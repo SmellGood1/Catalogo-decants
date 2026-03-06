@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,7 +11,7 @@
 body{
 font-family:Arial;
 margin:0;
-background:#f2f2f2;
+background:#f4f4f4;
 }
 
 /* HEADER */
@@ -18,7 +19,7 @@ background:#f2f2f2;
 header{
 background:black;
 color:white;
-padding:15px;
+padding:15px 20px;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -26,7 +27,15 @@ align-items:center;
 
 #carritoBtn{
 cursor:pointer;
-font-size:22px;
+font-size:20px;
+}
+
+#contador{
+background:red;
+border-radius:50%;
+padding:2px 7px;
+font-size:12px;
+margin-left:5px;
 }
 
 /* CATALOGO */
@@ -34,18 +43,18 @@ font-size:22px;
 .catalogo{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:15px;
+gap:18px;
 padding:20px;
 }
 
 .card{
 background:white;
-padding:10px;
+padding:12px;
 border-radius:12px;
 text-align:center;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+box-shadow:0 5px 12px rgba(0,0,0,0.1);
 cursor:pointer;
-transition:0.2s;
+transition:0.25s;
 }
 
 .card:hover{
@@ -62,12 +71,17 @@ object-fit:contain;
 
 .detalle{
 display:none;
-padding:25px;
+padding:30px;
 text-align:center;
 }
 
+select{
+padding:8px;
+border-radius:6px;
+}
+
 button{
-padding:10px 15px;
+padding:10px 16px;
 border:none;
 border-radius:8px;
 background:black;
@@ -80,22 +94,30 @@ cursor:pointer;
 
 #carritoPanel{
 position:fixed;
-right:-320px;
+right:-330px;
 top:0;
 width:300px;
 height:100%;
 background:white;
-box-shadow:-3px 0 10px rgba(0,0,0,0.2);
+box-shadow:-4px 0 15px rgba(0,0,0,0.2);
 padding:20px;
-transition:0.4s;
+transition:0.35s ease;
 overflow:auto;
+z-index:999;
 }
 
 #carritoPanel.activo{
 right:0;
 }
 
+.cerrar{
+float:right;
+cursor:pointer;
+font-size:18px;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -105,7 +127,7 @@ right:0;
 <h2>Decants Abdiel</h2>
 
 <div id="carritoBtn" onclick="toggleCarrito()">
-🛒
+🛒 <span id="contador">0</span>
 </div>
 
 </header>
@@ -143,6 +165,8 @@ right:0;
 
 <div id="carritoPanel">
 
+<span class="cerrar" onclick="toggleCarrito()">✖</span>
+
 <h3>Carrito</h3>
 
 <div id="listaCarrito"></div>
@@ -153,7 +177,7 @@ Total: $<span id="total">0</span>
 
 <br><br>
 
-<button onclick="comprar()">Comprar carrito</button>
+<button onclick="comprar()">Comprar</button>
 
 </div>
 
@@ -164,12 +188,12 @@ Total: $<span id="total">0</span>
 let perfumes=[
 
 {
-nombre:"Asad Clasico",
+nombre:"Asad",
 img:"https://fimgs.net/mdimg/perfume/375x500.70603.jpg"
 },
 
 {
-nombre:"Hawas Clasico",
+nombre:"Hawas",
 img:"https://fimgs.net/mdimg/perfume/375x500.46890.jpg"
 },
 
@@ -184,33 +208,8 @@ img:"https://fimgs.net/mdimg/perfume/375x500.58539.jpg"
 },
 
 {
-nombre:"Al Qiam Gold",
-img:"https://fimgs.net/mdimg/perfume/375x500.76820.jpg"
-},
-
-{
-nombre:"Vintage Radio",
-img:"https://fimgs.net/mdimg/perfume/375x500.74853.jpg"
-},
-
-{
-nombre:"Ramz Silver",
-img:"https://fimgs.net/mdimg/perfume/375x500.47870.jpg"
-},
-
-{
-nombre:"Ishq Al Shuyukh",
-img:"https://fimgs.net/mdimg/perfume/375x500.71924.jpg"
-},
-
-{
 nombre:"Turathi Blue",
 img:"https://fimgs.net/mdimg/perfume/375x500.64604.jpg"
-},
-
-{
-nombre:"CDN Urban Man Intense",
-img:"https://fimgs.net/mdimg/perfume/375x500.50812.jpg"
 },
 
 {
@@ -219,33 +218,13 @@ img:"https://fimgs.net/mdimg/perfume/375x500.82910.jpg"
 },
 
 {
+nombre:"9PM",
+img:"https://fimgs.net/mdimg/perfume/375x500.65414.jpg"
+},
+
+{
 nombre:"Odyssey Homme",
 img:"https://fimgs.net/mdimg/perfume/375x500.64545.jpg"
-},
-
-{
-nombre:"9PM Rebel",
-img:"https://fimgs.net/mdimg/perfume/375x500.82176.jpg"
-},
-
-{
-nombre:"Odyssey Mandarin Sky",
-img:"https://fimgs.net/mdimg/perfume/375x500.70268.jpg"
-},
-
-{
-nombre:"Odyssey Aqua",
-img:"https://fimgs.net/mdimg/perfume/375x500.78045.jpg"
-},
-
-{
-nombre:"Emeer Lattafa",
-img:"https://fimgs.net/mdimg/perfume/375x500.78662.jpg"
-},
-
-{
-nombre:"9PM Night Out",
-img:"https://fimgs.net/mdimg/perfume/375x500.82512.jpg"
 }
 
 ]
@@ -259,6 +238,7 @@ catalogo.innerHTML+=`
 <div class="card" onclick="verPerfume('${p.nombre}')">
 
 <img src="${p.img}">
+
 <h4>${p.nombre}</h4>
 
 </div>
@@ -280,10 +260,10 @@ function verPerfume(nombre){
 
 perfumeActual=nombre
 
-document.getElementById("catalogo").style.display="none"
-document.getElementById("detalle").style.display="block"
+catalogo.style.display="none"
+detalle.style.display="block"
 
-document.getElementById("nombrePerfume").innerText=nombre
+nombrePerfume.innerText=nombre
 
 }
 
@@ -291,16 +271,16 @@ document.getElementById("nombrePerfume").innerText=nombre
 
 function volver(){
 
-document.getElementById("catalogo").style.display="grid"
-document.getElementById("detalle").style.display="none"
+catalogo.style.display="grid"
+detalle.style.display="none"
 
 }
 
-/* AGREGAR AL CARRITO */
+/* AGREGAR */
 
 function agregar(){
 
-let ml=parseInt(document.getElementById("mlSelect").value)
+let ml=parseInt(mlSelect.value)
 
 let precio=ml*precioML
 
@@ -314,12 +294,11 @@ actualizarCarrito()
 
 }
 
-/* ACTUALIZAR CARRITO */
+/* ACTUALIZAR */
 
 function actualizarCarrito(){
 
 let lista=""
-
 total=0
 
 carrito.forEach((item,index)=>{
@@ -330,8 +309,9 @@ total+=item.precio
 
 })
 
-document.getElementById("listaCarrito").innerHTML=lista
-document.getElementById("total").innerText=total
+listaCarrito.innerHTML=lista
+total.innerText=total
+contador.innerText=carrito.length
 
 }
 
@@ -345,11 +325,11 @@ actualizarCarrito()
 
 }
 
-/* TOGGLE CARRITO */
+/* CARRITO */
 
 function toggleCarrito(){
 
-document.getElementById("carritoPanel").classList.toggle("activo")
+carritoPanel.classList.toggle("activo")
 
 }
 
@@ -367,7 +347,7 @@ pedido+=item.nombre+" "+item.ml+"ml ($"+item.precio+")%0A"
 
 })
 
-let mensaje="Hola Jhoan, soy "+nombre+" y quiero pedir:%0A%0A"+pedido+"%0ATotal: $"+total
+let mensaje="Hola Jhoan, soy "+nombre+" quiero pedir:%0A%0A"+pedido+"%0ATotal $"+total
 
 window.open("https://wa.me/529213042001?text="+mensaje)
 
@@ -376,4 +356,5 @@ window.open("https://wa.me/529213042001?text="+mensaje)
 </script>
 
 </body>
+
 </html>
