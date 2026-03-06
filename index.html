@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <title>Decants Abdiel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 
 body{
-font-family: Arial;
-background:#f2f2f2;
+font-family:Arial;
+background:#f3f3f3;
 text-align:center;
-padding:20px;
+}
+
+h1{
+margin-top:30px;
+}
+
+.catalogo{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
 }
 
 .card{
 background:white;
-padding:20px;
-margin:20px auto;
 width:250px;
+margin:15px;
+padding:20px;
 border-radius:15px;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card img{
+width:150px;
 }
 
 button{
@@ -29,6 +44,7 @@ color:white;
 font-size:16px;
 border-radius:10px;
 cursor:pointer;
+margin-top:10px;
 }
 
 </style>
@@ -37,17 +53,56 @@ cursor:pointer;
 <body>
 
 <h1>Decants Abdiel</h1>
-<p>Catálogo de Decants</p>
+<p>Catálogo de perfumes</p>
+
+<div class="catalogo">
 
 <div class="card">
-<h2>Tobacco Oud</h2>
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Tom_Ford_Tobacco_Oud.jpg">
+
+<h3>Tobacco Oud</h3>
+
 <p>5ml — $350</p>
 
-<a href="https://wa.me/529213042001?text=Hola%20quiero%20un%20decant%20de%20Tobacco%20Oud">
-<button>Comprar por WhatsApp</button>
-</a>
+<button onclick="ordenar('Tobacco Oud 5ml')">
+Comprar
+</button>
 
 </div>
+
+
+<div class="card">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Perfume_bottle.jpg">
+
+<h3>Le Male Elixir</h3>
+
+<p>5ml — $220</p>
+
+<button onclick="ordenar('Le Male Elixir 5ml')">
+Comprar
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+function ordenar(producto){
+
+let nombre = prompt("Escribe tu nombre:");
+
+let mensaje = "Hola, soy " + nombre + " y quiero pedir: " + producto;
+
+let telefono = "529213042001";
+
+window.open("https://wa.me/"+telefono+"?text="+encodeURIComponent(mensaje));
+
+}
+
+</script>
+
 
 </body>
 </html>
