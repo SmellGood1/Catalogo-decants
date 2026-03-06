@@ -9,12 +9,8 @@
 
 body{
 font-family:Arial;
-background:#f3f3f3;
+background:#f4f4f4;
 text-align:center;
-}
-
-h1{
-margin-top:30px;
 }
 
 .catalogo{
@@ -25,7 +21,7 @@ justify-content:center;
 
 .card{
 background:white;
-width:250px;
+width:230px;
 margin:15px;
 padding:20px;
 border-radius:15px;
@@ -33,76 +29,96 @@ box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
 .card img{
-width:150px;
+width:140px;
 }
 
 button{
-background:#25D366;
-border:none;
-padding:12px 20px;
+background:#111;
 color:white;
-font-size:16px;
-border-radius:10px;
-cursor:pointer;
+border:none;
+padding:10px 15px;
 margin-top:10px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.carrito{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+color:white;
+padding:15px;
+border-radius:12px;
+font-size:18px;
+cursor:pointer;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <h1>Decants Abdiel</h1>
-<p>Catálogo de perfumes</p>
+<p>Catálogo de decants</p>
 
 <div class="catalogo">
 
 <div class="card">
-<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Tom_Ford_Tobacco_Oud.jpg">
-
+<img src="https://i.imgur.com/0Z8FQyO.png">
 <h3>Tobacco Oud</h3>
-
-<p>5ml — $350</p>
-
-<button onclick="ordenar('Tobacco Oud 5ml')">
-Comprar
-</button>
-
+<p>$350 / 5ml</p>
+<button onclick="agregar('Tobacco Oud',350)">Agregar</button>
 </div>
-
 
 <div class="card">
-<img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Perfume_bottle.jpg">
-
+<img src="https://i.imgur.com/e6y7X1F.png">
 <h3>Le Male Elixir</h3>
+<p>$220 / 5ml</p>
+<button onclick="agregar('Le Male Elixir',220)">Agregar</button>
+</div>
 
-<p>5ml — $220</p>
-
-<button onclick="ordenar('Le Male Elixir 5ml')">
-Comprar
-</button>
-
+<div class="card">
+<img src="https://i.imgur.com/Vs6YQ6v.png">
+<h3>Ultra Male</h3>
+<p>$200 / 5ml</p>
+<button onclick="agregar('Ultra Male',200)">Agregar</button>
 </div>
 
 </div>
 
+<div class="carrito" onclick="comprar()">
+Ver carrito 🛒
+</div>
 
 <script>
 
-function ordenar(producto){
+let carrito = []
+let total = 0
 
-let nombre = prompt("Escribe tu nombre:");
+function agregar(nombre,precio){
 
-let mensaje = "Hola, soy " + nombre + " y quiero pedir: " + producto;
+carrito.push(nombre)
+total += precio
 
-let telefono = "529213042001";
+alert(nombre + " agregado al carrito")
 
-window.open("https://wa.me/"+telefono+"?text="+encodeURIComponent(mensaje));
+}
+
+function comprar(){
+
+let nombre = prompt("Escribe tu nombre")
+
+let lista = carrito.join(", ")
+
+let mensaje = "Hola soy " + nombre + " y quiero pedir: " + lista + ". Total: $" + total
+
+window.open("https://wa.me/529213042001?text="+encodeURIComponent(mensaje))
 
 }
 
 </script>
-
 
 </body>
 </html>
