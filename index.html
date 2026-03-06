@@ -2,14 +2,21 @@
 <html>
 
 <head>
-<title>Decants Abdiel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decants Abdiel</title>
 
 <style>
 
 body{
 font-family:Arial;
 background:#f4f4f4;
+margin:0;
+}
+
+header{
+background:black;
+color:white;
+padding:15px;
 text-align:center;
 }
 
@@ -17,41 +24,44 @@ text-align:center;
 display:flex;
 flex-wrap:wrap;
 justify-content:center;
+padding:20px;
 }
 
 .card{
 background:white;
-width:230px;
-margin:15px;
-padding:20px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
+width:200px;
+margin:10px;
+padding:15px;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
 }
 
 .card img{
-width:140px;
+width:120px;
 }
 
-button{
-background:#111;
-color:white;
-border:none;
-padding:10px 15px;
+.detalle{
+display:none;
+padding:20px;
+text-align:center;
+}
+
+select,button{
+padding:10px;
 margin-top:10px;
-border-radius:8px;
-cursor:pointer;
 }
 
 .carrito{
 position:fixed;
-bottom:20px;
-right:20px;
-background:#25D366;
-color:white;
+right:0;
+top:0;
+width:250px;
+height:100%;
+background:white;
+box-shadow:-3px 0 10px rgba(0,0,0,0.1);
 padding:15px;
-border-radius:12px;
-font-size:18px;
-cursor:pointer;
+overflow:auto;
 }
 
 </style>
@@ -60,61 +70,146 @@ cursor:pointer;
 
 <body>
 
-<h1>Decants Abdiel</h1>
-<p>Catálogo de decants</p>
+<header>
+<h2>Decants Abdiel</h2>
+</header>
 
-<div class="catalogo">
+<div id="catalogo" class="catalogo">
 
-<div class="card">
-<img src="https://i.imgur.com/0Z8FQyO.png">
-<h3>Tobacco Oud</h3>
-<p>$350 / 5ml</p>
-<button onclick="agregar('Tobacco Oud',350)">Agregar</button>
-</div>
-
-<div class="card">
+<div class="card" onclick="verPerfume('Le Male Elixir',44)">
 <img src="https://i.imgur.com/e6y7X1F.png">
 <h3>Le Male Elixir</h3>
-<p>$220 / 5ml</p>
-<button onclick="agregar('Le Male Elixir',220)">Agregar</button>
 </div>
 
-<div class="card">
-<img src="https://i.imgur.com/Vs6YQ6v.png">
-<h3>Ultra Male</h3>
-<p>$200 / 5ml</p>
-<button onclick="agregar('Ultra Male',200)">Agregar</button>
+<div class="card" onclick="verPerfume('Le Beau Le Parfum',40)">
+<img src="https://i.imgur.com/0Z8FQyO.png">
+<h3>Le Beau Le Parfum</h3>
 </div>
 
 </div>
 
-<div class="carrito" onclick="comprar()">
-Ver carrito 🛒
+
+<div id="detalle" class="detalle">
+
+<h2 id="nombrePerfume"></h2>
+
+<p>Selecciona los ml</p>
+
+<select id="mlSelect">
+<option value="2">2 ml</option>
+<option value="3">3 ml</option>
+<option value="4">4 ml</option>
+<option value="5">5 ml</option>
+<option value="6">6 ml</option>
+<option value="7">7 ml</option>
+<option value="8">8 ml</option>
+<option value="9">9 ml</option>
+<option value="10">10 ml</option>
+</select>
+
+<br>
+
+<button onclick="agregar()">Agregar al carrito</button>
+
+<br><br>
+
+<button onclick="volver()">Volver</button>
+
+</div>
+
+
+<div class="carrito">
+
+<h3>Carrito</h3>
+
+<div id="listaCarrito"></div>
+
+<hr>
+
+<p>Total: $<span id="total">0</span></p>
+
+<button onclick="comprar()">Comprar carrito</button>
+
 </div>
 
 <script>
 
-let carrito = []
-let total = 0
+let perfumeActual=""
+let precioML=0
 
-function agregar(nombre,precio){
+let carrito=[]
+let total=0
 
-carrito.push(nombre)
-total += precio
+function verPerfume(nombre,precio){
 
-alert(nombre + " agregado al carrito")
+document.getElementById("catalogo").style.display="none"
+document.getElementById("detalle").style.display="block"
+
+perfumeActual=nombre
+precioML=precio
+
+document.getElementById("nombrePerfume").innerText=nombre
+
+}
+
+function volver(){
+
+document.getElementById("catalogo").style.display="flex"
+document.getElementById("detalle").style.display="none"
+
+}
+
+function agregar(){
+
+let ml=document.getElementById("mlSelect").value
+
+let precio=ml*precioML
+
+carrito.push({
+nombre:perfumeActual,
+ml:ml,
+precio:precio
+})
+
+actualizarCarrito()
+
+}
+
+function actualizarCarrito(){
+
+let lista=""
+
+total=0
+
+carrito.forEach(item=>{
+
+lista+=item.nombre+" "+item.ml+"ml ($"+item.precio+")<br>"
+
+total+=item.precio
+
+})
+
+document.getElementById("listaCarrito").innerHTML=lista
+
+document.getElementById("total").innerText=total
 
 }
 
 function comprar(){
 
-let nombre = prompt("Escribe tu nombre")
+let nombre=prompt("Escribe tu nombre")
 
-let lista = carrito.join(", ")
+let pedido=""
 
-let mensaje = "Hola soy " + nombre + " y quiero pedir: " + lista + ". Total: $" + total
+carrito.forEach(item=>{
 
-window.open("https://wa.me/529213042001?text="+encodeURIComponent(mensaje))
+pedido+=item.nombre+" "+item.ml+"ml ($"+item.precio+")%0A"
+
+})
+
+let mensaje="Hola Jhoan, soy "+nombre+" me gustaría realizar mi pedido:%0A%0A"+pedido+"%0ATotal del pedido $"+total
+
+window.open("https://wa.me/529213042001?text="+mensaje)
 
 }
 
