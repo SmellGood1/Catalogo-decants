@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Decants Abdiel</title>
 
@@ -12,12 +13,23 @@ margin:0;
 background:#f2f2f2;
 }
 
+/* HEADER */
+
 header{
 background:black;
 color:white;
 padding:15px;
-text-align:center;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
+
+#carritoBtn{
+cursor:pointer;
+font-size:22px;
+}
+
+/* CATALOGO */
 
 .catalogo{
 display:grid;
@@ -28,16 +40,25 @@ padding:20px;
 
 .card{
 background:white;
-padding:15px;
+padding:10px;
 border-radius:12px;
 text-align:center;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 cursor:pointer;
+transition:0.2s;
 }
 
 .card:hover{
-transform:scale(1.03);
+transform:scale(1.05);
 }
+
+.card img{
+width:100%;
+height:160px;
+object-fit:contain;
+}
+
+/* DETALLE */
 
 .detalle{
 display:none;
@@ -52,18 +73,10 @@ border-radius:8px;
 background:black;
 color:white;
 margin-top:10px;
-}
-
-#abrirCarrito{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#25D366;
-padding:14px;
-border-radius:50px;
-color:white;
 cursor:pointer;
 }
+
+/* CARRITO */
 
 #carritoPanel{
 position:fixed;
@@ -74,7 +87,7 @@ height:100%;
 background:white;
 box-shadow:-3px 0 10px rgba(0,0,0,0.2);
 padding:20px;
-transition:0.3s;
+transition:0.4s;
 overflow:auto;
 }
 
@@ -88,7 +101,13 @@ right:0;
 <body>
 
 <header>
+
 <h2>Decants Abdiel</h2>
+
+<div id="carritoBtn" onclick="toggleCarrito()">
+🛒
+</div>
+
 </header>
 
 <div id="catalogo" class="catalogo"></div>
@@ -98,6 +117,8 @@ right:0;
 <h2 id="nombrePerfume"></h2>
 
 <select id="mlSelect">
+
+<option>1</option>
 <option>2</option>
 <option>3</option>
 <option>4</option>
@@ -107,6 +128,7 @@ right:0;
 <option>8</option>
 <option>9</option>
 <option>10</option>
+
 </select>
 
 <br>
@@ -117,10 +139,6 @@ right:0;
 
 <button onclick="volver()">Volver</button>
 
-</div>
-
-<div id="abrirCarrito" onclick="toggleCarrito()">
-🛒
 </div>
 
 <div id="carritoPanel">
@@ -141,24 +159,95 @@ Total: $<span id="total">0</span>
 
 <script>
 
+/* PERFUMES */
+
 let perfumes=[
-"Asad Clasico",
-"Hawas Clasico",
-"Le beau le parfum",
-"Shaghaf oud aswad",
-"Al qiam gold",
-"Vintage radio",
-"Ramz Silver",
-"Ishq al Shuyukh",
-"Durathi Blue",
-"Club de nuit urban man intense",
-"Khamrah Qawah",
-"Odyssey homme",
-"9pm Rebel",
-"Odyssey Mandarin Sky",
-"Odyssey Aqua",
-"Emeer Lattafa Al Oud",
-"9pm Night Out"
+
+{
+nombre:"Asad Clasico",
+img:"https://fimgs.net/mdimg/perfume/375x500.70603.jpg"
+},
+
+{
+nombre:"Hawas Clasico",
+img:"https://fimgs.net/mdimg/perfume/375x500.46890.jpg"
+},
+
+{
+nombre:"Le Beau Le Parfum",
+img:"https://fimgs.net/mdimg/perfume/375x500.72106.jpg"
+},
+
+{
+nombre:"Shaghaf Oud Aswad",
+img:"https://fimgs.net/mdimg/perfume/375x500.58539.jpg"
+},
+
+{
+nombre:"Al Qiam Gold",
+img:"https://fimgs.net/mdimg/perfume/375x500.76820.jpg"
+},
+
+{
+nombre:"Vintage Radio",
+img:"https://fimgs.net/mdimg/perfume/375x500.74853.jpg"
+},
+
+{
+nombre:"Ramz Silver",
+img:"https://fimgs.net/mdimg/perfume/375x500.47870.jpg"
+},
+
+{
+nombre:"Ishq Al Shuyukh",
+img:"https://fimgs.net/mdimg/perfume/375x500.71924.jpg"
+},
+
+{
+nombre:"Turathi Blue",
+img:"https://fimgs.net/mdimg/perfume/375x500.64604.jpg"
+},
+
+{
+nombre:"CDN Urban Man Intense",
+img:"https://fimgs.net/mdimg/perfume/375x500.50812.jpg"
+},
+
+{
+nombre:"Khamrah Qawah",
+img:"https://fimgs.net/mdimg/perfume/375x500.82910.jpg"
+},
+
+{
+nombre:"Odyssey Homme",
+img:"https://fimgs.net/mdimg/perfume/375x500.64545.jpg"
+},
+
+{
+nombre:"9PM Rebel",
+img:"https://fimgs.net/mdimg/perfume/375x500.82176.jpg"
+},
+
+{
+nombre:"Odyssey Mandarin Sky",
+img:"https://fimgs.net/mdimg/perfume/375x500.70268.jpg"
+},
+
+{
+nombre:"Odyssey Aqua",
+img:"https://fimgs.net/mdimg/perfume/375x500.78045.jpg"
+},
+
+{
+nombre:"Emeer Lattafa",
+img:"https://fimgs.net/mdimg/perfume/375x500.78662.jpg"
+},
+
+{
+nombre:"9PM Night Out",
+img:"https://fimgs.net/mdimg/perfume/375x500.82512.jpg"
+}
+
 ]
 
 let catalogo=document.getElementById("catalogo")
@@ -166,18 +255,26 @@ let catalogo=document.getElementById("catalogo")
 perfumes.forEach(p=>{
 
 catalogo.innerHTML+=`
-<div class="card" onclick="verPerfume('${p}')">
-<h4>${p}</h4>
+
+<div class="card" onclick="verPerfume('${p.nombre}')">
+
+<img src="${p.img}">
+<h4>${p.nombre}</h4>
+
 </div>
+
 `
 
 })
 
+/* VARIABLES */
+
 let perfumeActual=""
 let precioML=40
-
 let carrito=[]
 let total=0
+
+/* VER PERFUME */
 
 function verPerfume(nombre){
 
@@ -190,6 +287,8 @@ document.getElementById("nombrePerfume").innerText=nombre
 
 }
 
+/* VOLVER */
+
 function volver(){
 
 document.getElementById("catalogo").style.display="grid"
@@ -197,11 +296,11 @@ document.getElementById("detalle").style.display="none"
 
 }
 
+/* AGREGAR AL CARRITO */
+
 function agregar(){
 
 let ml=parseInt(document.getElementById("mlSelect").value)
-
-ml=ml+1
 
 let precio=ml*precioML
 
@@ -215,31 +314,46 @@ actualizarCarrito()
 
 }
 
+/* ACTUALIZAR CARRITO */
+
 function actualizarCarrito(){
 
 let lista=""
 
 total=0
 
-carrito.forEach(item=>{
+carrito.forEach((item,index)=>{
 
-lista+=item.nombre+" "+item.ml+"ml ($"+item.precio+")<br>"
+lista+=item.nombre+" "+item.ml+"ml ($"+item.precio+") <button onclick='eliminar("+index+")'>❌</button><br>"
 
 total+=item.precio
 
 })
 
 document.getElementById("listaCarrito").innerHTML=lista
-
 document.getElementById("total").innerText=total
 
 }
+
+/* ELIMINAR */
+
+function eliminar(i){
+
+carrito.splice(i,1)
+
+actualizarCarrito()
+
+}
+
+/* TOGGLE CARRITO */
 
 function toggleCarrito(){
 
 document.getElementById("carritoPanel").classList.toggle("activo")
 
 }
+
+/* WHATSAPP */
 
 function comprar(){
 
@@ -253,7 +367,7 @@ pedido+=item.nombre+" "+item.ml+"ml ($"+item.precio+")%0A"
 
 })
 
-let mensaje="Hola Jhoan, soy "+nombre+" me gustaría realizar mi pedido:%0A%0A"+pedido+"%0ATotal del pedido $"+total
+let mensaje="Hola Jhoan, soy "+nombre+" y quiero pedir:%0A%0A"+pedido+"%0ATotal: $"+total
 
 window.open("https://wa.me/529213042001?text="+mensaje)
 
