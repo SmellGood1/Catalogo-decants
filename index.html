@@ -387,11 +387,38 @@ precio:precio
 
 contador.innerText=carrito.length
 
-listaCarrito.innerHTML+=`<div>${actual.name} ${ml}ml ($${precio})</div>`
+actualizarCarrito()
 
 toast.classList.add("show")
 
 setTimeout(()=>toast.classList.remove("show"),2000)
+
+}
+
+function actualizarCarrito(){
+
+listaCarrito.innerHTML=""
+
+carrito.forEach((p,index)=>{
+
+listaCarrito.innerHTML+=`
+<div style="margin-bottom:10px">
+${p.nombre} ${p.ml}ml ($${p.precio})
+<button onclick="eliminar(${index})">❌</button>
+</div>
+`
+
+})
+
+}
+
+function eliminar(i){
+
+carrito.splice(i,1)
+
+contador.innerText=carrito.length
+
+actualizarCarrito()
 
 }
 
