@@ -26,8 +26,6 @@ body{
 background:var(--bg);
 }
 
-/* HEADER */
-
 header{
 display:flex;
 justify-content:space-between;
@@ -62,8 +60,6 @@ top:-8px;
 right:-12px;
 }
 
-/* CASAS */
-
 .casa{
 font-family:"Playfair Display";
 font-size:30px;
@@ -72,8 +68,6 @@ color:var(--gold);
 border-bottom:2px solid var(--gold);
 display:inline-block;
 }
-
-/* GRID */
 
 .grid{
 display:grid;
@@ -107,8 +101,6 @@ margin-top:10px;
 border-bottom:1px solid var(--gold);
 display:inline-block;
 }
-
-/* DETALLE PERFUME */
 
 #detalle{
 position:fixed;
@@ -175,8 +167,6 @@ cursor:pointer;
 font-weight:600;
 }
 
-/* CARRITO */
-
 #carritoPanel{
 position:fixed;
 right:-350px;
@@ -194,8 +184,6 @@ overflow:auto;
 right:0;
 }
 
-/* TOAST */
-
 #toast{
 position:fixed;
 bottom:-80px;
@@ -210,6 +198,14 @@ transition:.5s;
 
 #toast.show{
 bottom:30px;
+}
+
+.fragrantica{
+display:block;
+margin-top:10px;
+color:#d4af37;
+font-weight:600;
+text-decoration:none;
 }
 
 </style>
@@ -229,8 +225,6 @@ bottom:30px;
 </header>
 
 <div id="catalogo"></div>
-
-<!-- DETALLE PERFUME -->
 
 <div id="detalle">
 
@@ -261,27 +255,17 @@ bottom:30px;
 
 <button onclick="addCarrito()">Añadir al carrito</button>
 
-<br><br>
+<a id="fragranticaLink" class="fragrantica" target="_blank">
+Conoce más en Fragrantica
+</a>
 
-<button onclick="addCarrito()">Añadir al carrito</button>
-
-<br><br>
-
-<a id="fragranticaLink" target="_blank">Conoce más en Fragrantica</a>
-
-<br><br>
-
-<button onclick="cerrarDetalle()">Cerrar</button>
-
-<br><br>
+<br>
 
 <button onclick="cerrarDetalle()">Cerrar</button>
 
 </div>
 
 </div>
-
-<!-- CARRITO -->
 
 <div id="carritoPanel">
 
@@ -378,6 +362,9 @@ dImg.src=p.img
 dNombre.innerText=p.name
 dConc.innerText=p.conc
 dMarca.innerText="Casa: "+buscarMarca(p.name)
+
+document.getElementById("fragranticaLink").href =
+"https://www.fragrantica.com/search/?q="+encodeURIComponent(p.name)
 
 detalle.style.display="flex"
 
