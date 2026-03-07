@@ -1,119 +1,109 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SmellGood Decants</title>
+
+<title>Decants Abdiel</title>
 
 <style>
 
 body{
-font-family:Arial;
 margin:0;
-background:#f4f4f4;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
 }
-
-/* HEADER */
 
 header{
-background:black;
-color:white;
-padding:15px 20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+text-align:center;
+padding:25px;
+font-size:24px;
+letter-spacing:2px;
 }
-
-#carritoBtn{
-cursor:pointer;
-font-size:20px;
-}
-
-#contador{
-background:red;
-border-radius:50%;
-padding:2px 7px;
-font-size:12px;
-margin-left:5px;
-}
-
-/* CATALOGO */
 
 .catalogo{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-gap:18px;
+grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+gap:20px;
 padding:20px;
 }
 
 .card{
-background:white;
-padding:12px;
+background:#1b1b1b;
 border-radius:12px;
-text-align:center;
-box-shadow:0 5px 12px rgba(0,0,0,0.1);
+overflow:hidden;
 cursor:pointer;
-transition:0.25s;
+transition:0.3s;
+box-shadow:0 10px 20px rgba(0,0,0,0.4);
 }
 
 .card:hover{
-transform:scale(1.05);
+transform:translateY(-8px);
+box-shadow:0 20px 40px rgba(0,0,0,0.6);
 }
 
 .card img{
 width:100%;
-height:160px;
-object-fit:contain;
+height:180px;
+object-fit:cover;
 }
 
-/* DETALLE */
+.card h3{
+padding:10px;
+font-size:15px;
+}
 
 .detalle{
 display:none;
-padding:30px;
+padding:25px;
 text-align:center;
 }
 
-select{
-padding:8px;
-border-radius:6px;
+.detalle img{
+width:250px;
+border-radius:12px;
 }
 
 button{
-padding:10px 16px;
+background:#d4af37;
 border:none;
+padding:12px 20px;
 border-radius:8px;
-background:black;
-color:white;
-margin-top:10px;
+font-weight:bold;
+cursor:pointer;
+margin-top:15px;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+#carritoBtn{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25D366;
+padding:15px;
+border-radius:50%;
+font-size:22px;
 cursor:pointer;
 }
 
-/* CARRITO */
-
-#carritoPanel{
+#carrito{
 position:fixed;
-right:-330px;
+right:-320px;
 top:0;
 width:300px;
 height:100%;
-background:white;
-box-shadow:-4px 0 15px rgba(0,0,0,0.2);
+background:#1b1b1b;
 padding:20px;
-transition:0.35s ease;
+transition:0.4s;
 overflow:auto;
-z-index:999;
 }
 
-#carritoPanel.activo{
+#carrito.activo{
 right:0;
-}
-
-.cerrar{
-float:right;
-cursor:pointer;
-font-size:18px;
 }
 
 </style>
@@ -123,24 +113,20 @@ font-size:18px;
 <body>
 
 <header>
-
-<h2>SmellGood Decants</h2>
-
-<div id="carritoBtn" onclick="toggleCarrito()">
-🛒 <span id="contador">0</span>
-</div>
-
+DECANTS ABDIEL
 </header>
 
-<div id="catalogo" class="catalogo"></div>
+<div class="catalogo" id="catalogo"></div>
 
-<div id="detalle" class="detalle">
+<div class="detalle" id="detalle">
 
-<h2 id="nombrePerfume"></h2>
+<h2 id="nombre"></h2>
 
-<select id="mlSelect">
+<img id="imagen">
 
-<option>1</option>
+<br><br>
+
+<select id="ml">
 <option>2</option>
 <option>3</option>
 <option>4</option>
@@ -150,7 +136,6 @@ font-size:18px;
 <option>8</option>
 <option>9</option>
 <option>10</option>
-
 </select>
 
 <br>
@@ -163,17 +148,17 @@ font-size:18px;
 
 </div>
 
-<div id="carritoPanel">
+<div id="carritoBtn" onclick="toggleCarrito()">🛒</div>
 
-<span class="cerrar" onclick="toggleCarrito()">✖</span>
+<div id="carrito">
 
 <h3>Carrito</h3>
 
-<div id="listaCarrito"></div>
+<div id="lista"></div>
 
 <hr>
 
-Total: $<span id="total">0</span>
+Total $<span id="total">0</span>
 
 <br><br>
 
@@ -183,63 +168,39 @@ Total: $<span id="total">0</span>
 
 <script>
 
-/* PERFUMES */
-
 let perfumes=[
 
-{
-nombre:"Asad",
-img:"https://fimgs.net/mdimg/perfume/375x500.70603.jpg"
-},
-
-{
-nombre:"Hawas",
-img:"https://fimgs.net/mdimg/perfume/375x500.46890.jpg"
-},
-
-{
-nombre:"Le Beau Le Parfum",
-img:"https://fimgs.net/mdimg/perfume/375x500.72106.jpg"
-},
-
-{
-nombre:"Shaghaf Oud Aswad",
-img:"https://fimgs.net/mdimg/perfume/375x500.58539.jpg"
-},
-
-{
-nombre:"Turathi Blue",
-img:"https://fimgs.net/mdimg/perfume/375x500.64604.jpg"
-},
-
-{
-nombre:"Khamrah Qawah",
-img:"https://fimgs.net/mdimg/perfume/375x500.82910.jpg"
-},
-
-{
-nombre:"9PM",
-img:"https://fimgs.net/mdimg/perfume/375x500.65414.jpg"
-},
-
-{
-nombre:"Odyssey Homme",
-img:"https://fimgs.net/mdimg/perfume/375x500.64545.jpg"
-}
+{name:"Asad Clasico",img:"IMAGEN"},
+{name:"Hawas Clasico",img:"IMAGEN"},
+{name:"Le beau le parfum",img:"IMAGEN"},
+{name:"Shaghaf oud aswad",img:"IMAGEN"},
+{name:"Al qiam gold",img:"IMAGEN"},
+{name:"Vintage radio",img:"IMAGEN"},
+{name:"Ramz Silver",img:"IMAGEN"},
+{name:"Ishq al Shuyukh",img:"IMAGEN"},
+{name:"Durathi Blue",img:"IMAGEN"},
+{name:"Club de nuit urban man intense",img:"IMAGEN"},
+{name:"Khamrah Qawah",img:"IMAGEN"},
+{name:"Odyssey homme",img:"IMAGEN"},
+{name:"9pm Rebel",img:"IMAGEN"},
+{name:"Odyssey Mandarin Sky",img:"IMAGEN"},
+{name:"Odyssey Aqua",img:"IMAGEN"},
+{name:"Emeer Lattafa Al Oud",img:"IMAGEN"},
+{name:"9pm Night Out",img:"IMAGEN"}
 
 ]
 
 let catalogo=document.getElementById("catalogo")
 
-perfumes.forEach(p=>{
+perfumes.forEach((p,i)=>{
 
 catalogo.innerHTML+=`
 
-<div class="card" onclick="verPerfume('${p.nombre}')">
+<div class="card" onclick="ver(${i})">
 
 <img src="${p.img}">
 
-<h4>${p.nombre}</h4>
+<h3>${p.name}</h3>
 
 </div>
 
@@ -247,93 +208,73 @@ catalogo.innerHTML+=`
 
 })
 
-/* VARIABLES */
+let actual=0
 
-let perfumeActual=""
-let precioML=40
 let carrito=[]
+
 let total=0
 
-/* VER PERFUME */
+function ver(i){
 
-function verPerfume(nombre){
+actual=i
 
-perfumeActual=nombre
+document.getElementById("catalogo").style.display="none"
+document.getElementById("detalle").style.display="block"
 
-catalogo.style.display="none"
-detalle.style.display="block"
-
-nombrePerfume.innerText=nombre
+document.getElementById("nombre").innerText=perfumes[i].name
+document.getElementById("imagen").src=perfumes[i].img
 
 }
-
-/* VOLVER */
 
 function volver(){
 
-catalogo.style.display="grid"
-detalle.style.display="none"
+document.getElementById("catalogo").style.display="grid"
+document.getElementById("detalle").style.display="none"
 
 }
 
-/* AGREGAR */
-
 function agregar(){
 
-let ml=parseInt(mlSelect.value)
+let ml=parseInt(document.getElementById("ml").value)
 
-let precio=ml*precioML
+ml=ml+1
+
+let precio=ml*40
 
 carrito.push({
-nombre:perfumeActual,
+nombre:perfumes[actual].name,
 ml:ml,
 precio:precio
 })
 
-actualizarCarrito()
+actualizar()
 
 }
 
-/* ACTUALIZAR */
-
-function actualizarCarrito(){
+function actualizar(){
 
 let lista=""
+
 total=0
 
-carrito.forEach((item,index)=>{
+carrito.forEach(p=>{
 
-lista+=item.nombre+" "+item.ml+"ml ($"+item.precio+") <button onclick='eliminar("+index+")'>❌</button><br>"
+lista+=p.nombre+" "+p.ml+"ml ($"+p.precio+")<br>"
 
-total+=item.precio
+total+=p.precio
 
 })
 
-listaCarrito.innerHTML=lista
-total.innerText=total
-contador.innerText=carrito.length
+document.getElementById("lista").innerHTML=lista
+document.getElementById("total").innerText=total
 
 }
-
-/* ELIMINAR */
-
-function eliminar(i){
-
-carrito.splice(i,1)
-
-actualizarCarrito()
-
-}
-
-/* CARRITO */
 
 function toggleCarrito(){
 
-carritoPanel.classList.toggle("activo")
+document.getElementById("carrito").classList.toggle("activo")
 
 }
-
-/* WHATSAPP */
 
 function comprar(){
 
@@ -341,13 +282,13 @@ let nombre=prompt("Tu nombre")
 
 let pedido=""
 
-carrito.forEach(item=>{
+carrito.forEach(p=>{
 
-pedido+=item.nombre+" "+item.ml+"ml ($"+item.precio+")%0A"
+pedido+=p.nombre+" "+p.ml+"ml ($"+p.precio+")%0A"
 
 })
 
-let mensaje="Hola Jhoan, soy "+nombre+" quiero pedir:%0A%0A"+pedido+"%0ATotal $"+total
+let mensaje="Hola Jhoan, soy "+nombre+" me gustaría realizar mi pedido:%0A%0A"+pedido+"%0ATotal $"+total
 
 window.open("https://wa.me/529213042001?text="+mensaje)
 
@@ -356,5 +297,4 @@ window.open("https://wa.me/529213042001?text="+mensaje)
 </script>
 
 </body>
-
 </html>
