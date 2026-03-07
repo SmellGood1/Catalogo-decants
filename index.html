@@ -3,187 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>SmellGood Decants</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Tienda de Perfumes</title>
 
 <style>
 
-:root{
---gold:#d4af37;
---bg:#fafafa;
-}
-
-*{
+body{
+font-family: Arial;
+background:#111;
+color:white;
 margin:0;
 padding:0;
-box-sizing:border-box;
-font-family:Poppins;
-}
-
-body{
-background:var(--bg);
 }
 
 header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:20px 40px;
-background:white;
-box-shadow:0 2px 10px rgba(0,0,0,.08);
+padding:20px;
+background:#000;
 }
 
-.logo{
-font-family:"Playfair Display";
-font-size:28px;
-color:var(--gold);
-border-bottom:2px solid var(--gold);
-padding-bottom:4px;
+h1{
+margin:0;
 }
 
-#carritoBtn{
-cursor:pointer;
-font-size:22px;
-position:relative;
-}
-
-#contador{
-background:var(--gold);
-color:white;
-font-size:12px;
-padding:3px 7px;
-border-radius:20px;
-position:absolute;
-top:-8px;
-right:-12px;
-}
-
-.casa{
-font-family:"Playfair Display";
-font-size:30px;
-margin:40px;
-color:var(--gold);
-border-bottom:2px solid var(--gold);
-display:inline-block;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-gap:25px;
-padding:20px 40px 40px;
-}
-
-.card{
-background:white;
-padding:15px;
-border-radius:12px;
-text-align:center;
-cursor:pointer;
-transition:.25s;
-box-shadow:0 3px 10px rgba(0,0,0,.05);
-}
-
-.card:hover{
-transform:translateY(-6px);
-}
-
-.card img{
-width:100%;
-height:180px;
-object-fit:contain;
-}
-
-.card div{
-margin-top:10px;
-border-bottom:1px solid var(--gold);
-display:inline-block;
-}
-
-#detalle{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.5);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.detalleBox{
-background:white;
-width:450px;
-padding:30px;
-border-radius:15px;
-text-align:center;
-}
-
-.detalleBox img{
-width:240px;
-}
-
-.perfumeNombre{
-font-family:"Playfair Display";
-font-size:26px;
-margin:10px 0;
-border-bottom:2px solid var(--gold);
-display:inline-block;
-}
-
-.concentracion{
-color:var(--gold);
-font-weight:600;
-margin:5px 0;
-}
-
-.marca{
-font-size:14px;
-opacity:.7;
-margin-bottom:10px;
-}
-
-select{
-padding:10px;
-margin:10px 0;
-}
-
-button{
-background:var(--gold);
+.cart-btn{
+background:#444;
 border:none;
-padding:12px 20px;
 color:white;
-border-radius:6px;
+padding:10px 20px;
 cursor:pointer;
-font-weight:600;
 }
 
-#carritoPanel{
+.products{
+display:flex;
+gap:20px;
+padding:20px;
+flex-wrap:wrap;
+}
+
+.product{
+background:#1b1b1b;
+padding:20px;
+border-radius:10px;
+width:200px;
+text-align:center;
+}
+
+.product button{
+margin-top:10px;
+padding:8px;
+border:none;
+background:#333;
+color:white;
+cursor:pointer;
+}
+
+/* carrito */
+
+.cart{
 position:fixed;
-right:-350px;
 top:0;
-width:320px;
+right:-400px;
+width:300px;
 height:100%;
-background:white;
-box-shadow:-3px 0 10px rgba(0,0,0,.2);
-transition:.4s;
-padding:25px;
+background:#000;
+padding:20px;
+transition:0.3s;
 overflow:auto;
 }
 
-#carritoPanel.open{
+.cart.active{
 right:0;
 }
 
-.fragrantica{
-display:block;
-margin-top:10px;
-color:#d4af37;
-font-weight:600;
-text-decoration:none;
+.close-cart{
+background:red;
+border:none;
+color:white;
+padding:8px 15px;
+cursor:pointer;
+margin-bottom:10px;
 }
 
 </style>
@@ -193,197 +93,76 @@ text-decoration:none;
 
 <header>
 
-<div class="logo">SmellGood Decants</div>
+<h1>Perfumes</h1>
 
-<div id="carritoBtn" onclick="toggleCarrito()">
-🛒
-<span id="contador">0</span>
-</div>
+<button class="cart-btn" onclick="openCart()">
+🛒 Carrito
+</button>
 
 </header>
 
-<div id="catalogo"></div>
 
-<div id="detalle">
+<div class="products">
 
-<div class="detalleBox">
+<div class="product">
+<h3>Bleu de Chanel</h3>
+<p>$120</p>
+<button onclick="addToCart('Bleu de Chanel')">
+Agregar
+</button>
+</div>
 
-<img id="dImg">
+<div class="product">
+<h3>Dior Sauvage</h3>
+<p>$110</p>
+<button onclick="addToCart('Dior Sauvage')">
+Agregar
+</button>
+</div>
 
-<div class="perfumeNombre" id="dNombre"></div>
-
-<div class="concentracion" id="dConc"></div>
-
-<div class="marca" id="dMarca"></div>
-
-<select id="ml">
-<option value="1">1 ml</option>
-<option value="2">2 ml</option>
-<option value="3">3 ml</option>
-<option value="5">5 ml</option>
-<option value="10">10 ml</option>
-</select>
-
-<br>
-
-<button onclick="addCarrito()">Añadir al carrito</button>
-
-<a id="fragranticaLink" class="fragrantica" target="_blank">
-Conoce más en Fragrantica
-</a>
-
-<br>
-
-<button onclick="cerrarDetalle()">Cerrar</button>
-
+<div class="product">
+<h3>Versace Eros</h3>
+<p>$95</p>
+<button onclick="addToCart('Versace Eros')">
+Agregar
+</button>
 </div>
 
 </div>
 
-<div id="carritoPanel">
 
-<h2>Carrito</h2>
+<div class="cart" id="cart">
 
-<br>
+<button class="close-cart" onclick="closeCart()">
+Cerrar
+</button>
 
-<div id="listaCarrito"></div>
+<h2>Tu carrito</h2>
 
-<br>
-
-<input id="nombreCliente" placeholder="Tu nombre">
-
-<br><br>
-
-<button onclick="enviarPedido()">Enviar pedido</button>
+<ul id="cart-items"></ul>
 
 </div>
+
 
 <script>
 
-const precioML=8
-
-const perfumes={
-"Armaf":[
-{name:"Odyssey Aqua",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83134.2x.avif"}
-]
+function openCart(){
+document.getElementById("cart").classList.add("active")
 }
 
-let carrito=[]
-let actual=null
-
-const catalogo=document.getElementById("catalogo")
-const listaCarrito=document.getElementById("listaCarrito")
-const contador=document.getElementById("contador")
-const carritoPanel=document.getElementById("carritoPanel")
-
-for(const casa in perfumes){
-
-catalogo.innerHTML+=`<div class="casa">${casa}</div>`
-catalogo.innerHTML+=`<div class="grid" id="${casa}"></div>`
-
-perfumes[casa].forEach(p=>{
-
-document.getElementById(casa).innerHTML+=`
-<div class="card" onclick='verPerfume(${JSON.stringify(p)})'>
-<img src="${p.img}">
-<div>${p.name}</div>
-</div>
-`
-
-})
-
+function closeCart(){
+document.getElementById("cart").classList.remove("active")
 }
 
-function verPerfume(p){
+function addToCart(product){
 
-actual=p
+let list = document.getElementById("cart-items")
 
-dImg.src=p.img
-dNombre.innerText=p.name
-dConc.innerText=p.conc
-dMarca.innerText="Casa: "+buscarMarca(p.name)
+let item = document.createElement("li")
 
-document.getElementById("fragranticaLink").href =
-"https://www.fragrantica.com/search/?q="+encodeURIComponent(p.name)
+item.textContent = product
 
-detalle.style.display="flex"
-
-}
-
-function cerrarDetalle(){
-detalle.style.display="none"
-}
-
-function addCarrito(){
-
-let ml=document.getElementById("ml").value
-let precio=ml*precioML
-
-carrito.push({
-nombre:actual.name,
-ml:ml,
-precio:precio
-})
-
-contador.innerText=carrito.length
-
-actualizarCarrito()
-
-}
-
-function actualizarCarrito(){
-
-listaCarrito.innerHTML=""
-
-carrito.forEach((p,index)=>{
-
-listaCarrito.innerHTML+=`
-<div style="margin-bottom:10px">
-${p.nombre} ${p.ml}ml ($${p.precio})
-<button onclick="eliminar(${index})">❌</button>
-</div>
-`
-
-})
-
-}
-
-function eliminar(i){
-
-carrito.splice(i,1)
-
-contador.innerText=carrito.length
-
-actualizarCarrito()
-
-}
-
-function toggleCarrito(){
-carritoPanel.classList.toggle("open")
-}
-
-function enviarPedido(){
-
-let nombre=document.getElementById("nombreCliente").value
-
-let texto=`Hola soy ${nombre} y quiero pedir:%0A%0A`
-
-carrito.forEach(p=>{
-texto+=`${p.nombre} ${p.ml}ml ($${p.precio})%0A`
-})
-
-window.open(`https://wa.me/529213042001?text=${texto}`)
-
-}
-
-function buscarMarca(nombre){
-
-for(const casa in perfumes){
-
-if(perfumes[casa].some(p=>p.name===nombre))
-return casa
-
-}
+list.appendChild(item)
 
 }
 
