@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>SmellGood Decants</title>
+
+<!-- FUENTE MODERNA -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 
 body{
-font-family:Arial;
+font-family:'Poppins',sans-serif;
 margin:0;
-background:#f5f5f5;
+background:#f4f4f4;
 }
 
 /* HEADER */
@@ -19,128 +21,157 @@ background:#f5f5f5;
 header{
 background:white;
 padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
-font-size:22px;
-font-weight:bold;
 }
 
-/* GRID */
+.logo{
+font-size:22px;
+font-weight:600;
+}
+
+#carritoBtn{
+cursor:pointer;
+font-size:20px;
+}
+
+#contador{
+background:black;
+color:white;
+border-radius:20px;
+padding:2px 8px;
+font-size:12px;
+margin-left:6px;
+}
+
+/* GRID PERFUMES */
 
 .catalogo{
-
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
 gap:20px;
 padding:25px;
-
 }
 
 .card{
-
 background:white;
 border-radius:12px;
 padding:15px;
 text-align:center;
 cursor:pointer;
-transition:0.2s;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-
+transition:0.25s;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
 
 .card:hover{
-
-transform:scale(1.04);
-
+transform:translateY(-5px);
 }
 
 .card img{
-
 width:100%;
-height:170px;
+height:180px;
 object-fit:contain;
-
 }
 
-.casa{
-
-font-size:14px;
+.marca{
+font-size:13px;
 color:gray;
-
 }
 
 /* DETALLE PERFUME */
 
 .detalle{
-
 display:none;
 padding:40px;
-
 }
 
 .detalleContenedor{
-
 display:flex;
 flex-wrap:wrap;
-gap:40px;
 align-items:center;
 justify-content:center;
-
+gap:60px;
 }
 
 .detalle img{
-
-width:260px;
+width:320px;
 object-fit:contain;
-
 }
 
 .info{
+max-width:420px;
+}
 
-max-width:400px;
-
+.info h2{
+font-size:32px;
+margin-bottom:10px;
 }
 
 select{
-
-padding:8px;
-margin-top:10px;
+padding:10px;
 border-radius:6px;
-
+margin-top:10px;
 }
 
 button{
-
-margin-top:15px;
-padding:10px 18px;
+padding:12px 20px;
 border:none;
 background:black;
 color:white;
 border-radius:6px;
 cursor:pointer;
-
+margin-top:15px;
 }
 
-.volver{
+/* CARRITO */
 
-margin-bottom:30px;
+#carritoPanel{
+position:fixed;
+right:-330px;
+top:0;
+width:300px;
+height:100%;
+background:white;
+box-shadow:-4px 0 20px rgba(0,0,0,0.2);
+padding:20px;
+transition:0.35s;
+overflow:auto;
+}
 
+#carritoPanel.activo{
+right:0;
+}
+
+.cerrar{
+float:right;
+cursor:pointer;
+font-size:18px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-SmellGood Decants
+
+<div class="logo">SmellGood Decants</div>
+
+<div id="carritoBtn" onclick="toggleCarrito()">
+🛒 <span id="contador">0</span>
+</div>
+
 </header>
 
 <div id="catalogo" class="catalogo"></div>
 
+<!-- DETALLE PERFUME -->
+
 <div id="detalle" class="detalle">
 
-<button class="volver" onclick="volver()">⬅ Volver</button>
+<button onclick="volver()">⬅ Volver</button>
 
 <div class="detalleContenedor">
 
@@ -150,36 +181,58 @@ SmellGood Decants
 
 <h2 id="nombrePerfume"></h2>
 
-<p class="casa" id="marcaPerfume"></p>
+<p class="marca" id="marcaPerfume"></p>
 
 <p>$40 MXN por ml</p>
 
-<select id="ml">
+<select id="mlSelect">
 
-<option>1 ml</option>
-<option>2 ml</option>
-<option>3 ml</option>
-<option>4 ml</option>
-<option>5 ml</option>
-<option>6 ml</option>
-<option>7 ml</option>
-<option>8 ml</option>
-<option>9 ml</option>
-<option>10 ml</option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
 
 </select>
 
 <br>
 
-<button onclick="comprar()">Pedir por WhatsApp</button>
+<button onclick="agregar()">Agregar al carrito</button>
 
 </div>
 
 </div>
+
+</div>
+
+<!-- CARRITO -->
+
+<div id="carritoPanel">
+
+<span class="cerrar" onclick="toggleCarrito()">✖</span>
+
+<h3>Carrito</h3>
+
+<div id="listaCarrito"></div>
+
+<hr>
+
+Total $<span id="total">0</span>
+
+<br><br>
+
+<button onclick="comprar()">Finalizar pedido</button>
 
 </div>
 
 <script>
+
+/* PERFUMES */
 
 let perfumes=[
 
@@ -213,13 +266,13 @@ perfumes.forEach((p,i)=>{
 
 catalogo.innerHTML+=`
 
-<div class="card" onclick="ver(${i})">
+<div class="card" onclick="verPerfume(${i})">
 
 <img src="${p.img}">
 
 <h4>${p.nombre}</h4>
 
-<p class="casa">${p.marca}</p>
+<p class="marca">${p.marca}</p>
 
 </div>
 
@@ -228,8 +281,11 @@ catalogo.innerHTML+=`
 })
 
 let perfumeActual=0
+let carrito=[]
+let precioML=40
+let total=0
 
-function ver(i){
+function verPerfume(i){
 
 perfumeActual=i
 
@@ -249,20 +305,74 @@ detalle.style.display="none"
 
 }
 
+function agregar(){
+
+let ml=parseInt(mlSelect.value)
+
+let precio=ml*precioML
+
+carrito.push({
+nombre:perfumes[perfumeActual].nombre,
+ml:ml,
+precio:precio
+})
+
+actualizarCarrito()
+
+}
+
+function actualizarCarrito(){
+
+let lista=""
+total=0
+
+carrito.forEach((item,index)=>{
+
+lista+=item.nombre+" "+item.ml+"ml ($"+item.precio+") <button onclick='eliminar("+index+")'>❌</button><br>"
+
+total+=item.precio
+
+})
+
+listaCarrito.innerHTML=lista
+document.getElementById("total").innerText=total
+contador.innerText=carrito.length
+
+}
+
+function eliminar(i){
+
+carrito.splice(i,1)
+
+actualizarCarrito()
+
+}
+
+function toggleCarrito(){
+
+carritoPanel.classList.toggle("activo")
+
+}
+
 function comprar(){
 
-let ml=document.getElementById("ml").value
+let nombre=prompt("Tu nombre")
 
-let perfume=perfumes[perfumeActual]
+let pedido=""
 
-let mensaje="Hola, quiero pedir "+ml+" de "+perfume.nombre+" - "+perfume.marca
+carrito.forEach(item=>{
 
-window.open("https://wa.me/529213042001?text="+encodeURIComponent(mensaje))
+pedido+=item.nombre+" "+item.ml+"ml ($"+item.precio+")%0A"
+
+})
+
+let mensaje="Hola, soy "+nombre+" quiero pedir:%0A%0A"+pedido+"%0ATotal $"+total
+
+window.open("https://wa.me/529213042001?text="+mensaje)
 
 }
 
 </script>
 
 </body>
-
 </html>
