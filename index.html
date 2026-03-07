@@ -1,109 +1,120 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Decants Abdiel</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#0f0f0f;
-color:white;
+margin:0;
+background:#f5f5f5;
 }
+
+/* HEADER */
 
 header{
-text-align:center;
-padding:25px;
-font-size:24px;
-letter-spacing:2px;
-}
-
-.catalogo{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-gap:20px;
-padding:20px;
-}
-
-.card{
-background:#1b1b1b;
-border-radius:12px;
-overflow:hidden;
-cursor:pointer;
-transition:0.3s;
-box-shadow:0 10px 20px rgba(0,0,0,0.4);
-}
-
-.card:hover{
-transform:translateY(-8px);
-box-shadow:0 20px 40px rgba(0,0,0,0.6);
-}
-
-.card img{
-width:100%;
-height:180px;
-object-fit:cover;
-}
-
-.card h3{
-padding:10px;
-font-size:15px;
-}
-
-.detalle{
-display:none;
-padding:25px;
-text-align:center;
-}
-
-.detalle img{
-width:250px;
-border-radius:12px;
-}
-
-button{
-background:#d4af37;
-border:none;
-padding:12px 20px;
-border-radius:8px;
-font-weight:bold;
-cursor:pointer;
-margin-top:15px;
-}
-
-button:hover{
-opacity:0.9;
+background:black;
+color:white;
+padding:15px 20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 #carritoBtn{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#25D366;
-padding:15px;
-border-radius:50%;
-font-size:22px;
 cursor:pointer;
+font-size:20px;
 }
 
+/* GRID */
+
+.catalogo{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+padding:20px;
+
+}
+
+.card{
+
+background:white;
+border-radius:12px;
+padding:15px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+transition:0.25s;
+}
+
+.card:hover{
+
+transform:translateY(-5px);
+
+}
+
+.card img{
+
+height:180px;
+width:100%;
+object-fit:contain;
+
+}
+
+.card button{
+
+margin-top:10px;
+padding:8px 14px;
+border:none;
+background:black;
+color:white;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+/* DETALLE */
+
+.detalle{
+
+display:none;
+text-align:center;
+padding:40px;
+
+}
+
+select{
+
+padding:8px;
+border-radius:6px;
+
+}
+
+/* CARRITO */
+
 #carrito{
+
 position:fixed;
-right:-320px;
 top:0;
+right:-320px;
 width:300px;
 height:100%;
-background:#1b1b1b;
+background:white;
+box-shadow:-4px 0 20px rgba(0,0,0,0.2);
 padding:20px;
-transition:0.4s;
+transition:0.3s;
 overflow:auto;
+
 }
 
 #carrito.activo{
+
 right:0;
+
 }
 
 </style>
@@ -113,20 +124,22 @@ right:0;
 <body>
 
 <header>
-DECANTS ABDIEL
+
+<h2>Decants Abdiel</h2>
+
+<div id="carritoBtn" onclick="toggleCarrito()">🛒</div>
+
 </header>
 
-<div class="catalogo" id="catalogo"></div>
+<div id="catalogo" class="catalogo"></div>
 
-<div class="detalle" id="detalle">
+<div id="detalle" class="detalle">
 
 <h2 id="nombre"></h2>
 
-<img id="imagen">
-
-<br><br>
-
 <select id="ml">
+
+<option>1</option>
 <option>2</option>
 <option>3</option>
 <option>4</option>
@@ -136,19 +149,18 @@ DECANTS ABDIEL
 <option>8</option>
 <option>9</option>
 <option>10</option>
+
 </select>
 
-<br>
+<br><br>
 
-<button onclick="agregar()">Agregar al carrito</button>
+<button onclick="agregar()">Agregar</button>
 
 <br><br>
 
 <button onclick="volver()">Volver</button>
 
 </div>
-
-<div id="carritoBtn" onclick="toggleCarrito()">🛒</div>
 
 <div id="carrito">
 
@@ -170,37 +182,51 @@ Total $<span id="total">0</span>
 
 let perfumes=[
 
-{name:"Asad Clasico",img:"IMAGEN"},
-{name:"Hawas Clasico",img:"IMAGEN"},
-{name:"Le beau le parfum",img:"IMAGEN"},
-{name:"Shaghaf oud aswad",img:"IMAGEN"},
-{name:"Al qiam gold",img:"IMAGEN"},
-{name:"Vintage radio",img:"IMAGEN"},
-{name:"Ramz Silver",img:"IMAGEN"},
-{name:"Ishq al Shuyukh",img:"IMAGEN"},
-{name:"Durathi Blue",img:"IMAGEN"},
-{name:"Club de nuit urban man intense",img:"IMAGEN"},
-{name:"Khamrah Qawah",img:"IMAGEN"},
-{name:"Odyssey homme",img:"IMAGEN"},
-{name:"9pm Rebel",img:"IMAGEN"},
-{name:"Odyssey Mandarin Sky",img:"IMAGEN"},
-{name:"Odyssey Aqua",img:"IMAGEN"},
-{name:"Emeer Lattafa Al Oud",img:"IMAGEN"},
-{name:"9pm Night Out",img:"IMAGEN"}
+{
+nombre:"Lattafa Asad",
+img:"https://fimgs.net/mdimg/perfume/375x500.70603.jpg"
+},
+
+{
+nombre:"Rasasi Hawas",
+img:"https://fimgs.net/mdimg/perfume/375x500.46890.jpg"
+},
+
+{
+nombre:"Le Beau Le Parfum",
+img:"https://fimgs.net/mdimg/perfume/375x500.72106.jpg"
+},
+
+{
+nombre:"Turathi Blue",
+img:"https://fimgs.net/mdimg/perfume/375x500.64604.jpg"
+},
+
+{
+nombre:"Khamrah Qawah",
+img:"https://fimgs.net/mdimg/perfume/375x500.82910.jpg"
+},
+
+{
+nombre:"Afnan 9PM",
+img:"https://fimgs.net/mdimg/perfume/375x500.65414.jpg"
+}
 
 ]
 
 let catalogo=document.getElementById("catalogo")
 
-perfumes.forEach((p,i)=>{
+perfumes.forEach(p=>{
 
 catalogo.innerHTML+=`
 
-<div class="card" onclick="ver(${i})">
+<div class="card">
 
 <img src="${p.img}">
 
-<h3>${p.name}</h3>
+<h4>${p.nombre}</h4>
+
+<button onclick="ver('${p.nombre}')">Ver perfume</button>
 
 </div>
 
@@ -208,28 +234,26 @@ catalogo.innerHTML+=`
 
 })
 
-let actual=0
-
+let perfumeActual=""
 let carrito=[]
-
 let total=0
+let precioML=40
 
-function ver(i){
+function ver(nombre){
 
-actual=i
+perfumeActual=nombre
 
-document.getElementById("catalogo").style.display="none"
-document.getElementById("detalle").style.display="block"
+catalogo.style.display="none"
+detalle.style.display="block"
 
-document.getElementById("nombre").innerText=perfumes[i].name
-document.getElementById("imagen").src=perfumes[i].img
+document.getElementById("nombre").innerText=nombre
 
 }
 
 function volver(){
 
-document.getElementById("catalogo").style.display="grid"
-document.getElementById("detalle").style.display="none"
+catalogo.style.display="grid"
+detalle.style.display="none"
 
 }
 
@@ -237,14 +261,14 @@ function agregar(){
 
 let ml=parseInt(document.getElementById("ml").value)
 
-ml=ml+1
-
-let precio=ml*40
+let precio=ml*precioML
 
 carrito.push({
-nombre:perfumes[actual].name,
+
+nombre:perfumeActual,
 ml:ml,
 precio:precio
+
 })
 
 actualizar()
@@ -254,12 +278,11 @@ actualizar()
 function actualizar(){
 
 let lista=""
-
 total=0
 
-carrito.forEach(p=>{
+carrito.forEach((p,i)=>{
 
-lista+=p.nombre+" "+p.ml+"ml ($"+p.precio+")<br>"
+lista+=p.nombre+" "+p.ml+"ml $"+p.precio+" <button onclick='eliminar("+i+")'>❌</button><br>"
 
 total+=p.precio
 
@@ -267,6 +290,14 @@ total+=p.precio
 
 document.getElementById("lista").innerHTML=lista
 document.getElementById("total").innerText=total
+
+}
+
+function eliminar(i){
+
+carrito.splice(i,1)
+
+actualizar()
 
 }
 
@@ -284,11 +315,11 @@ let pedido=""
 
 carrito.forEach(p=>{
 
-pedido+=p.nombre+" "+p.ml+"ml ($"+p.precio+")%0A"
+pedido+=p.nombre+" "+p.ml+"ml $"+p.precio+"%0A"
 
 })
 
-let mensaje="Hola Jhoan, soy "+nombre+" me gustaría realizar mi pedido:%0A%0A"+pedido+"%0ATotal $"+total
+let mensaje="Hola quiero pedir:%0A"+pedido+"Total $"+total
 
 window.open("https://wa.me/529213042001?text="+mensaje)
 
