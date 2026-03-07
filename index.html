@@ -120,12 +120,6 @@ width:450px;
 padding:30px;
 border-radius:15px;
 text-align:center;
-animation:zoom .3s;
-}
-
-@keyframes zoom{
-from{transform:scale(.8);opacity:0}
-to{transform:scale(1);opacity:1}
 }
 
 .detalleBox img{
@@ -184,22 +178,6 @@ overflow:auto;
 right:0;
 }
 
-#toast{
-position:fixed;
-bottom:-80px;
-left:50%;
-transform:translateX(-50%);
-background:#2ecc71;
-color:white;
-padding:15px 25px;
-border-radius:30px;
-transition:.5s;
-}
-
-#toast.show{
-bottom:30px;
-}
-
 .fragrantica{
 display:block;
 margin-top:10px;
@@ -242,12 +220,7 @@ text-decoration:none;
 <option value="1">1 ml</option>
 <option value="2">2 ml</option>
 <option value="3">3 ml</option>
-<option value="4">4 ml</option>
 <option value="5">5 ml</option>
-<option value="6">6 ml</option>
-<option value="7">7 ml</option>
-<option value="8">8 ml</option>
-<option value="9">9 ml</option>
 <option value="10">10 ml</option>
 </select>
 
@@ -285,54 +258,23 @@ Conoce más en Fragrantica
 
 </div>
 
-<div id="toast">Añadido exitosamente</div>
-
 <script>
 
-const precioML = 8
+const precioML=8
 
-const perfumes = {
-
+const perfumes={
 "Armaf":[
-{name:"Odyssey Mandarin Sky",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83132.2x.avif"},
-{name:"Odyssey Aqua",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83134.2x.avif"},
-{name:"Odyssey Homme",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64464.2x.avif"},
-{name:"Club de Nuit Urban Man Elixir",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.77860.2x.avif"}
-],
-
-"Lattafa":[
-{name:"Ameer Al Oudh Intense Oud",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64947.2x.avif"},
-{name:"Khamrah Qahwa",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.88175.2x.avif"},
-{name:"Ishq Al Shuyukh",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.81121.2x.avif"},
-{name:"Vintage Radio",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.89454.2x.avif"},
-{name:"Ramz Silver",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.71868.2x.avif"},
-{name:"Asad",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72821.2x.avif"}
-],
-
-"Afnan":[
-{name:"9PM Rebel",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.99238.2x.avif"},
-{name:"9PM Night Out",conc:"Extrait de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.123313.2x.avif"},
-{name:"Turathi Blue",conc:"EDP",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.70839.2x.avif"}
-],
-
-"Jean Paul Gaultier":[
-{name:"Le Beau Le Parfum",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72158.2x.avif"}
-],
-
-"Swiss Arabian":[
-{name:"Shaghaf Oud Aswad",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.54283.2x.avif"}
-],
-
-"Rasasi":[
-{name:"Hawas For Him",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.46890.2x.avif"}
+{name:"Odyssey Aqua",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83134.2x.avif"}
 ]
-
 }
 
 let carrito=[]
 let actual=null
 
 const catalogo=document.getElementById("catalogo")
+const listaCarrito=document.getElementById("listaCarrito")
+const contador=document.getElementById("contador")
+const carritoPanel=document.getElementById("carritoPanel")
 
 for(const casa in perfumes){
 
@@ -342,12 +284,10 @@ catalogo.innerHTML+=`<div class="grid" id="${casa}"></div>`
 perfumes[casa].forEach(p=>{
 
 document.getElementById(casa).innerHTML+=`
-
 <div class="card" onclick='verPerfume(${JSON.stringify(p)})'>
 <img src="${p.img}">
 <div>${p.name}</div>
 </div>
-
 `
 
 })
@@ -377,7 +317,7 @@ detalle.style.display="none"
 function addCarrito(){
 
 let ml=document.getElementById("ml").value
-let precio = ml * precioML
+let precio=ml*precioML
 
 carrito.push({
 nombre:actual.name,
@@ -388,10 +328,6 @@ precio:precio
 contador.innerText=carrito.length
 
 actualizarCarrito()
-
-toast.classList.add("show")
-
-setTimeout(()=>toast.classList.remove("show"),2000)
 
 }
 
@@ -428,18 +364,13 @@ carritoPanel.classList.toggle("open")
 
 function enviarPedido(){
 
-let nombre = document.getElementById("nombreCliente").value
+let nombre=document.getElementById("nombreCliente").value
 
-let texto=`Hola Jhoan, soy ${nombre} me gustaría hacer mi pedido de decants.%0A%0A`
-
-let total=0
+let texto=`Hola soy ${nombre} y quiero pedir:%0A%0A`
 
 carrito.forEach(p=>{
 texto+=`${p.nombre} ${p.ml}ml ($${p.precio})%0A`
-total+=p.precio
 })
-
-texto+=`%0ATotal de mi pedido: $${total}`
 
 window.open(`https://wa.me/529213042001?text=${texto}`)
 
