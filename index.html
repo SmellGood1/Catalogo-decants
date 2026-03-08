@@ -5,409 +5,1066 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SmellGood Decants</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
+      --bg:#0f0f12;
+      --bg-soft:#17171c;
+      --card:#18181f;
+      --card-2:#20202a;
+      --line:rgba(255,255,255,.08);
       --gold:#d4af37;
-      --gold-dark:#b89222;
-      --bg:#f7f5f1;
-      --text:#222;
-      --muted:#777;
-      --white:#fff;
-      --shadow:0 8px 24px rgba(0,0,0,.08);
-      --radius:16px;
+      --gold-2:#f0d980;
+      --text:#f8f6f2;
+      --muted:#b7b2a7;
+      --white:#ffffff;
+      --success:#2ecc71;
+      --shadow:0 14px 40px rgba(0,0,0,.35);
+      --radius:22px;
+      --radius-sm:14px;
+      --transition:.28s ease;
     }
 
     *{
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family:"Poppins", sans-serif;
+    }
+
+    html{
+      scroll-behavior:smooth;
     }
 
     body{
-      background:var(--bg);
+      font-family:"Inter", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(212,175,55,.08), transparent 26%),
+        radial-gradient(circle at top right, rgba(212,175,55,.06), transparent 22%),
+        linear-gradient(180deg, #0b0b0e 0%, #121217 100%);
       color:var(--text);
+      min-height:100vh;
     }
 
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    button, input, select{
+      font:inherit;
+    }
+
+    .container{
+      width:min(1220px, calc(100% - 32px));
+      margin:0 auto;
+    }
+
+    /* HEADER */
     header{
       position:sticky;
       top:0;
-      z-index:50;
+      z-index:100;
+      backdrop-filter:blur(14px);
+      background:rgba(10,10,12,.7);
+      border-bottom:1px solid var(--line);
+    }
+
+    .nav{
+      min-height:78px;
       display:flex;
-      justify-content:space-between;
       align-items:center;
-      padding:18px 24px;
-      background:rgba(255,255,255,.95);
-      backdrop-filter:blur(10px);
-      box-shadow:0 2px 10px rgba(0,0,0,.06);
+      justify-content:space-between;
+      gap:18px;
     }
 
     .logo{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .logo strong{
       font-family:"Playfair Display", serif;
       font-size:30px;
-      color:var(--gold);
-      border-bottom:2px solid var(--gold);
-      padding-bottom:4px;
-      letter-spacing:.5px;
+      font-weight:700;
+      color:var(--gold-2);
+      letter-spacing:.4px;
     }
 
-    .header-right{
+    .logo span{
+      font-size:12px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+
+    .nav-actions{
       display:flex;
       align-items:center;
-      gap:14px;
+      gap:12px;
     }
 
-    .buscador{
-      padding:10px 14px;
-      border:1px solid #ddd;
-      border-radius:30px;
-      outline:none;
-      width:240px;
-      background:#fff;
-    }
-
-    #carritoBtn{
-      cursor:pointer;
-      font-size:24px;
+    .search-wrap{
       position:relative;
-      user-select:none;
     }
 
-    #contador{
-      background:var(--gold);
-      color:white;
-      font-size:12px;
+    .search-wrap input{
+      width:280px;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:12px 18px;
+      outline:none;
+      transition:var(--transition);
+    }
+
+    .search-wrap input::placeholder{
+      color:#8f8a80;
+    }
+
+    .search-wrap input:focus{
+      border-color:rgba(212,175,55,.45);
+      box-shadow:0 0 0 4px rgba(212,175,55,.08);
+    }
+
+    .cart-btn{
+      border:none;
+      background:linear-gradient(135deg, rgba(212,175,55,.18), rgba(212,175,55,.08));
+      color:var(--text);
+      border:1px solid rgba(212,175,55,.28);
+      border-radius:999px;
+      padding:12px 18px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      transition:var(--transition);
+      position:relative;
+    }
+
+    .cart-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 24px rgba(0,0,0,.22);
+    }
+
+    .badge{
       min-width:22px;
       height:22px;
-      display:flex;
+      padding:0 6px;
+      border-radius:999px;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
-      border-radius:50%;
-      position:absolute;
-      top:-8px;
-      right:-12px;
-      font-weight:600;
+      background:var(--gold);
+      color:#111;
+      font-size:12px;
+      font-weight:700;
     }
 
+    /* HERO */
     .hero{
-      padding:60px 24px 35px;
-      text-align:center;
-      background:linear-gradient(180deg, #fff 0%, #f7f5f1 100%);
+      padding:72px 0 38px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+      align-items:stretch;
+    }
+
+    .hero-card,
+    .hero-side{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero-card{
+      padding:44px;
+    }
+
+    .hero-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(212,175,55,.26);
+      background:rgba(212,175,55,.08);
+      color:var(--gold-2);
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      margin-bottom:20px;
     }
 
     .hero h1{
       font-family:"Playfair Display", serif;
-      font-size:42px;
-      line-height:1.15;
-      color:#1f1f1f;
-      max-width:800px;
-      margin:0 auto 14px;
+      font-size:64px;
+      line-height:.98;
+      letter-spacing:-1px;
+      margin-bottom:18px;
+      max-width:720px;
     }
 
     .hero p{
-      max-width:760px;
-      margin:0 auto;
       color:var(--muted);
-      font-size:16px;
+      font-size:17px;
+      line-height:1.75;
+      max-width:650px;
     }
 
-    .catalogo-wrap{
-      padding-bottom:60px;
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:28px;
     }
 
-    .casa{
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:14px 22px;
+      cursor:pointer;
+      transition:var(--transition);
+      font-weight:600;
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, var(--gold-2), var(--gold));
+      color:#141414;
+      box-shadow:0 16px 32px rgba(212,175,55,.16);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 20px 40px rgba(212,175,55,.2);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.08);
+    }
+
+    .hero-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .mini-badge{
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      color:#ddd7cb;
+      font-size:13px;
+    }
+
+    .hero-side{
+      padding:24px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:100%;
+    }
+
+    .side-glow{
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:180px;
+      height:180px;
+      background:radial-gradient(circle, rgba(212,175,55,.25), transparent 68%);
+      filter:blur(10px);
+      pointer-events:none;
+    }
+
+    .premium-box{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border-radius:24px;
+      padding:24px;
+    }
+
+    .premium-box h3{
       font-family:"Playfair Display", serif;
-      font-size:32px;
-      margin:42px 24px 18px;
-      color:var(--gold);
-      border-bottom:2px solid var(--gold);
-      display:inline-block;
+      font-size:28px;
+      color:var(--gold-2);
+      margin-bottom:10px;
     }
 
+    .premium-box p{
+      color:var(--muted);
+      line-height:1.75;
+      font-size:15px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .stat{
+      padding:18px 14px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:18px;
+      text-align:center;
+    }
+
+    .stat strong{
+      display:block;
+      font-size:24px;
+      color:var(--gold-2);
+      margin-bottom:4px;
+    }
+
+    .stat span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    /* TRUST */
+    .trust{
+      padding:8px 0 14px;
+    }
+
+    .trust-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }
+
+    .trust-card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:22px;
+      padding:18px;
+      transition:var(--transition);
+    }
+
+    .trust-card:hover{
+      transform:translateY(-4px);
+      background:rgba(255,255,255,.045);
+    }
+
+    .trust-card strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:15px;
+    }
+
+    .trust-card p{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    /* SECTION HEAD */
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:20px;
+      padding:42px 0 14px;
+    }
+
+    .section-head h2{
+      font-family:"Playfair Display", serif;
+      font-size:42px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      max-width:580px;
+      line-height:1.7;
+    }
+
+    /* CASA */
+    .house-title{
+      margin:28px 0 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .house-title h3{
+      font-family:"Playfair Display", serif;
+      font-size:30px;
+      color:var(--gold-2);
+    }
+
+    .house-line{
+      flex:1;
+      height:1px;
+      background:linear-gradient(90deg, rgba(212,175,55,.35), transparent);
+    }
+
+    /* GRID */
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-      gap:24px;
-      padding:0 24px 12px;
+      grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+      gap:20px;
     }
 
     .card{
-      background:var(--white);
-      padding:16px;
-      border-radius:var(--radius);
-      text-align:center;
+      position:relative;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border-radius:24px;
+      padding:18px;
+      overflow:hidden;
       cursor:pointer;
-      transition:.25s ease;
-      box-shadow:0 4px 16px rgba(0,0,0,.05);
-      border:1px solid rgba(212,175,55,.12);
+      transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+      box-shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg, transparent, rgba(212,175,55,.04));
+      opacity:0;
+      transition:var(--transition);
     }
 
     .card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 12px 24px rgba(0,0,0,.10);
+      transform:translateY(-8px) scale(1.01);
+      box-shadow:0 20px 40px rgba(0,0,0,.25);
+      border-color:rgba(212,175,55,.28);
+    }
+
+    .card:hover::before{
+      opacity:1;
+    }
+
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill{
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:rgba(212,175,55,.12);
+      color:var(--gold-2);
+      border:1px solid rgba(212,175,55,.18);
+    }
+
+    .card-img-wrap{
+      min-height:220px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      z-index:1;
+    }
+
+    .card-img-wrap::after{
+      content:"";
+      position:absolute;
+      bottom:0;
+      width:120px;
+      height:26px;
+      border-radius:50%;
+      background:rgba(0,0,0,.22);
+      filter:blur(12px);
     }
 
     .card img{
       width:100%;
-      height:200px;
+      max-width:170px;
+      height:210px;
       object-fit:contain;
+      position:relative;
+      z-index:2;
+      transition:transform .35s ease;
+    }
+
+    .card:hover img{
+      transform:translateY(-4px) scale(1.04);
+    }
+
+    .card-content{
+      position:relative;
+      z-index:1;
+    }
+
+    .card h4{
+      font-size:18px;
+      line-height:1.35;
       margin-bottom:8px;
+      min-height:48px;
     }
 
-    .card .nombre{
-      margin-top:8px;
-      border-bottom:1px solid var(--gold);
-      display:inline-block;
-      color:#222;
-      font-weight:500;
-    }
-
-    .card .conc{
-      margin-top:8px;
+    .card .brand{
+      color:var(--muted);
       font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .card .bottom{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .starting{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .starting span{
+      font-size:12px;
       color:var(--muted);
     }
 
+    .starting strong{
+      color:var(--gold-2);
+      font-size:18px;
+    }
+
+    .small-btn{
+      border:none;
+      background:linear-gradient(135deg, rgba(212,175,55,.92), rgba(240,217,128,.88));
+      color:#141414;
+      padding:11px 14px;
+      border-radius:999px;
+      font-weight:700;
+      cursor:pointer;
+      transition:var(--transition);
+      white-space:nowrap;
+    }
+
+    .small-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 24px rgba(212,175,55,.18);
+    }
+
+    /* MODAL */
     #detalle{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.55);
+      background:rgba(0,0,0,.68);
       display:none;
       justify-content:center;
       align-items:center;
-      padding:20px;
-      z-index:100;
+      padding:18px;
+      z-index:120;
+      backdrop-filter:blur(8px);
     }
 
     .detalleBox{
-      background:white;
-      width:100%;
-      max-width:460px;
-      padding:30px;
-      border-radius:20px;
-      text-align:center;
+      width:min(980px, 100%);
+      border-radius:28px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      background:linear-gradient(180deg, #141419, #0f0f14);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 30px 80px rgba(0,0,0,.45);
       animation:zoom .25s ease;
       position:relative;
     }
 
     @keyframes zoom{
-      from{transform:scale(.92);opacity:0}
-      to{transform:scale(1);opacity:1}
+      from{transform:scale(.96); opacity:0}
+      to{transform:scale(1); opacity:1}
+    }
+
+    .detalle-left{
+      padding:34px;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,.12), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:520px;
+      position:relative;
+    }
+
+    .detalle-left::after{
+      content:"";
+      position:absolute;
+      bottom:40px;
+      width:180px;
+      height:28px;
+      border-radius:50%;
+      background:rgba(0,0,0,.28);
+      filter:blur(16px);
+    }
+
+    .detalle-left img{
+      max-width:280px;
+      max-height:380px;
+      object-fit:contain;
+      z-index:2;
+    }
+
+    .detalle-right{
+      padding:34px;
+      position:relative;
     }
 
     .cerrarX{
       position:absolute;
-      top:14px;
-      right:16px;
-      border:none;
-      background:none;
-      font-size:24px;
+      top:18px;
+      right:18px;
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--white);
       cursor:pointer;
-      color:#666;
+      font-size:22px;
     }
 
-    .detalleBox img{
-      width:220px;
-      max-width:100%;
-      height:auto;
-      object-fit:contain;
+    .modal-brand{
+      color:var(--gold-2);
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:2px;
+      margin-bottom:10px;
     }
 
     .perfumeNombre{
       font-family:"Playfair Display", serif;
-      font-size:28px;
-      margin:12px 0 8px;
-      border-bottom:2px solid var(--gold);
-      display:inline-block;
-      line-height:1.2;
+      font-size:44px;
+      line-height:1.05;
+      margin-bottom:12px;
     }
 
     .concentracion{
-      color:var(--gold);
-      font-weight:600;
-      margin:5px 0;
+      display:inline-flex;
+      border:1px solid rgba(212,175,55,.24);
+      background:rgba(212,175,55,.08);
+      color:var(--gold-2);
+      border-radius:999px;
+      padding:9px 12px;
+      font-size:13px;
+      margin-bottom:14px;
     }
 
-    .marca{
-      font-size:14px;
-      opacity:.7;
+    .descripcion{
+      color:var(--muted);
+      line-height:1.85;
+      margin-bottom:24px;
+      font-size:15px;
+    }
+
+    .field{
       margin-bottom:16px;
     }
 
-    .campo{
-      margin:14px 0;
-    }
-
-    .campo label{
+    .field label{
       display:block;
       margin-bottom:8px;
-      font-size:14px;
-      color:#555;
+      color:#e7e0d2;
+      font-weight:600;
     }
 
     select, input{
       width:100%;
-      padding:12px 14px;
-      border:1px solid #ddd;
-      border-radius:10px;
+      padding:14px 15px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--white);
       outline:none;
-      font-size:15px;
-      background:#fff;
     }
 
-    button{
-      background:var(--gold);
+    select:focus, input:focus{
+      border-color:rgba(212,175,55,.42);
+      box-shadow:0 0 0 4px rgba(212,175,55,.08);
+    }
+
+    .price-box{
+      margin:14px 0 18px;
+      padding:18px;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(212,175,55,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(212,175,55,.16);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+
+    .price-box span{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .price-box strong{
+      font-size:28px;
+      color:var(--gold-2);
+      font-weight:800;
+    }
+
+    .modal-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .full-btn{
+      flex:1;
+      min-width:220px;
       border:none;
-      padding:12px 18px;
-      color:white;
-      border-radius:10px;
+      padding:15px 18px;
+      border-radius:999px;
       cursor:pointer;
+      font-weight:700;
+      transition:var(--transition);
+    }
+
+    .full-btn.primary{
+      background:linear-gradient(135deg, var(--gold-2), var(--gold));
+      color:#141414;
+    }
+
+    .full-btn.primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 32px rgba(212,175,55,.18);
+    }
+
+    .full-btn.secondary{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .fragrantica-link{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:14px;
+      color:var(--gold-2);
       font-weight:600;
-      transition:.2s;
+      border-bottom:1px solid rgba(212,175,55,.25);
+      padding-bottom:3px;
+      transition:var(--transition);
     }
 
-    button:hover{
-      background:var(--gold-dark);
+    .fragrantica-link:hover{
+      opacity:.85;
+      transform:translateX(2px);
     }
 
-    .btn-secundario{
-      background:#efefef;
-      color:#333;
-    }
-
-    .btn-secundario:hover{
-      background:#ddd;
-    }
-
+    /* CART */
     #carritoPanel{
       position:fixed;
-      right:-380px;
       top:0;
-      width:360px;
-      max-width:100%;
-      height:100%;
-      background:white;
-      box-shadow:-8px 0 24px rgba(0,0,0,.18);
-      transition:.35s ease;
+      right:-420px;
+      width:min(400px, 100%);
+      height:100vh;
+      background:linear-gradient(180deg, #121218, #0e0e13);
+      border-left:1px solid var(--line);
+      box-shadow:-16px 0 40px rgba(0,0,0,.35);
+      z-index:130;
       padding:22px;
+      transition:.35s ease;
       overflow:auto;
-      z-index:120;
     }
 
     #carritoPanel.open{
       right:0;
     }
 
-    .carrito-head{
+    .cart-head{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      margin-bottom:16px;
+      gap:12px;
+      margin-bottom:18px;
     }
 
-    .carrito-head h2{
+    .cart-head h2{
       font-family:"Playfair Display", serif;
-      color:var(--gold);
-      font-size:30px;
+      font-size:34px;
+      color:var(--gold-2);
     }
 
-    .item-carrito{
-      border:1px solid #eee;
-      border-radius:14px;
-      padding:12px;
+    .close-cart{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      color:var(--white);
+      cursor:pointer;
+    }
+
+    .cart-empty{
+      color:var(--muted);
+      padding:18px 0;
+    }
+
+    .cart-item{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:14px;
       margin-bottom:12px;
-      background:#fcfcfc;
     }
 
-    .item-carrito strong{
+    .cart-item strong{
       display:block;
-      margin-bottom:4px;
+      margin-bottom:6px;
+      line-height:1.4;
     }
 
-    .item-carrito .meta{
-      color:#666;
+    .cart-item .meta{
+      color:var(--muted);
       font-size:14px;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
 
-    .item-carrito button{
-      padding:8px 12px;
-      border-radius:8px;
-      font-size:13px;
+    .cart-remove{
+      background:rgba(255,255,255,.05);
+      color:#f1f1f1;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:9px 12px;
+      cursor:pointer;
     }
 
-    .carrito-vacio{
-      color:#888;
-      font-size:15px;
-      margin:10px 0 20px;
+    .cart-total{
+      margin:18px 0 14px;
+      padding:18px;
+      border-radius:18px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(212,175,55,.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
 
-    .total{
-      font-size:18px;
-      font-weight:700;
-      margin:16px 0;
-      color:#222;
+    .cart-total span{
+      color:#eee2b8;
+      font-size:14px;
     }
 
+    .cart-total strong{
+      font-size:26px;
+      color:var(--gold-2);
+    }
+
+    /* TOAST */
     #toast{
       position:fixed;
-      bottom:-90px;
       left:50%;
+      bottom:-90px;
       transform:translateX(-50%);
-      background:#2ecc71;
+      background:linear-gradient(135deg, #24b266, #2ecc71);
       color:white;
-      padding:14px 22px;
-      border-radius:30px;
-      transition:.4s ease;
+      padding:15px 24px;
+      border-radius:999px;
+      box-shadow:0 20px 30px rgba(0,0,0,.25);
+      transition:.35s ease;
       z-index:200;
-      box-shadow:0 8px 20px rgba(0,0,0,.18);
+      font-weight:600;
     }
 
     #toast.show{
-      bottom:28px;
+      bottom:26px;
     }
 
-    @media(max-width:768px){
-      header{
-        padding:16px;
-        gap:12px;
-      }
+    /* FLOAT WHATSAPP */
+    .wa-float{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      z-index:110;
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      background:linear-gradient(135deg, #25d366, #1faf57);
+      box-shadow:0 18px 30px rgba(0,0,0,.3);
+      transition:var(--transition);
+    }
 
-      .logo{
-        font-size:24px;
-      }
+    .wa-float:hover{
+      transform:translateY(-4px) scale(1.05);
+    }
 
-      .header-right{
-        gap:10px;
-      }
+    /* FOOTER */
+    footer{
+      margin-top:60px;
+      border-top:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+    }
 
-      .buscador{
-        width:150px;
-      }
+    .footer-wrap{
+      padding:28px 0 38px;
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+    }
 
-      .hero{
-        padding:42px 18px 25px;
-      }
+    .footer-wrap div{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.8;
+    }
 
-      .hero h1{
-        font-size:30px;
-      }
+    .footer-brand{
+      color:var(--text);
+    }
 
-      .casa{
-        font-size:28px;
-        margin:34px 18px 14px;
-      }
-
-      .grid{
-        padding:0 18px 8px;
-        gap:18px;
-        grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+    /* RESPONSIVE */
+    @media (max-width: 1024px){
+      .hero-grid{
+        grid-template-columns:1fr;
       }
 
       .detalleBox{
-        padding:24px 18px;
+        grid-template-columns:1fr;
+      }
+
+      .detalle-left{
+        min-height:320px;
+      }
+    }
+
+    @media (max-width: 768px){
+      .nav{
+        min-height:74px;
+      }
+
+      .search-wrap input{
+        width:160px;
+      }
+
+      .hero{
+        padding:42px 0 24px;
+      }
+
+      .hero-card{
+        padding:28px;
+      }
+
+      .hero h1{
+        font-size:42px;
+      }
+
+      .section-head{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .section-head h2{
+        font-size:34px;
+      }
+
+      .trust-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .perfumeNombre{
+        font-size:34px;
+      }
+    }
+
+    @media (max-width: 540px){
+      .container{
+        width:min(100% - 20px, 1220px);
+      }
+
+      .nav{
+        gap:10px;
+      }
+
+      .logo strong{
+        font-size:22px;
+      }
+
+      .logo span{
+        font-size:10px;
+      }
+
+      .search-wrap{
+        display:none;
+      }
+
+      .hero h1{
+        font-size:36px;
+      }
+
+      .trust-grid{
+        grid-template-columns:1fr;
+      }
+
+      .grid{
+        grid-template-columns:1fr 1fr;
+        gap:14px;
+      }
+
+      .card{
+        padding:14px;
+      }
+
+      .card h4{
+        font-size:15px;
+        min-height:auto;
+      }
+
+      .card img{
+        height:170px;
+      }
+
+      .detalle-left,
+      .detalle-right{
+        padding:22px;
+      }
+
+      .modal-actions{
+        flex-direction:column;
+      }
+
+      .full-btn{
+        min-width:100%;
       }
     }
   </style>
@@ -415,111 +1072,322 @@
 <body>
 
   <header>
-    <div class="logo">SmellGood Decants</div>
+    <div class="container nav">
+      <div class="logo">
+        <strong>SmellGood</strong>
+        <span>Luxury Decants</span>
+      </div>
 
-    <div class="header-right">
-      <input
-        type="text"
-        class="buscador"
-        id="buscador"
-        placeholder="Buscar perfume..."
-      />
+      <div class="nav-actions">
+        <div class="search-wrap">
+          <input type="text" id="buscador" placeholder="Buscar perfume o casa...">
+        </div>
 
-      <div id="carritoBtn" onclick="toggleCarrito()">
-        🛒
-        <span id="contador">0</span>
+        <button class="cart-btn" onclick="toggleCarrito()">
+          <span>🛒 Carrito</span>
+          <span class="badge" id="contador">0</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <section class="hero">
-    <h1>Descubre tu aroma favorito sin gastar una fortuna</h1>
-    <p>
-      Explora decants de perfumes increíbles, prueba antes de comprar el frasco completo
-      y encuentra la fragancia perfecta para ti.
-    </p>
-  </section>
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-card">
+          <div class="hero-kicker">✨ Decants premium · compra con confianza</div>
+          <h1>Descubre fragancias exclusivas sin comprar el frasco completo</h1>
+          <p>
+            Prueba aromas increíbles, elige tus mililitros favoritos y arma tu pedido
+            de forma rápida, elegante y segura. Una experiencia premium desde el primer clic.
+          </p>
 
-  <div id="catalogo" class="catalogo-wrap"></div>
+          <div class="hero-actions">
+            <a href="#catalogoSection" class="btn btn-primary">Explorar catálogo</a>
+            <button class="btn btn-secondary" onclick="toggleCarrito()">Ver carrito</button>
+          </div>
 
-  <!-- DETALLE -->
-  <div id="detalle" onclick="cerrarDetalle(event)">
-    <div class="detalleBox" onclick="event.stopPropagation()">
-      <button class="cerrarX" onclick="cerrarDetalle()">×</button>
+          <div class="hero-badges">
+            <div class="mini-badge">Decants auténticos</div>
+            <div class="mini-badge">Atención personalizada</div>
+            <div class="mini-badge">Pedido por WhatsApp</div>
+            <div class="mini-badge">Experiencia premium</div>
+          </div>
+        </div>
 
-      <img id="dImg" alt="Perfume" />
-      <div class="perfumeNombre" id="dNombre"></div>
-      <div class="concentracion" id="dConc"></div>
-      <div class="marca" id="dMarca"></div>
+        <div class="hero-side">
+          <div class="premium-box">
+            <h3>Tu aroma, a tu ritmo</h3>
+            <p>
+              Prueba antes de invertir en botella completa. Ideal para descubrir nuevos aromas,
+              crear colección y encontrar esa fragancia que realmente conecte contigo.
+            </p>
 
-      <div class="campo">
-        <label for="ml">Selecciona la cantidad</label>
-        <select id="ml">
-          <option value="1">1 ml</option>
-          <option value="2">2 ml</option>
-          <option value="3">3 ml</option>
-          <option value="5">5 ml</option>
-          <option value="10">10 ml</option>
-        </select>
+            <div class="stats">
+              <div class="stat">
+                <strong>1ml+</strong>
+                <span>Desde muestras pequeñas</span>
+              </div>
+              <div class="stat">
+                <strong>Premium</strong>
+                <span>Diseño elegante y limpio</span>
+              </div>
+              <div class="stat">
+                <strong>Directo</strong>
+                <span>Pedido rápido por WhatsApp</span>
+              </div>
+            </div>
+          </div>
+          <div class="side-glow"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust">
+      <div class="container trust-grid">
+        <div class="trust-card">
+          <strong>Compra con confianza</strong>
+          <p>Diseño profesional, proceso simple y pedido claro para el cliente.</p>
+        </div>
+        <div class="trust-card">
+          <strong>Prueba antes de invertir</strong>
+          <p>Descubre si realmente amas una fragancia antes de comprarla completa.</p>
+        </div>
+        <div class="trust-card">
+          <strong>Atención directa</strong>
+          <p>Recibe tu pedido personalizado por WhatsApp, sin vueltas innecesarias.</p>
+        </div>
+        <div class="trust-card">
+          <strong>Catálogo elegante</strong>
+          <p>Explora casas reconocidas en una experiencia visual mucho más premium.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="catalogoSection" class="container">
+      <div class="section-head">
+        <div>
+          <h2>Catálogo</h2>
+          <p>Explora tu colección por casas. Cada perfume se abre con vista detallada, selección de mililitros y acceso a Fragrantica.</p>
+        </div>
       </div>
 
-      <button onclick="addCarrito()">Añadir al carrito</button>
-      <br><br>
-      <button class="btn-secundario" onclick="cerrarDetalle()">Cerrar</button>
+      <div id="catalogo"></div>
+    </section>
+  </main>
+
+  <!-- MODAL DETALLE -->
+  <div id="detalle" onclick="cerrarDetalle(event)">
+    <div class="detalleBox" onclick="event.stopPropagation()">
+      <div class="detalle-left">
+        <img id="dImg" alt="Perfume">
+      </div>
+
+      <div class="detalle-right">
+        <button class="cerrarX" onclick="cerrarDetalle()">×</button>
+
+        <div class="modal-brand" id="dMarca"></div>
+        <div class="perfumeNombre" id="dNombre"></div>
+        <div class="concentracion" id="dConc"></div>
+
+        <div class="descripcion">
+          Descubre este perfume en un formato ideal para probarlo, conocer su evolución en piel
+          y decidir si se convierte en tu próxima firma olfativa.
+        </div>
+
+        <div class="field">
+          <label for="ml">Selecciona tus mililitros</label>
+          <select id="ml" onchange="actualizarPrecioModal()">
+            <option value="1">1 ml</option>
+            <option value="2">2 ml</option>
+            <option value="3">3 ml</option>
+            <option value="5">5 ml</option>
+            <option value="10">10 ml</option>
+          </select>
+        </div>
+
+        <div class="price-box">
+          <div>
+            <span>Precio estimado</span>
+            <strong id="precioModal">$8</strong>
+          </div>
+          <div>
+            <span id="textoMlModal">1 ml seleccionado</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="full-btn primary" onclick="addCarrito()">Añadir al carrito</button>
+          <button class="full-btn secondary" onclick="cerrarDetalle()">Cerrar</button>
+        </div>
+
+        <a id="fragranticaLink" class="fragrantica-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+          Conoce más en Fragrantica ↗
+        </a>
+      </div>
     </div>
   </div>
 
   <!-- CARRITO -->
-  <div id="carritoPanel">
-    <div class="carrito-head">
+  <aside id="carritoPanel">
+    <div class="cart-head">
       <h2>Carrito</h2>
-      <button class="btn-secundario" onclick="toggleCarrito()">Ocultar</button>
+      <button class="close-cart" onclick="toggleCarrito()">×</button>
     </div>
 
     <div id="listaCarrito"></div>
 
-    <div class="total" id="totalCarrito">Total: $0</div>
+    <div class="cart-total">
+      <span>Total de tu pedido</span>
+      <strong id="totalCarrito">$0</strong>
+    </div>
 
-    <input id="nombreCliente" placeholder="Tu nombre" />
+    <input id="nombreCliente" placeholder="Tu nombre">
 
-    <br><br>
+    <div style="height:14px"></div>
 
-    <button onclick="enviarPedido()">Enviar pedido</button>
-  </div>
+    <button class="full-btn primary" onclick="enviarPedido()">Enviar pedido por WhatsApp</button>
+  </aside>
 
   <div id="toast">Añadido exitosamente</div>
+
+  <a class="wa-float" href="https://wa.me/529213042001" target="_blank" rel="noopener noreferrer">💬</a>
+
+  <footer>
+    <div class="container footer-wrap">
+      <div class="footer-brand">
+        <strong style="font-family:'Playfair Display', serif; font-size:24px; color:var(--gold-2);">SmellGood</strong><br>
+        Decants con estilo premium.
+      </div>
+      <div>
+        Atención personalizada<br>
+        Catálogo elegante<br>
+        Compra rápida por WhatsApp
+      </div>
+      <div>
+        Diseñado para inspirar confianza<br>
+        Explora, prueba y elige<br>
+        Tu aroma ideal empieza aquí
+      </div>
+    </div>
+  </footer>
 
   <script>
     const precioML = 8;
 
     const perfumes = {
       "Armaf":[
-        {name:"Odyssey Mandarin Sky",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83132.2x.avif"},
-        {name:"Odyssey Aqua",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83134.2x.avif"},
-        {name:"Odyssey Homme",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64464.2x.avif"},
-        {name:"Club de Nuit Urban Man Elixir",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.77860.2x.avif"}
+        {
+          name:"Odyssey Mandarin Sky",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83132.2x.avif",
+          link:""
+        },
+        {
+          name:"Odyssey Aqua",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.83134.2x.avif",
+          link:""
+        },
+        {
+          name:"Odyssey Homme",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64464.2x.avif",
+          link:""
+        },
+        {
+          name:"Club de Nuit Urban Man Elixir",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.77860.2x.avif",
+          link:""
+        }
       ],
+
       "Lattafa":[
-        {name:"Ameer Al Oudh Intense Oud",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64947.2x.avif"},
-        {name:"Khamrah Qahwa",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.88175.2x.avif"},
-        {name:"Ishq Al Shuyukh",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.81121.2x.avif"},
-        {name:"Vintage Radio",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.89454.2x.avif"},
-        {name:"Ramz Silver",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.71868.2x.avif"},
-        {name:"Asad",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72821.2x.avif"}
+        {
+          name:"Ameer Al Oudh Intense Oud",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.64947.2x.avif",
+          link:""
+        },
+        {
+          name:"Khamrah Qahwa",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.88175.2x.avif",
+          link:""
+        },
+        {
+          name:"Ishq Al Shuyukh",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.81121.2x.avif",
+          link:""
+        },
+        {
+          name:"Vintage Radio",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.89454.2x.avif",
+          link:""
+        },
+        {
+          name:"Ramz Silver",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.71868.2x.avif",
+          link:""
+        },
+        {
+          name:"Asad",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72821.2x.avif",
+          link:""
+        }
       ],
+
       "Afnan":[
-        {name:"9PM Rebel",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.99238.2x.avif"},
-        {name:"9PM Night Out",conc:"Extrait de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.123313.2x.avif"},
-        {name:"Turathi Blue",conc:"EDP",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.70839.2x.avif"}
+        {
+          name:"9PM Rebel",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.99238.2x.avif",
+          link:""
+        },
+        {
+          name:"9PM Night Out",
+          conc:"Extrait de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.123313.2x.avif",
+          link:""
+        },
+        {
+          name:"Turathi Blue",
+          conc:"EDP",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.70839.2x.avif",
+          link:""
+        }
       ],
+
       "Jean Paul Gaultier":[
-        {name:"Le Beau Le Parfum",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72158.2x.avif"}
+        {
+          name:"Le Beau Le Parfum",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72158.2x.avif",
+          link:""
+        }
       ],
+
       "Swiss Arabian":[
-        {name:"Shaghaf Oud Aswad",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.54283.2x.avif"}
+        {
+          name:"Shaghaf Oud Aswad",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.54283.2x.avif",
+          link:""
+        }
       ],
+
       "Rasasi":[
-        {name:"Hawas For Him",conc:"Eau de Parfum",img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.46890.2x.avif"}
+        {
+          name:"Hawas For Him",
+          conc:"Eau de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.46890.2x.avif",
+          link:""
+        }
       ]
     };
 
@@ -538,16 +1406,9 @@
     const toast = document.getElementById("toast");
     const buscador = document.getElementById("buscador");
     const totalCarrito = document.getElementById("totalCarrito");
-
-    function obtenerTodosLosPerfumes() {
-      const resultado = [];
-      for (const casa in perfumes) {
-        perfumes[casa].forEach(p => {
-          resultado.push({ ...p, casa });
-        });
-      }
-      return resultado;
-    }
+    const precioModal = document.getElementById("precioModal");
+    const textoMlModal = document.getElementById("textoMlModal");
+    const fragranticaLink = document.getElementById("fragranticaLink");
 
     function renderCatalogo(filtro = "") {
       catalogo.innerHTML = "";
@@ -561,21 +1422,41 @@
 
         if (!perfumesFiltrados.length) continue;
 
-        const titulo = document.createElement("div");
-        titulo.className = "casa";
-        titulo.textContent = casa;
-        catalogo.appendChild(titulo);
+        const houseTitle = document.createElement("div");
+        houseTitle.className = "house-title";
+        houseTitle.innerHTML = `
+          <h3>${casa}</h3>
+          <div class="house-line"></div>
+        `;
+        catalogo.appendChild(houseTitle);
 
         const grid = document.createElement("div");
         grid.className = "grid";
 
         perfumesFiltrados.forEach(p => {
-          const card = document.createElement("div");
+          const card = document.createElement("article");
           card.className = "card";
           card.innerHTML = `
-            <img src="${p.img}" alt="${p.name}">
-            <div class="nombre">${p.name}</div>
-            <div class="conc">${p.conc}</div>
+            <div class="card-top">
+              <span class="pill">${p.conc}</span>
+            </div>
+
+            <div class="card-img-wrap">
+              <img src="${p.img}" alt="${p.name}">
+            </div>
+
+            <div class="card-content">
+              <h4>${p.name}</h4>
+              <div class="brand">${casa}</div>
+
+              <div class="bottom">
+                <div class="starting">
+                  <span>Desde</span>
+                  <strong>$${precioML}</strong>
+                </div>
+                <button class="small-btn">Ver detalle</button>
+              </div>
+            </div>
           `;
           card.onclick = () => verPerfume({ ...p, casa });
           grid.appendChild(card);
@@ -587,12 +1468,23 @@
 
     function verPerfume(p) {
       actual = p;
+
       dImg.src = p.img;
       dImg.alt = p.name;
-      dNombre.innerText = p.name;
-      dConc.innerText = p.conc;
-      dMarca.innerText = "Casa: " + p.casa;
+      dNombre.textContent = p.name;
+      dConc.textContent = p.conc;
+      dMarca.textContent = p.casa;
+
       document.getElementById("ml").value = "1";
+      actualizarPrecioModal();
+
+      if (p.link && p.link.trim() !== "") {
+        fragranticaLink.href = p.link;
+        fragranticaLink.style.display = "inline-flex";
+      } else {
+        fragranticaLink.style.display = "none";
+      }
+
       detalle.style.display = "flex";
       document.body.style.overflow = "hidden";
     }
@@ -600,6 +1492,14 @@
     function cerrarDetalle() {
       detalle.style.display = "none";
       document.body.style.overflow = "auto";
+    }
+
+    function actualizarPrecioModal() {
+      const ml = Number(document.getElementById("ml").value);
+      const precio = ml * precioML;
+
+      precioModal.textContent = `$${precio}`;
+      textoMlModal.textContent = `${ml} ml seleccionado${ml > 1 ? "s" : ""}`;
     }
 
     function addCarrito() {
@@ -616,7 +1516,7 @@
 
       renderCarrito();
       cerrarDetalle();
-      mostrarToast("Añadido exitosamente");
+      mostrarToast("Añadido al carrito");
     }
 
     function eliminar(index) {
@@ -626,11 +1526,11 @@
     }
 
     function renderCarrito() {
-      contador.innerText = carrito.length;
+      contador.textContent = carrito.length;
 
       if (!carrito.length) {
-        listaCarrito.innerHTML = `<div class="carrito-vacio">Tu carrito está vacío.</div>`;
-        totalCarrito.innerText = "Total: $0";
+        listaCarrito.innerHTML = `<div class="cart-empty">Tu carrito está vacío.</div>`;
+        totalCarrito.textContent = "$0";
         return;
       }
 
@@ -641,16 +1541,16 @@
         total += item.precio;
 
         const div = document.createElement("div");
-        div.className = "item-carrito";
+        div.className = "cart-item";
         div.innerHTML = `
           <strong>${item.nombre}</strong>
           <div class="meta">${item.ml} ml · $${item.precio}</div>
-          <button onclick="eliminar(${index})">Eliminar</button>
+          <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
         `;
         listaCarrito.appendChild(div);
       });
 
-      totalCarrito.innerText = `Total: $${total}`;
+      totalCarrito.textContent = `$${total}`;
     }
 
     function toggleCarrito() {
@@ -674,7 +1574,7 @@
       let texto = `Hola Jhoan, soy ${nombre} y me gustaría hacer mi pedido de decants.\n\n`;
 
       carrito.forEach(p => {
-        texto += `• ${p.nombre} - ${p.ml}ml ($${p.precio})\n`;
+        texto += `• ${p.nombre} - ${p.ml} ml ($${p.precio})\n`;
         total += p.precio;
       });
 
@@ -686,9 +1586,11 @@
     }
 
     function mostrarToast(mensaje) {
-      toast.innerText = mensaje;
+      toast.textContent = mensaje;
       toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2000);
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2000);
     }
 
     buscador.addEventListener("input", (e) => {
