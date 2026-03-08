@@ -193,8 +193,12 @@
     }
 
     .hero-card{
-      padding:44px;
-    }
+ padding:44px;
+
+ background:
+ linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.55)),
+ url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgbz9vd5JP3HZL_obt1LO5G0aPFo1No2oVKwNawjSMmg&s=10") center/cover no-repeat;
+}
 
     .hero-kicker{
       display:inline-flex;
@@ -296,31 +300,7 @@
       pointer-events:none;
     }
 
-    .premium-box{
-  position:relative;
-  overflow:hidden;
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:24px;
-
-  background:
-  linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.45)),
-  url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgbz9vd5JP3HZL_obt1LO5G0aPFo1No2oVKwNawjSMmg&s=10") center/cover no-repeat;
-}
-
-    .premium-box h3{
-      font-family:"Playfair Display", serif;
-      font-size:28px;
-      color:var(--gold-2);
-      margin-bottom:10px;
-    }
-
-    .premium-box p{
-      color:var(--muted);
-      line-height:1.75;
-      font-size:15px;
-    }
-
+    
     .stats{
       display:grid;
       grid-template-columns:repeat(3,1fr);
