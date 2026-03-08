@@ -182,15 +182,23 @@
       align-items:stretch;
     }
 
-    .hero-card,
     .hero-side{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-      border-radius:30px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-    }
+  border:1px solid var(--line);
+  border-radius:30px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+  padding:32px;
+
+  background:
+  linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.60)),
+  url("https://parfumeriedaquitaine.cl/cdn/shop/articles/como-empezar-tu-coleccion-de-perfumes-las-5-fragancias-claves-9667401.jpg?v=1769529152") center/cover no-repeat;
+
+  min-height:520px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
 
     .hero-card{
  padding:44px;
