@@ -570,18 +570,17 @@
     }
 
     /* MODAL */
-.detalleBox{
-  width:min(980px, 100%);
-  max-height:calc(100vh - 40px);
-  border-radius:28px;
-  overflow:hidden;
-  display:grid;
-  grid-template-columns:.95fr 1.05fr;
-  background:linear-gradient(180deg, #141419, #0f0f14);
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 30px 80px rgba(0,0,0,.45);
-  animation:zoom .25s ease;
-  position:relative;
+#detalle{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.68);
+  display:none;
+  justify-content:center;
+  align-items:flex-start;
+  padding:18px;
+  z-index:120;
+  backdrop-filter:blur(8px);
+  overflow-y:auto;
 }
     .detalleBox{
       width:min(980px, 100%);
@@ -1487,8 +1486,7 @@
       }
 
       detalle.style.display = "flex";
-      document.body.style.overflow = "hidden";
-    }
+          }
 
     function cerrarDetalle() {
       detalle.style.display = "none";
