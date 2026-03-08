@@ -13,7 +13,7 @@
 
 :root{
 --gold:#d4af37;
---bg:#fafafa;
+--bg:#0e0e0e;
 }
 
 *{
@@ -389,8 +389,13 @@ precio:precio
 
 contador.innerText=carrito.length
 
-listaCarrito.innerHTML+=`<div>${actual.name} ${ml}ml ($${precio})</div>`
+let index = carrito.length - 1
 
+listaCarrito.innerHTML+=`
+<div>
+${actual.name} ${ml}ml ($${precio})
+<button onclick="eliminar(${index})">❌</button>
+</div>`
 toast.classList.add("show")
 
 setTimeout(()=>toast.classList.remove("show"),2000)
