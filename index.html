@@ -1569,7 +1569,7 @@
 
     function actualizarPrecioModal() {
       const ml = Number(document.getElementById("ml").value);
-      const precio = ml * precioML;
+      const precio = ml * actual.price;
 
       precioModal.textContent = `$${precio}`;
       textoMlModal.textContent = `${ml} ml seleccionado${ml > 1 ? "s" : ""}`;
@@ -1579,7 +1579,7 @@
       if (!actual) return;
 
       const ml = Number(document.getElementById("ml").value);
-      const precio = ml * precioML;
+      const precio = ml * actual.price;
 
       carrito.push({
         nombre: actual.name,
