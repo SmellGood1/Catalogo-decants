@@ -1098,9 +1098,9 @@ transform:translateX(4px);
 /* TOAST ERROR */
 
 .toast-error{
-background:rgba(255,60,60,.15);
-color:#ff4d4d;
-border:1px solid rgba(255,60,60,.35);
+background:rgba(255,60,60,.18) !important;
+color:#ff4d4d !important;
+border:1px solid rgba(255,60,60,.35) !important;
 }
 
 </style>
@@ -1655,12 +1655,12 @@ border:1px solid rgba(255,60,60,.35);
       const nombre = document.getElementById("nombreCliente").value.trim();
 
       if (!nombre) {
-        mostrarToast("Escribe tu nombre para enviar el pedido", true);
+        mostrarToast("Escribe tu nombre", true);
         return;
       }
 
       if (!carrito.length) {
-        mostrarToast("Tu carrito está vacío 🛒", true);
+        mostrarToast("Tu carrito está vacío", true);
         return;
       }
 
