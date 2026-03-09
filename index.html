@@ -1091,10 +1091,19 @@ object-fit:contain;
 }
 
 .social-links a:hover{
-  color:var(--gold-2);
-  transform:translateX(4px);
+color:var(--gold-2);
+transform:translateX(4px);
 }
-  </style>
+
+/* TOAST ERROR */
+
+.toast-error{
+background:rgba(255,60,60,.15);
+color:#ff4d4d;
+border:1px solid rgba(255,60,60,.35);
+}
+
+</style>
 </head>
 <body>
 
@@ -1646,12 +1655,12 @@ object-fit:contain;
       const nombre = document.getElementById("nombreCliente").value.trim();
 
       if (!nombre) {
-        mostrarToast("Escribe tu nombre");
+        mostrarToast("Escribe tu nombre para enviar el pedido", true);
         return;
       }
 
       if (!carrito.length) {
-        mostrarToast("Tu carrito está vacío");
+        mostrarToast("Tu carrito está vacío 🛒", true);
         return;
       }
 
@@ -1670,14 +1679,22 @@ object-fit:contain;
       window.open(url, "_blank");
     }
 
-    function mostrarToast(mensaje) {
-      toast.textContent = mensaje;
-      toast.classList.add("show");
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2000);
-    }
+    function mostrarToast(mensaje, error = false) {
 
+toast.textContent = mensaje;
+
+if(error){
+toast.className = "show toast-error";
+}else{
+toast.className = "show";
+}
+
+setTimeout(()=>{
+toast.className = "";
+},2000);
+
+}
+      
     buscador.addEventListener("input", (e) => {
       renderCatalogo(e.target.value);
     });
