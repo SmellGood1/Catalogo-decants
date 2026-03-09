@@ -1142,9 +1142,19 @@ display:none;
 }
 
 .aroma-box{
-  max-width:900px;
-  margin:auto;
+  max-width:1100px;
+  margin:0 auto;
   text-align:center;
+  padding:50px 30px;
+  border-radius:32px;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+
+  background:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.65)),
+    url("https://images.unsplash.com/photo-1519682337058-a94d519337bc") center/cover no-repeat;
 }
 
 .aroma-box h2{
@@ -1157,11 +1167,49 @@ display:none;
   margin-bottom:30px;
 }
 
+.aroma-box .stats{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  flex-wrap:wrap;
+  margin-top:30px;
+}
+
+.aroma-box .stat{
+  min-width:180px;
+  padding:18px 14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;
+  backdrop-filter:blur(4px);
+}
+
 .stats{
   display:flex;
   justify-content:center;
   gap:30px;
   flex-wrap:wrap;
+}
+
+.aroma-box .stat strong{
+ display:block;
+ font-size:22px;
+ margin-bottom:6px;
+ color:var(--gold);
+}
+
+.aroma-box .stat span{
+ font-size:14px;
+ opacity:.75;
+}
+
+.aroma-box .stat{
+ transition:.25s ease;
+}
+
+.aroma-box .stat:hover{
+ transform:translateY(-4px);
+ border-color:rgba(212,175,55,.35);
 }
 
 </style>
