@@ -11,6 +11,27 @@
 
   <style>
   
+  .cart-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.cart-left{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.cart-img{
+  width:55px;
+  height:55px;
+  object-fit:contain;
+  border-radius:10px;
+  background:rgba(255,255,255,.05);
+  padding:6px;
+}
+  
   .soon-label{
   margin-top:4px;
   display:inline-block;
@@ -1829,13 +1850,15 @@ display:none;
       carrito.forEach((item, index) => {
         total += item.precio;
 
-        const div = document.createElement("div");
-        div.className = "cart-item";
         div.innerHTML = `
-          <strong>${item.nombre}</strong>
-          <div class="meta">${item.ml} ml · $${item.precio}</div>
-          <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
-        `;
+  <div class="cart-left">
+    <strong>${item.nombre}</strong>
+    <div class="meta">${item.ml} ml · $${item.precio}</div>
+    <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
+  </div>
+
+  <img src="${item.img}" class="cart-img">
+`;
         listaCarrito.appendChild(div);
       });
 
