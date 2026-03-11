@@ -1822,7 +1822,6 @@ display:none;
   nombre: actual.name,
   ml: ml,
   precio: precio,
-  img: actual.img
 });
 
       renderCarrito();
@@ -1850,6 +1849,9 @@ display:none;
 
       carrito.forEach((item, index) => {
         total += item.precio;
+        
+        const div = document.createElement("div");
+  div.className = "cart-item";
 
         div.innerHTML = `
   <div class="cart-left">
