@@ -10,6 +10,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+  
+  .badge-proximo{
+ position:absolute;
+ top:10px;
+ left:10px;
+ background:linear-gradient(135deg,#d4af37,#f5e08a);
+ color:#111;
+ font-size:11px;
+ font-weight:700;
+ padding:6px 10px;
+ border-radius:10px;
+ letter-spacing:.5px;
+}
+
+.card{
+ position:relative;
+}
+  
     :root{
       --bg:#0f0f12;
       --bg-soft:#17171c;
@@ -1583,6 +1601,17 @@ display:none;
         }
       ],
 
+      "Orto Parisi":[
+        {
+          name:"Megamare",
+          conc:"Extrait de Parfum",
+          img:"https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.53471.2x.avif",
+          link:"https://www.fragrantica.es/perfume/Orto-Parisi/Megamare-53471.html",
+          price:122,
+          proximo:true
+        }
+      ],
+      
       "Swiss Arabian":[
         {
           name:"Shaghaf Oud Aswad",
@@ -1650,6 +1679,7 @@ display:none;
           const card = document.createElement("article");
           card.className = "card";
           card.innerHTML = `
+          ${p.proximo ? `<div class="badge-proximo">Próximamente</div>` : ""}
             <div class="card-top">
               <span class="pill">${p.conc}</span>
             </div>
