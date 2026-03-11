@@ -11,6 +11,14 @@
 
   <style>
   
+  .soon-label{
+ margin-top:8px;
+ font-size:12px;
+ color:var(--gold);
+ opacity:.9;
+ letter-spacing:.5px;
+}
+  
   .badge-proximo{
  position:absolute;
  top:10px;
@@ -1691,8 +1699,9 @@ display:none;
           card.className = p.proximo ? "card proximo" : "card";
           card.innerHTML = `
             <div class="card-top">
-              <span class="pill">${p.conc}</span>
-            </div>
+  <span class="pill">${p.conc}</span>
+  ${p.proximo ? `<div class="soon-label">Próximamente</div>` : ""}
+</div>
 
             <div class="card-img-wrap">
               <img src="${p.img}" alt="${p.name}">
