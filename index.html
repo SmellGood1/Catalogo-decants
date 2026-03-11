@@ -1822,6 +1822,7 @@ display:none;
   nombre: actual.name,
   ml: ml,
   precio: precio,
+  img: actual.img || ""
 });
 
       renderCarrito();
@@ -1860,7 +1861,7 @@ display:none;
     <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
   </div>
 
-  <img src="${item.img || ''}" class="cart-img" alt="${item.nombre}">
+  ${item.img ? `<img src="${item.img}" class="cart-img" alt="${item.nombre}">` : ""}
 `;
         listaCarrito.appendChild(div);
       });
