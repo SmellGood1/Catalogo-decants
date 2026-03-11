@@ -1230,6 +1230,17 @@ display:none;
  border-color:rgba(212,175,55,.35);
 }
 
+.btn-proximo{
+  background:rgba(255,255,255,.08);
+  color:var(--gold);
+  border:1px solid rgba(212,175,55,.25);
+  cursor:default;
+}
+
+.card.proximo{
+  opacity:.9;
+}
+
 </style>
 </head>
 <body>
@@ -1677,9 +1688,8 @@ display:none;
 
         perfumesFiltrados.forEach(p => {
           const card = document.createElement("article");
-          card.className = "card";
+          card.className = p.proximo ? "card proximo" : "card";
           card.innerHTML = `
-          ${p.proximo ? `<div class="badge-proximo">Próximamente</div>` : ""}
             <div class="card-top">
               <span class="pill">${p.conc}</span>
             </div>
@@ -1697,11 +1707,18 @@ display:none;
                   <span>Desde</span>
                   <strong>$${p.price}/ml</strong>
                 </div>
-                <button class="small-btn">Ver</button>
+                <button class="small-btn ${p.proximo ? 'btn-proximo' : ''}">
+  ${p.proximo ? 'Próximamente' : 'Ver'}
+</button>
               </div>
             </div>
+            
+            ${p.proximo ? `<div class="soon-bar">Próximamente</div>` : ""}
           `;
-          card.onclick = () => verPerfume({ ...p, casa });
+          card.onclick = () => {
+  if (p.proximo) return;
+  verPerfume({ ...p, casa });
+};
           grid.appendChild(card);
         });
 
