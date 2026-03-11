@@ -1699,13 +1699,13 @@ display:none;
                   <span>Desde</span>
                   <strong>$${p.price}/ml</strong>
                 </div>
+                
                 <button class="small-btn ${p.proximo ? 'btn-proximo' : ''}">
   ${p.proximo ? 'Próximamente' : 'Ver'}
 </button>
               </div>
             </div>
             
-            ${p.proximo ? `<div class="soon-bar">Próximamente</div>` : ""}
           `;
           card.onclick = () => {
   if (p.proximo) return;
