@@ -1819,10 +1819,11 @@ display:none;
       const precio = ml * actual.price;
 
       carrito.push({
-        nombre: actual.name,
-        ml,
-        precio
-      });
+ nombre:p.name,
+ ml:mlSeleccionado,
+ precio:precio,
+ img:p.img
+});
 
       renderCarrito();
       cerrarDetalle();
