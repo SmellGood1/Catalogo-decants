@@ -1860,7 +1860,7 @@ display:none;
     <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
   </div>
 
-  <img src="${item.img}" class="cart-img">
+  <img src="${item.img || ''}" class="cart-img" alt="${item.nombre}">
 `;
         listaCarrito.appendChild(div);
       });
