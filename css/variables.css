@@ -1,0 +1,17 @@
+:root{
+  --bg:#0f0f12;
+  --bg-soft:#17171c;
+  --card:#18181f;
+  --card-2:#20202a;
+  --line:rgba(255,255,255,.08);
+  --gold:#d4af37;
+  --gold-2:#f0d980;
+  --text:#f8f6f2;
+  --muted:#b7b2a7;
+  --white:#ffffff;
+  --success:#2ecc71;
+  --shadow:0 14px 40px rgba(0,0,0,.35);
+  --radius:22px;
+  --radius-sm:14px;
+  --transition:.28s ease;
+}

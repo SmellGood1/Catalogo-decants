@@ -1,0 +1,97 @@
+.hero{
+  padding:72px 0 38px;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:24px;
+  align-items:stretch;
+}
+
+.hero-side{
+  border:1px solid var(--line);
+  border-radius:30px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  position:relative;
+  padding:24px;
+  background:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.60)),
+    url("https://parfumeriedaquitaine.cl/cdn/shop/articles/como-empezar-tu-coleccion-de-perfumes-las-5-fragancias-claves-9667401.jpg?v=1769529152") center/cover no-repeat;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.hero-card{
+  padding:44px;
+  border-radius:30px;
+  overflow:hidden;
+  background:
+    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.55)),
+    url("https://i.ibb.co/67BsJRYg/IMG-8068.jpg") center/cover no-repeat;
+}
+
+.hero-kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(212,175,55,.26);
+  background:rgba(212,175,55,.08);
+  color:var(--gold-2);
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  margin-bottom:20px;
+}
+
+.hero h1{
+  font-family:"Playfair Display", serif;
+  font-size:64px;
+  line-height:.98;
+  letter-spacing:-1px;
+  margin-bottom:18px;
+  max-width:720px;
+}
+
+.hero p{
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.75;
+  max-width:650px;
+}
+
+.hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:28px;
+}
+
+.hero-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:22px;
+}
+
+.mini-badge{
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  color:#ddd7cb;
+  font-size:13px;
+}
+
+.side-glow{
+  position:absolute;
+  inset:auto -40px -40px auto;
+  width:180px;
+  height:180px;
+  background:radial-gradient(circle, rgba(212,175,55,.25), transparent 68%);
+  filter:blur(10px);
+  pointer-events:none;
+}

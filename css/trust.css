@@ -1,0 +1,34 @@
+.trust{
+  padding:8px 0 14px;
+}
+
+.trust-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.trust-card{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  border-radius:22px;
+  padding:18px;
+  transition:var(--transition);
+}
+
+.trust-card:hover{
+  transform:translateY(-4px);
+  background:rgba(255,255,255,.045);
+}
+
+.trust-card strong{
+  display:block;
+  margin-bottom:6px;
+  font-size:15px;
+}
+
+.trust-card p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}

@@ -1,0 +1,181 @@
+@media (min-width:1024px){
+  .container{
+    width:min(1280px, 92%);
+    margin:auto;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(220px, 1fr));
+    gap:20px;
+    align-items:start;
+  }
+
+  .card{
+    width:100%;
+    min-width:0;
+  }
+
+  .card-img-wrap{
+    height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .card-img-wrap img{
+    max-width:100%;
+    max-height:200px;
+    object-fit:contain;
+  }
+
+  .trust-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(220px, 1fr));
+    gap:18px;
+  }
+
+  .hero-badges{
+    flex-wrap:wrap;
+  }
+}
+
+@media (max-width:1024px){
+  .hero-grid{
+    grid-template-columns:1fr;
+  }
+
+  .detalleBox{
+    grid-template-columns:1fr;
+  }
+
+  .detalle-left{
+    min-height:320px;
+  }
+}
+
+@media (max-width:768px){
+  .nav{
+    min-height:74px;
+  }
+
+  .search-wrap input{
+    width:160px;
+  }
+
+  .hero{
+    padding:42px 0 24px;
+  }
+
+  .hero-card{
+    padding:28px;
+  }
+
+  .hero h1{
+    font-size:42px;
+  }
+
+  .section-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .section-head h2{
+    font-size:34px;
+  }
+
+  .trust-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .perfumeNombre{
+    font-size:34px;
+  }
+}
+
+@media (max-width:540px){
+  .container{
+    width:min(100% - 20px, 1220px);
+  }
+
+  .nav{
+    gap:10px;
+  }
+
+  .logo strong{
+    font-size:22px;
+  }
+
+  .logo span{
+    font-size:10px;
+  }
+
+  .logo-text strong{
+    font-size:20px;
+  }
+
+  .logo-text span{
+    font-size:10px;
+  }
+
+  .search-wrap{
+    display:none;
+  }
+
+  .hero h1{
+    font-size:36px;
+  }
+
+  .trust-grid{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .card{
+    padding:14px;
+  }
+
+  .card h4{
+    font-size:15px;
+    min-height:auto;
+  }
+
+  .card img{
+    height:170px;
+  }
+
+  .detalle-left,
+  .detalle-right{
+    padding:22px;
+  }
+
+  .modal-actions{
+    flex-direction:column;
+  }
+
+  .full-btn{
+    min-width:100%;
+  }
+
+  .cart-btn{
+    padding:10px 16px;
+    font-size:14px;
+  }
+
+  .nav-actions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .container.nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+}

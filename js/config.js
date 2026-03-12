@@ -1,0 +1,6 @@
+window.CONFIG = {
+  WA_NUMBER: '529213042001',
+  WA_CONTACT: 'Jhoan',
+  TOAST_DURATION: 2000,
+  ML_OPTIONS: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+};
