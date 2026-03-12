@@ -1876,23 +1876,41 @@ display:none;
       listaCarrito.innerHTML = "";
       let total = 0;
 
-      carrito.forEach((item, index) => {
-        total += item.precio;
-        
-        const div = document.createElement("div");
+      const agrupados = {};
+
+carrito.forEach(item => {
+  const key = item.nombre + "_" + item.ml;
+
+  if (!agrupados[key]) {
+    agrupados[key] = {
+      ...item,
+      cantidad: 1
+    };
+  } else {
+    agrupados[key].cantidad++;
+  }
+});
+
+Object.values(agrupados).forEach((item, index) => {
+  const precioTotal = item.precio * item.cantidad;
+  total += precioTotal;
+
+  const div = document.createElement("div");
   div.className = "cart-item";
 
-        div.innerHTML = `
-  <div class="cart-left">
-    <strong>${item.nombre}</strong>
-    <div class="meta">${item.ml} ml · $${item.precio}</div>
-    <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
-  </div>
+  div.innerHTML = `
+    <div class="cart-left">
+      <strong>${item.nombre}</strong>
+      <div class="meta">${item.ml} ml × ${item.cantidad}</div>
+      <div class="meta">$${precioTotal}</div>
+      <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
+    </div>
 
-  ${item.img ? `<img src="${item.img}" class="cart-img" alt="${item.nombre}">` : ""}
-`;
-        listaCarrito.appendChild(div);
-      });
+    ${item.img ? `<img src="${item.img}" class="cart-img">` : ""}
+  `;
+
+  listaCarrito.appendChild(div);
+});
 
       totalCarrito.textContent = `$${total}`;
     }
