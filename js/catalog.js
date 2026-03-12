@@ -1,11 +1,43 @@
-function renderCatalogo(filtro) {
-  filtro = filtro || '';
+let marcaSeleccionada = '';
+
+function renderBotoneraFiltros(filtroTexto) {
+  var filtrosContainer = document.getElementById('filtros-marcas');
+  if (!filtrosContainer) return;
+
+  var marcas = Object.keys(PERFUMES);
+  
+  var htmlFiltros = '<button class="filter-pill ' + (marcaSeleccionada === '' ? 'active' : '') + '" data-marca="">Todas</button>';
+  
+  marcas.forEach(function(marca) {
+    var isActive = (marcaSeleccionada === marca) ? 'active' : '';
+    htmlFiltros += '<button class="filter-pill ' + isActive + '" data-marca="' + marca + '">' + marca + '</button>';
+  });
+
+  filtrosContainer.innerHTML = htmlFiltros;
+
+  // Delegation para los pills
+  filtrosContainer.onclick = function(e) {
+    if (e.target.classList.contains('filter-pill')) {
+      marcaSeleccionada = e.target.getAttribute('data-marca');
+      renderCatalogo(filtroTexto);
+    }
+  };
+}
+
+function renderCatalogo(filtroTexto) {
+  filtroTexto = filtroTexto || '';
+  renderBotoneraFiltros(filtroTexto);
+
   var catalogo = document.getElementById('catalogo');
   catalogo.innerHTML = '';
 
   for (var casa in PERFUMES) {
+    if (marcaSeleccionada && casa !== marcaSeleccionada) {
+      continue; // Saltar si hay filtro de marca y no coincide
+    }
+
     var perfumesFiltrados = PERFUMES[casa].filter(function(p) {
-      var f = filtro.toLowerCase();
+      var f = filtroTexto.toLowerCase();
       return p.name.toLowerCase().indexOf(f) !== -1 ||
              casa.toLowerCase().indexOf(f) !== -1 ||
              p.conc.toLowerCase().indexOf(f) !== -1;
@@ -46,7 +78,7 @@ function renderCatalogo(filtro) {
           '</div>' +
         '</div>';
 
-      card.onclick = (function(perfume, casaNombre) {
+      card.addEventListener('click', (function(perfume, casaNombre) {
         return function() {
           if (perfume.proximo) return;
           var perfumeConCasa = {};
@@ -54,7 +86,7 @@ function renderCatalogo(filtro) {
           perfumeConCasa.casa = casaNombre;
           verPerfume(perfumeConCasa);
         };
-      })(p, casa);
+      })(p, casa));
 
       grid.appendChild(card);
     });

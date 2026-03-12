@@ -95,10 +95,35 @@ function renderCarrito() {
   contador.textContent = carrito.length;
 
   if (!carrito.length) {
-    listaCarrito.innerHTML = '<div class="cart-empty">Tu carrito está vacío.</div>';
+    listaCarrito.innerHTML = `
+      <div class="cart-empty-state">
+        <div class="cart-empty-icon">🛍️</div>
+        <h3>Tu carrito está vacío</h3>
+        <p>Aún no has agregado ninguna fragancia a tu colección. ¡Descubre tu próximo aroma favorito!</p>
+        <button id="btnEmptyStateCat" class="full-btn primary">Explorar Catálogo</button>
+      </div>
+    `;
+    
+    // Listener para el nuevo botón CTA
+    var btnEmptyStateCat = document.getElementById('btnEmptyStateCat');
+    if (btnEmptyStateCat) {
+      btnEmptyStateCat.addEventListener('click', function() {
+        toggleCarrito(); // Cerrar carrito
+        // Mover sutilmente a catalogo si no está visible
+        document.getElementById('catalogoSection').scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
     totalCarrito.textContent = '$0';
+    document.getElementById('btnEnviarPedido').disabled = true;
+    document.getElementById('btnEnviarPedido').style.opacity = '0.5';
+    document.getElementById('btnVaciarCarrito').style.display = 'none';
     return;
   }
+
+  document.getElementById('btnEnviarPedido').disabled = false;
+  document.getElementById('btnEnviarPedido').style.opacity = '1';
+  document.getElementById('btnVaciarCarrito').style.display = 'block';
 
   listaCarrito.innerHTML = '';
   var total = 0;
@@ -138,11 +163,11 @@ function renderCarrito() {
         '<div class="meta">' + item.ml + ' ml &times; <strong>' + item.cantidad + '</strong></div>' +
         '<div class="meta">$' + precioTotal + '</div>' +
         '<div class="qty-controls">' +
-          '<button class="qty-btn" onclick="decrementar([' + item.ids.join(',') + '])" aria-label="Reducir cantidad">&minus;</button>' +
+          '<button class="qty-btn" data-action="decrement" data-ids="' + item.ids.join(',') + '" aria-label="Reducir cantidad">&minus;</button>' +
           '<span>' + item.cantidad + '</span>' +
-          '<button class="qty-btn" onclick="incrementar(\'' + escapedNombre + '\', ' + item.ml + ')" aria-label="Aumentar cantidad">+</button>' +
+          '<button class="qty-btn" data-action="increment" data-nombre="' + escapedNombre + '" data-ml="' + item.ml + '" aria-label="Aumentar cantidad">+</button>' +
         '</div>' +
-        '<button class="cart-remove" onclick="eliminar([' + item.ids.join(',') + '])">Eliminar</button>' +
+        '<button class="cart-remove" data-ids="' + item.ids.join(',') + '">Eliminar</button>' +
       '</div>' +
       (item.img ? '<img src="' + item.img + '" class="cart-img" alt="' + item.nombre + '">' : '');
 

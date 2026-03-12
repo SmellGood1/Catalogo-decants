@@ -50,8 +50,14 @@
   padding:18px;
   overflow:hidden;
   cursor:pointer;
-  transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+  transition:transform .28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .28s ease, border-color .28s ease;
   box-shadow:0 10px 30px rgba(0,0,0,.18);
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card::before{
@@ -105,11 +111,6 @@
   background:rgba(212,175,55,.06);
 }
 
-@keyframes shimmer{
-  0%{background-position:-200% 0}
-  100%{background-position:200% 0}
-}
-
 .card-img-wrap{
   min-height:220px;
   display:flex;
@@ -117,21 +118,6 @@
   justify-content:center;
   position:relative;
   z-index:1;
-  background:linear-gradient(90deg, rgba(255,255,255,.02) 25%, rgba(255,255,255,.06) 50%, rgba(255,255,255,.02) 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.8s ease infinite;
-  border-radius:16px;
-}
-
-.card-img-wrap::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  width:120px;
-  height:26px;
-  border-radius:50%;
-  background:rgba(0,0,0,.22);
-  filter:blur(12px);
 }
 
 .card img{
@@ -142,7 +128,6 @@
   position:relative;
   z-index:2;
   transition:transform .35s ease;
-  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
 }
 
 .card:hover img{

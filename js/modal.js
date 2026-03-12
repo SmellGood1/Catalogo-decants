@@ -34,13 +34,23 @@ function verPerfume(p) {
     notasDiv.style.display = 'none';
   }
 
-  document.getElementById('detalle').style.display = 'flex';
+  var detalle = document.getElementById('detalle');
+  detalle.style.display = 'flex';
+  // Pequeño timeout para permitir la transición de opacidad si se desea en el futuro
+  setTimeout(function() {
+    detalle.classList.add('show');
+  }, 10);
   document.body.style.overflow = 'hidden';
 }
 
 function cerrarDetalle(e) {
-  if (e && e.target !== document.getElementById('detalle')) return;
-  document.getElementById('detalle').style.display = 'none';
+  var detalle = document.getElementById('detalle');
+  if (e && e.target !== detalle) return;
+  
+  detalle.classList.remove('show');
+  setTimeout(function() {
+    detalle.style.display = 'none';
+  }, 250); // Mismo tiempo que blur animation
   document.body.style.overflow = '';
 }
 
