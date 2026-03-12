@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
   });
 
-  if (btnCerrarX) btnCerrarX.addEventListener('click', cerrarDetalle);
+  if (btnCerrarX) btnCerrarX.addEventListener('click', function() { cerrarDetalle(); });
   if (mlSelect) mlSelect.addEventListener('change', actualizarPrecioModal);
   if (btnAddCart) btnAddCart.addEventListener('click', addCarrito);
-  if (btnCerrarDetalle) btnCerrarDetalle.addEventListener('click', cerrarDetalle);
+  if (btnCerrarDetalle) btnCerrarDetalle.addEventListener('click', function() { cerrarDetalle(); });
 
   // Delegación de eventos para los botones dinámicos en la lista del carrito
   const listaCarrito = document.getElementById('listaCarrito');

@@ -7,19 +7,29 @@
   align-items:flex-start;
   padding:18px;
   z-index:120;
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
   overflow-y:auto;
+  opacity:0;
+  transition:opacity .4s cubic-bezier(.25,.46,.45,.94),
+             backdrop-filter .5s cubic-bezier(.25,.46,.45,.94),
+             -webkit-backdrop-filter .5s cubic-bezier(.25,.46,.45,.94);
 }
 
 #detalle.show{
   display:flex;
-  animation:fadeIn .25s ease;
+  opacity:1;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
-@keyframes fadeIn{
-  from{opacity:0}
-  to{opacity:1}
+#detalle.closing{
+  opacity:0;
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+  transition:opacity .5s cubic-bezier(.25,.46,.45,.94),
+             backdrop-filter .55s cubic-bezier(.25,.46,.45,.94),
+             -webkit-backdrop-filter .55s cubic-bezier(.25,.46,.45,.94);
 }
 
 .detalleBox{
@@ -31,13 +41,28 @@
   background:linear-gradient(180deg, #141419, #0f0f14);
   border:1px solid rgba(255,255,255,.08);
   box-shadow:0 30px 80px rgba(0,0,0,.45);
-  animation:zoom .25s ease;
   position:relative;
+  transform:scale(.92) translateY(30px);
+  opacity:0;
+  filter:blur(0px);
+  transition:transform .45s cubic-bezier(.16,1,.3,1),
+             opacity .4s ease,
+             filter .4s ease;
 }
 
-@keyframes zoom{
-  from{transform:scale(.96); opacity:0}
-  to{transform:scale(1); opacity:1}
+#detalle.show .detalleBox{
+  transform:scale(1) translateY(0);
+  opacity:1;
+  filter:blur(0px);
+}
+
+#detalle.closing .detalleBox{
+  transform:scale(.88) translateY(40px);
+  opacity:0;
+  filter:blur(4px);
+  transition:transform .5s cubic-bezier(.4,0,.2,1),
+             opacity .45s cubic-bezier(.4,0,.2,1),
+             filter .5s cubic-bezier(.4,0,.2,1);
 }
 
 .detalle-left{
