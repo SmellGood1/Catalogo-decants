@@ -911,16 +911,14 @@ box-shadow:0 4px 20px rgba(0,0,0,.25);
     }
 
     .meta{
- color:#bdbdc7;
- font-size:14px;
- display:flex;
- align-items:center;
- gap:4px;
+  color:#bdbdc7;
+  font-size:14px;
+  line-height:1.4;
 }
 
 .meta strong{
- color:var(--gold-2);
- font-weight:600;
+  color:var(--gold-2);
+  font-weight:600;
 }
 
     .cart-remove{
@@ -1908,7 +1906,7 @@ Object.values(agrupados).forEach((item, index) => {
   div.innerHTML = `
     <div class="cart-left">
       <strong>${item.nombre}</strong>
-      <div class="meta">${item.ml} ml × <strong>${item.cantidad}</strong></div>
+      <div class="meta">${item.ml} ml ×<strong> ${item.cantidad}</strong></div>
       <div class="meta">$${precioTotal}</div>
       <button class="cart-remove" onclick="eliminar(${index})">Eliminar</button>
     </div>
