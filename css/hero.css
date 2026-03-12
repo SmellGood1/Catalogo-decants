@@ -1,97 +1,133 @@
 .hero{
-  padding:72px 0 38px;
-}
-
-.hero-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:24px;
-  align-items:stretch;
-}
-
-.hero-side{
-  border:1px solid var(--line);
-  border-radius:30px;
-  box-shadow:var(--shadow);
-  overflow:hidden;
+  padding:0;
+  min-height:100vh;
   position:relative;
-  padding:24px;
-  background:
-    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.60)),
-    url("https://parfumeriedaquitaine.cl/cdn/shop/articles/como-empezar-tu-coleccion-de-perfumes-las-5-fragancias-claves-9667401.jpg?v=1769529152") center/cover no-repeat;
-  min-height:100%;
   display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
-
-.hero-card{
-  padding:44px;
-  border-radius:30px;
-  overflow:hidden;
-  background:
-    linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,.55)),
-    url("https://i.ibb.co/67BsJRYg/IMG-8068.jpg") center/cover no-repeat;
-}
-
-.hero-kicker{
-  display:inline-flex;
   align-items:center;
-  gap:8px;
-  border:1px solid rgba(212,175,55,.26);
-  background:rgba(212,175,55,.08);
-  color:var(--gold-2);
-  padding:8px 14px;
-  border-radius:999px;
-  font-size:13px;
-  margin-bottom:20px;
+  background:
+    linear-gradient(to bottom, rgba(10,10,12,0.2) 0%, rgba(10,10,12,0.9) 100%),
+    url("../assets/luxury_bg.png") center/cover no-repeat;
+  overflow:hidden;
 }
 
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center, transparent 30%, rgba(10,10,12,0.75) 100%);
+  pointer-events:none;
+}
+
+.hero-content{
+  position:relative;
+  z-index:10;
+  padding-top:80px; /* Compensa el header fijo */
+  max-width:900px;
+}
+
+/* Orbes volumétricos */
+.glow-orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(90px);
+  z-index:1;
+  pointer-events:none;
+}
+
+.orb-1{
+  width:50vw;
+  height:50vw;
+  background:rgba(212,175,55,0.12);
+  top:-10%;
+  right:-10%;
+  animation:floatOrb 15s infinite alternate ease-in-out;
+}
+
+.orb-2{
+  width:60vw;
+  height:60vw;
+  background:rgba(255,255,255,0.04);
+  bottom:-20%;
+  left:-10%;
+  animation:floatOrb 20s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes floatOrb {
+  0% { transform:translate(0, 0) scale(1); }
+  100% { transform:translate(-50px, 50px) scale(1.15); }
+}
+
+/* Tipografía masiva */
 .hero h1{
   font-family:"Playfair Display", serif;
-  font-size:64px;
-  line-height:.98;
-  letter-spacing:-1px;
-  margin-bottom:18px;
-  max-width:720px;
+  font-size:clamp(46px, 6vw, 84px);
+  line-height:.95;
+  letter-spacing:-1.5px;
+  margin-bottom:24px;
+}
+
+.hero h1 em{
+  font-style:italic;
+  color:var(--gold-2);
+  font-weight:400;
 }
 
 .hero p{
-  color:var(--muted);
-  font-size:17px;
-  line-height:1.75;
+  color:rgba(255,255,255,0.75);
+  font-size:clamp(17px, 2vw, 21px);
+  line-height:1.6;
   max-width:650px;
+  font-weight:300;
 }
 
+/* Acciones */
 .hero-actions{
   display:flex;
   flex-wrap:wrap;
-  gap:14px;
-  margin-top:28px;
+  gap:16px;
+  margin-top:40px;
 }
 
-.hero-badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-top:22px;
+.glass-btn{
+  backdrop-filter:blur(24px);
+  padding:16px 28px;
+  font-size:16px;
 }
 
-.mini-badge{
-  padding:10px 14px;
-  border-radius:999px;
+.btn-primary.glass-btn{
+  background:rgba(212,175,55,.15);
+  border:1px solid rgba(212,175,55,.4);
+  color:var(--gold-2);
+  box-shadow:0 12px 32px rgba(212,175,55,.15);
+}
+
+.btn-primary.glass-btn::before{
+  display:none; /* Quitar shimmer del viejo primary normal si causa conflictos visuales con el glass */
+}
+
+.btn-secondary.glass-btn{
   background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
-  color:#ddd7cb;
-  font-size:13px;
+  border:1px solid rgba(255,255,255,.15);
+  color:var(--white);
 }
 
-.side-glow{
-  position:absolute;
-  inset:auto -40px -40px auto;
-  width:180px;
-  height:180px;
-  background:radial-gradient(circle, rgba(212,175,55,.25), transparent 68%);
-  filter:blur(10px);
-  pointer-events:none;
+.btn-secondary.glass-btn:hover{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.3);
+}
+
+/* --- Reveal Cinemático (Staggered Ease) --- */
+.cinematic-reveal{
+  opacity:0;
+  animation:cinematicUp 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-kicker.cinematic-reveal { animation-delay:0.1s; }
+.hero h1.cinematic-reveal { animation-delay:0.3s; }
+.hero p.cinematic-reveal { animation-delay:0.5s; }
+.hero-actions.cinematic-reveal { animation-delay:0.7s; }
+
+@keyframes cinematicUp {
+  0% { opacity:0; transform:translateY(50px); filter:blur(10px); }
+  100% { opacity:1; transform:translateY(0); filter:blur(0); }
 }

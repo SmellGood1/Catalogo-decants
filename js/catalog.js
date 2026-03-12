@@ -73,8 +73,7 @@ function renderCatalogo(filtroTexto) {
             '<div class="starting">' +
               '<span>Desde</span>' +
               '<strong>$' + p.price + '/ml</strong>' +
-            '</div>' +
-            '<button class="small-btn">Ver</button>' +
+            '<button class="small-btn">Explorar</button>' +
           '</div>' +
         '</div>';
 

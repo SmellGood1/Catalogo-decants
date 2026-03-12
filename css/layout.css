@@ -1,4 +1,20 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .container{
   width:min(1220px, calc(100% - 32px));
   margin:0 auto;
+}
+
+/* --- Animaciones Scroll Reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
 }

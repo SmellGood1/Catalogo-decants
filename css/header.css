@@ -1,10 +1,18 @@
 header{
-  position:sticky;
+  position:fixed;
   top:0;
+  width:100%;
   z-index:100;
-  backdrop-filter:blur(14px);
-  background:rgba(10,10,12,.7);
-  border-bottom:1px solid var(--line);
+  transition:all 0.4s ease;
+  background:transparent;
+  border-bottom:1px solid transparent;
+}
+
+header.scrolled{
+  backdrop-filter:blur(20px);
+  background:rgba(10,10,12,.85);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
 
 .nav{
@@ -98,4 +106,15 @@ header{
   color:#111;
   font-size:12px;
   font-weight:700;
+  transition:transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.badge.pop{
+  animation:popBadge 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popBadge{
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); background: #fff; }
+  100% { transform: scale(1); }
 }

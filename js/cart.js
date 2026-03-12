@@ -39,6 +39,17 @@ function addCarrito() {
   renderCarrito();
   cerrarDetalle();
   mostrarToast('Añadido al carrito');
+  
+  // Animar el badge del contador
+  var contador = document.getElementById('contador');
+  if (contador) {
+    contador.classList.remove('pop');
+    void contador.offsetWidth; // Trigger reflow para reiniciar animacion
+    contador.classList.add('pop');
+    setTimeout(function() {
+      contador.classList.remove('pop');
+    }, 400); // 400ms dura el keyframe popBadge en header.css
+  }
 }
 
 function eliminar(ids) {
