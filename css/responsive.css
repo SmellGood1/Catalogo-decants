@@ -41,6 +41,10 @@
 }
 
 @media (max-width:1024px){
+  .hero{
+    min-height:auto;
+  }
+
   .hero-grid{
     grid-template-columns:1fr;
   }
@@ -179,12 +183,25 @@
     gap:10px;
   }
 
+  .search-wrap{
+    order:1;
+  }
+
+  .cart-btn{
+    order:2;
+  }
+
   .container.nav{
     display:flex;
     flex-wrap: wrap;
     align-items:center;
     padding-bottom: 14px;
     padding-top: 14px;
+  }
+
+  .hero{
+    min-height:auto;
+    padding:24px 0 16px;
   }
 }
 
