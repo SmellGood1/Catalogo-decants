@@ -218,5 +218,9 @@
     min-height:auto;
     padding:24px 0 16px;
   }
+
+  .hero-content{
+    padding-top:180px !important;
+  }
 }
 
