@@ -25,9 +25,8 @@ window.PERFUMES = {
       name: "Club de Nuit intense Man",
       conc: "Eau de Toilette",
       img: "https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.34696.2x.avif",
-      link: "https://www.fragrantica.es/perfume/Armaf/Odyssey-Homme-64464.html",
-      price: 25,
-      proximo: true
+      link: "https://www.fragrantica.es/perfume/Armaf/Club-de-Nuit-Intense-Man-34696.html",
+      price: 25
     },
     {
       name: "Club de Nuit Urban Man Elixir",
@@ -149,6 +148,17 @@ window.PERFUMES = {
       img: "https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.72158.2x.avif",
       link: "https://www.fragrantica.es/perfume/Jean-Paul-Gaultier/Le-Beau-Le-Parfum-72158.html",
       price: 34
+    }
+  ],
+
+  "Xerjoff": [
+    {
+      name: "Naxos",
+      conc: "Eau de Parfum",
+      img: "https://fimgs.net/mdimg/perfume-thumbs/dark-375x500.30529.2x.avif",
+      link: "https://www.fragrantica.es/perfume/Xerjoff/XJ-1861-Naxos-30529.html",
+      price: 0,
+      proximo: true
     }
   ],
 

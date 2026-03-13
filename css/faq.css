@@ -1,0 +1,117 @@
+.faq-section{
+  padding:80px 20px;
+}
+
+.faq-kicker{
+  display:block;
+  text-align:center;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  color:var(--gold-2);
+  margin-bottom:16px;
+}
+
+.faq-title{
+  text-align:center;
+  font-family:"Playfair Display", serif;
+  font-size:clamp(32px, 5vw, 52px);
+  margin-bottom:48px;
+}
+
+.faq-list{
+  max-width:800px;
+  margin:0 auto;
+}
+
+.faq-item{
+  border-top:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.faq-item:last-child{
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.faq-item summary{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px 0;
+  font-size:17px;
+  font-weight:600;
+  color:var(--text);
+  cursor:pointer;
+  list-style:none;
+  transition:color .3s ease;
+}
+
+.faq-item summary::-webkit-details-marker{
+  display:none;
+}
+
+.faq-item summary::after{
+  content:"";
+  width:28px;
+  height:28px;
+  min-width:28px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .5s cubic-bezier(.25,.46,.45,.94), background .4s ease;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M2 4.5l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+}
+
+.faq-item.active summary::after{
+  transform:rotate(180deg);
+  background-color:rgba(212,175,55,.12);
+}
+
+.faq-item summary:hover{
+  color:var(--gold-2);
+}
+
+.faq-item .faq-answer{
+  display:grid;
+  grid-template-rows:0fr;
+  opacity:0;
+  transition:grid-template-rows .55s cubic-bezier(.25,.46,.45,.94),
+             opacity .5s cubic-bezier(.25,.46,.45,.94);
+}
+
+.faq-item .faq-answer > p{
+  overflow:hidden;
+  color:var(--muted);
+  line-height:1.8;
+  font-size:15px;
+  margin:0;
+  padding:0;
+}
+
+.faq-item.active .faq-answer{
+  grid-template-rows:1fr;
+  opacity:1;
+}
+
+.faq-item.active .faq-answer > p{
+  padding:0 0 22px;
+}
+
+.faq-item.closing summary::after{
+  transform:rotate(0deg);
+  background-color:rgba(255,255,255,.04);
+}
+
+.faq-item.closing .faq-answer{
+  grid-template-rows:0fr;
+  opacity:0;
+}
+
+.faq-item.closing .faq-answer > p{
+  padding:0;
+}

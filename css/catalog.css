@@ -83,34 +83,32 @@
 
 .card-top{
   display:flex;
-  justify-content:space-between;
+  flex-direction:column;
   align-items:flex-start;
-  gap:12px;
+  gap:6px;
   position:absolute;
-  top:20px;
-  left:20px;
-  right:20px;
+  top:12px;
+  left:12px;
+  right:12px;
   z-index:10;
 }
 
 .pill{
-  font-size:11px;
-  padding:6px 14px;
+  font-size:10px;
+  padding:5px 10px;
   border-radius:999px;
   background:rgba(10,10,12,0.9);
   color:var(--gold-2);
   border:1px solid rgba(212,175,55,.2);
-  letter-spacing: 0.5px;
+  letter-spacing:0.5px;
 }
 
 .soon-label{
-  margin-top:0;
-  display:inline-block;
-  padding:6px 12px;
+  padding:5px 10px;
   border:1px solid rgba(212,175,55,.3);
   border-radius:999px;
   color:#111;
-  font-size:11px;
+  font-size:10px;
   font-weight:700;
   letter-spacing:.5px;
   background:var(--gold);
@@ -224,8 +222,12 @@
 }
 
 .small-btn::after{
-  content:"\2197"; /* Flecha diagonal hacia arriba derecha */
-  font-size:16px;
+  content:"";
+}
+
+.fragrantica-card-link::after{
+  content:"\2197";
+  font-size:14px;
   transition:transform 0.3s ease;
 }
 

@@ -60,8 +60,9 @@ function renderCatalogo(filtroTexto) {
       card.className = p.proximo ? 'card proximo' : 'card';
       card.innerHTML =
         '<div class="card-top">' +
-          '<span class="pill">' + p.conc + '</span>' +
-          (p.proximo ? '<div class="soon-label">Próximamente</div>' : '') +
+          (p.proximo
+            ? '<div class="soon-label">Próximamente</div>'
+            : '<span class="pill">' + p.conc + '</span>') +
         '</div>' +
         '<div class="card-img-wrap">' +
           '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
@@ -70,16 +71,20 @@ function renderCatalogo(filtroTexto) {
           '<h4>' + p.name + '</h4>' +
           '<div class="brand">' + casa + '</div>' +
           '<div class="bottom">' +
-            '<div class="starting">' +
-              '<span>Desde</span>' +
-              '<strong>$' + p.price + '/ml</strong>' +
-            '<button class="small-btn">Explorar</button>' +
+            (p.proximo
+              ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn fragrantica-card-link">Conoce más en Fragrantica</a>'
+              : '<div class="starting">' +
+                  '<span>Desde</span>' +
+                  '<strong>$' + p.price + '/ml</strong>' +
+                '</div>' +
+                '<button class="small-btn">Ver</button>') +
           '</div>' +
         '</div>';
 
       card.addEventListener('click', (function(perfume, casaNombre) {
-        return function() {
+        return function(e) {
           if (perfume.proximo) return;
+          if (e.target.closest('a')) return;
           var perfumeConCasa = {};
           for (var key in perfume) { perfumeConCasa[key] = perfume[key]; }
           perfumeConCasa.casa = casaNombre;
