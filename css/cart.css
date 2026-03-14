@@ -15,6 +15,69 @@
   pointer-events:auto;
 }
 
+/* Discount Progress Bar */
+.discount-bar{
+  background:rgba(212,175,55,.06);
+  border:1px solid rgba(212,175,55,.15);
+  border-radius:16px;
+  padding:16px 18px 18px;
+  margin-bottom:18px;
+}
+
+.discount-bar p{
+  font-size:13px;
+  color:var(--muted);
+  text-align:center;
+  margin-bottom:14px;
+  line-height:1.5;
+}
+
+.discount-bar p strong{
+  color:var(--gold-2);
+}
+
+.discount-track{
+  position:relative;
+  height:6px;
+  background:rgba(255,255,255,.08);
+  border-radius:99px;
+  margin-bottom:20px;
+}
+
+.discount-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--gold-2), #e8c547);
+  border-radius:99px;
+  width:0%;
+  transition:width .5s ease;
+}
+
+.discount-goal{
+  text-align:right;
+  margin-top:12px;
+}
+
+.discount-goal span{
+  display:inline-block;
+  background:rgba(212,175,55,.12);
+  border:1px solid rgba(212,175,55,.25);
+  color:var(--gold-2);
+  font-size:10px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:99px;
+  letter-spacing:.5px;
+}
+
+.discount-bar.reached{
+  background:rgba(212,175,55,.1);
+  border-color:rgba(212,175,55,.3);
+}
+
+.discount-bar.reached p{
+  color:var(--gold-2);
+}
+
 #carritoPanel{
   position:fixed;
   top:0;
@@ -225,4 +288,96 @@
 
 .vaciar-btn:hover{
   background:rgba(255,60,60,.14);
+}
+
+/* Confirm Modal */
+.confirm-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  z-index:200;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s ease;
+}
+
+.confirm-overlay.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.confirm-box{
+  background:linear-gradient(170deg, #1a1a22, #121218);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:32px 28px;
+  max-width:340px;
+  width:90%;
+  text-align:center;
+  transform:scale(.9);
+  transition:transform .3s ease;
+}
+
+.confirm-overlay.show .confirm-box{
+  transform:scale(1);
+}
+
+.confirm-icon{
+  font-size:40px;
+  margin-bottom:14px;
+}
+
+.confirm-box h3{
+  font-family:"Playfair Display", serif;
+  font-size:22px;
+  color:var(--white);
+  margin-bottom:8px;
+}
+
+.confirm-box p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:24px;
+}
+
+.confirm-actions{
+  display:flex;
+  gap:10px;
+}
+
+.confirm-btn{
+  flex:1;
+  padding:14px 18px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:var(--transition);
+  border:none;
+}
+
+.confirm-btn.cancel{
+  background:rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  color:var(--text);
+}
+
+.confirm-btn.cancel:hover{
+  background:rgba(255,255,255,.1);
+}
+
+.confirm-btn.accept{
+  background:rgba(255,60,60,.15);
+  border:1px solid rgba(255,60,60,.3);
+  color:#ff6b6b;
+}
+
+.confirm-btn.accept:hover{
+  background:rgba(255,60,60,.25);
 }

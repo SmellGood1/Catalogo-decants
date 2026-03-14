@@ -20,7 +20,15 @@ function enviarPedido() {
     total += p.precio;
   });
 
-  texto += '\nTotal de mi pedido: $' + total;
+  var descuento = 0;
+  if (total >= 500) {
+    descuento = Math.round(total * 10 / 100);
+    texto += '\nSubtotal: $' + total;
+    texto += '\nDescuento 10%: -$' + descuento;
+    texto += '\nTotal de mi pedido: $' + (total - descuento);
+  } else {
+    texto += '\nTotal de mi pedido: $' + total;
+  }
 
   var url = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent(texto);
   window.open(url, '_blank');

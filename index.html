@@ -30,7 +30,7 @@
   <link rel="stylesheet" href="css/trust.css">
   <link rel="stylesheet" href="css/catalog.css?v=6">
   <link rel="stylesheet" href="css/modal.css">
-  <link rel="stylesheet" href="css/cart.css">
+  <link rel="stylesheet" href="css/cart.css?v=3">
   <link rel="stylesheet" href="css/aroma.css">
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/faq.css">
@@ -202,6 +202,16 @@
       <button id="btnCerrarCarrito" class="close-cart" aria-label="Cerrar carrito">&times;</button>
     </div>
 
+    <div id="discountBar" class="discount-bar" style="display:none">
+      <p id="discountMsg"></p>
+      <div class="discount-track">
+        <div id="discountFill" class="discount-fill"></div>
+        <div class="discount-goal">
+          <span>10% OFF</span>
+        </div>
+      </div>
+    </div>
+
     <div id="listaCarrito"></div>
 
     <div class="cart-total">
@@ -217,6 +227,19 @@
 
     <button id="btnEnviarPedido" class="full-btn primary">Enviar pedido por WhatsApp</button>
   </aside>
+
+  <!-- MODAL CONFIRMAR VACIAR -->
+  <div id="confirmOverlay" class="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <h3>¿Vaciar carrito?</h3>
+      <p>Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="confirm-btn cancel">Cancelar</button>
+        <button id="confirmAccept" class="confirm-btn accept">Sí, vaciar</button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast">Añadido exitosamente</div>
 
@@ -292,7 +315,7 @@
   <script src="js/config.js" defer></script>
   <script src="js/sheets.js?v=2" defer></script>
   <script src="js/toast.js" defer></script>
-  <script src="js/cart.js?v=2" defer></script>
+  <script src="js/cart.js?v=4" defer></script>
   <script src="js/modal.js?v=2" defer></script>
   <script src="js/whatsapp.js" defer></script>
   <script src="js/catalog.js?v=5" defer></script>

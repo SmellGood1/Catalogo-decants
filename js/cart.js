@@ -91,11 +91,30 @@ function decrementar(ids) {
 
 function vaciarCarrito() {
   if (!carrito.length) return;
-  if (!confirm('¿Seguro que deseas vaciar el carrito?')) return;
-  carrito = [];
-  _saveCart();
-  renderCarrito();
-  mostrarToast('Carrito vaciado');
+
+  var overlay = document.getElementById('confirmOverlay');
+  overlay.classList.add('show');
+
+  var onCancel = function() { overlay.classList.remove('show'); cleanup(); };
+  var onAccept = function() {
+    overlay.classList.remove('show');
+    carrito = [];
+    _saveCart();
+    renderCarrito();
+    mostrarToast('Carrito vaciado');
+    cleanup();
+  };
+  var onOverlay = function(e) { if (e.target === overlay) onCancel(); };
+
+  function cleanup() {
+    document.getElementById('confirmCancel').removeEventListener('click', onCancel);
+    document.getElementById('confirmAccept').removeEventListener('click', onAccept);
+    overlay.removeEventListener('click', onOverlay);
+  }
+
+  document.getElementById('confirmCancel').addEventListener('click', onCancel);
+  document.getElementById('confirmAccept').addEventListener('click', onAccept);
+  overlay.addEventListener('click', onOverlay);
 }
 
 function renderCarrito() {
@@ -185,7 +204,38 @@ function renderCarrito() {
     listaCarrito.appendChild(div);
   });
 
-  totalCarrito.textContent = '$' + total;
+  // Discount bar logic
+  var DISCOUNT_THRESHOLD = 500;
+  var DISCOUNT_PERCENT = 10;
+  var discountBar = document.getElementById('discountBar');
+  var discountMsg = document.getElementById('discountMsg');
+  var discountFill = document.getElementById('discountFill');
+  var descuento = 0;
+
+  if (carrito.length) {
+    discountBar.style.display = 'block';
+    var progress = Math.min((total / DISCOUNT_THRESHOLD) * 100, 100);
+    discountFill.style.width = progress + '%';
+
+    if (total >= DISCOUNT_THRESHOLD) {
+      descuento = Math.round(total * DISCOUNT_PERCENT / 100);
+      discountBar.classList.add('reached');
+      discountMsg.innerHTML = '¡Desbloqueaste <strong>' + DISCOUNT_PERCENT + '% de descuento!</strong> Ahorras <strong>$' + descuento + '</strong>';
+    } else {
+      var falta = DISCOUNT_THRESHOLD - total;
+      discountBar.classList.remove('reached');
+      discountMsg.innerHTML = 'Agrega <strong>$' + falta + ' más</strong> para obtener <strong>' + DISCOUNT_PERCENT + '% de descuento</strong>';
+    }
+  } else {
+    discountBar.style.display = 'none';
+    discountBar.classList.remove('reached');
+  }
+
+  var totalFinal = total - descuento;
+  totalCarrito.textContent = '$' + totalFinal;
+  if (descuento) {
+    totalCarrito.innerHTML = '<s style="color:var(--muted);font-size:16px;font-weight:400">$' + total + '</s> $' + totalFinal;
+  }
 }
 
 function toggleCarrito() {
