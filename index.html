@@ -30,13 +30,23 @@
   <link rel="stylesheet" href="css/trust.css">
   <link rel="stylesheet" href="css/catalog.css?v=6">
   <link rel="stylesheet" href="css/modal.css">
-  <link rel="stylesheet" href="css/cart.css?v=3">
+  <link rel="stylesheet" href="css/cart.css?v=5">
   <link rel="stylesheet" href="css/aroma.css">
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/faq.css">
+  <link rel="stylesheet" href="css/extras.css?v=1">
   <link rel="stylesheet" href="css/responsive.css?v=3">
 </head>
 <body>
+
+  <!-- BANNER ANUNCIO -->
+  <div class="announcement-bar">
+    <div class="container announcement-content">
+      <span>10% OFF en pedidos +$500</span>
+      <span class="announcement-sep">|</span>
+      <span>Entregas en todo Cancún</span>
+    </div>
+  </div>
 
   <header>
     <nav class="container nav" aria-label="Navegación principal">
@@ -97,6 +107,17 @@
       </div>
     </section>
 
+    <!-- DESTACADOS -->
+    <section class="destacados-section container">
+      <div class="section-head reveal">
+        <div>
+          <span class="section-kicker">Top picks</span>
+          <h2>Los más pedidos</h2>
+        </div>
+      </div>
+      <div id="destacados" class="destacados-grid"></div>
+    </section>
+
     <section id="catalogoSection" class="container">
       <div class="section-head reveal">
         <div>
@@ -122,18 +143,18 @@
 
         <div class="stats">
           <div class="stat">
-            <strong>1ml+</strong>
-            <span>Desde muestras pequeñas</span>
+            <strong><span class="count-up" data-target="19">0</span>+</strong>
+            <span>Fragancias disponibles</span>
           </div>
 
           <div class="stat">
-            <strong>Premium</strong>
-            <span>Diseño elegante y limpio</span>
+            <strong><span class="count-up" data-target="7">0</span></strong>
+            <span>Casas de perfumería</span>
           </div>
 
           <div class="stat">
-            <strong>Directo</strong>
-            <span>Pedido rápido por WhatsApp</span>
+            <strong><span class="count-up" data-target="3">0</span></strong>
+            <span>Tamaños disponibles</span>
           </div>
         </div>
       </div>
@@ -245,6 +266,9 @@
 
   <a class="wa-float" href="https://wa.me/529213042001" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">💬</a>
 
+  <!-- BOTÓN VOLVER ARRIBA -->
+  <button id="btnScrollTop" class="scroll-top-btn" aria-label="Volver arriba">↑</button>
+
   <section class="faq-section">
     <div class="container">
       <span class="faq-kicker">Preguntas frecuentes</span>
@@ -319,7 +343,8 @@
   <script src="js/modal.js?v=2" defer></script>
   <script src="js/whatsapp.js" defer></script>
   <script src="js/catalog.js?v=5" defer></script>
+  <script src="js/extras.js?v=1" defer></script>
   <script src="js/faq.js" defer></script>
-  <script src="js/app.js?v=2" defer></script>
+  <script src="js/app.js?v=3" defer></script>
 </body>
 </html>

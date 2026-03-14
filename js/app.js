@@ -6,12 +6,17 @@ document.addEventListener('DOMContentLoaded', function() {
   loadPerfumesFromSheets()
     .then(function() {
       renderCatalogo();
+      renderDestacados();
     })
     .catch(function(err) {
       console.error('Error cargando productos:', err);
       document.getElementById('catalogo').innerHTML =
         '<p style="text-align:center;color:#999;padding:2rem;">No se pudieron cargar los productos. Recarga la página.</p>';
     });
+
+  // Extras
+  initCountUp();
+  initScrollTop();
 
   // Search filter
   var buscador = document.getElementById('buscador');

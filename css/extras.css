@@ -1,0 +1,225 @@
+/* ── Announcement Bar ────────────────────────────────────────── */
+.announcement-bar{
+  background:linear-gradient(90deg, var(--gold), var(--gold-2));
+  color:#111;
+  text-align:center;
+  padding:4px 16px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.3px;
+  position:relative;
+}
+
+.announcement-content{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.announcement-sep{
+  opacity:.4;
+}
+
+/* ── Section Kicker ──────────────────────────────────────────── */
+.section-kicker{
+  display:inline-block;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--gold-2);
+  margin-bottom:8px;
+}
+
+/* ── Destacados ──────────────────────────────────────────────── */
+.destacados-section{
+  padding-top:60px;
+  padding-bottom:20px;
+}
+
+.destacados-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+  gap:20px;
+}
+
+.destacado-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px;
+  cursor:pointer;
+  transition:var(--transition);
+  overflow:hidden;
+}
+
+.destacado-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(212,175,55,.3);
+  box-shadow:0 16px 40px rgba(0,0,0,.3);
+}
+
+.destacado-badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-2));
+  color:#111;
+  font-size:10px;
+  font-weight:700;
+  padding:4px 10px;
+  border-radius:99px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  z-index:2;
+}
+
+.destacado-card .card-img-wrap{
+  display:flex;
+  justify-content:center;
+  padding:12px 0;
+}
+
+.destacado-card .card-img-wrap img{
+  height:160px;
+  object-fit:contain;
+}
+
+.destacado-card h4{
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.destacado-card .brand{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+
+.destacado-card .starting{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+}
+
+.destacado-card .starting span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.destacado-card .starting strong{
+  font-size:18px;
+  color:var(--gold-2);
+}
+
+/* ── Testimonials ────────────────────────────────────────────── */
+.testimonials-section{
+  padding:80px 20px;
+}
+
+.testimonials-title{
+  font-family:"Playfair Display", serif;
+  font-size:clamp(28px, 4vw, 40px);
+  margin-bottom:40px;
+}
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:20px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.testimonial-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:28px 24px;
+  transition:var(--transition);
+}
+
+.testimonial-card:hover{
+  border-color:rgba(212,175,55,.25);
+  transform:translateY(-4px);
+}
+
+.testimonial-stars{
+  color:var(--gold-2);
+  font-size:16px;
+  letter-spacing:2px;
+  margin-bottom:14px;
+}
+
+.testimonial-card p{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  font-style:italic;
+  margin-bottom:18px;
+}
+
+.testimonial-author{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.testimonial-author strong{
+  color:var(--text);
+  font-size:14px;
+}
+
+.testimonial-author span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.testimonial-author span::before{
+  content:"·";
+  margin-right:8px;
+}
+
+/* ── Scroll to Top ───────────────────────────────────────────── */
+.scroll-top-btn{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:rgba(18,18,24,.85);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  color:var(--gold-2);
+  font-size:20px;
+  cursor:pointer;
+  z-index:110;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(10px);
+  transition:opacity .3s ease, transform .3s ease, background .2s ease;
+}
+
+.scroll-top-btn.show{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+.scroll-top-btn:hover{
+  background:rgba(212,175,55,.15);
+  border-color:rgba(212,175,55,.35);
+}
+
+/* ── Count-up animation ─────────────────────────────────────── */
+.count-up{
+  display:inline-block;
+}
