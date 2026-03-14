@@ -1,21 +1,49 @@
 /* ── Announcement Bar ────────────────────────────────────────── */
 .announcement-bar{
-  background:linear-gradient(90deg, var(--gold), var(--gold-2));
+  background:linear-gradient(90deg, var(--gold), var(--gold-2), var(--gold));
+  background-size:200% 100%;
+  animation:shimmerBar 4s ease infinite;
   color:#111;
-  text-align:center;
-  padding:4px 16px;
+  padding:5px 0;
   font-size:11px;
   font-weight:600;
   letter-spacing:.3px;
   position:relative;
+  overflow:hidden;
+  max-height:28px;
+  display:flex;
+  transition:max-height .5s cubic-bezier(.4,0,.2,1), padding .5s ease, opacity .4s ease;
 }
 
-.announcement-content{
+.announcement-bar.hidden{
+  max-height:0;
+  padding:0;
+  opacity:0;
+}
+
+@keyframes shimmerBar{
+  0%{ background-position:0% 50%; }
+  50%{ background-position:100% 50%; }
+  100%{ background-position:0% 50%; }
+}
+
+.announcement-track{
   display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
+  white-space:nowrap;
+  animation:marquee 25s linear infinite;
+  flex-shrink:0;
+  min-width:100%;
+  justify-content:space-around;
+}
+
+.announcement-track span{
+  padding:0 40px;
+  flex-shrink:0;
+}
+
+@keyframes marquee{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-100%); }
 }
 
 .announcement-sep{

@@ -98,6 +98,19 @@ function initCountUp() {
 
 /* ── Scroll to Top Button ────────────────────────────────────── */
 
+function initAnnouncementBar() {
+  var bar = document.querySelector('.announcement-bar');
+  if (!bar) return;
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 80) {
+      bar.classList.add('hidden');
+    } else {
+      bar.classList.remove('hidden');
+    }
+  });
+}
+
 function initScrollTop() {
   var btn = document.getElementById('btnScrollTop');
   if (!btn) return;

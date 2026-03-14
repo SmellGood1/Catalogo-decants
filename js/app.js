@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Extras
   initCountUp();
   initScrollTop();
+  initAnnouncementBar();
 
   // Search filter
   var buscador = document.getElementById('buscador');
