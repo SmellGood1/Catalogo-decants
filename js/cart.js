@@ -25,7 +25,7 @@ function addCarrito() {
   if (!actual) return;
 
   var ml = Number(document.getElementById('ml').value);
-  var precio = ml * actual.price;
+  var precio = actual.prices[ml];
 
   carrito.push({
     id: _nextCartId++,

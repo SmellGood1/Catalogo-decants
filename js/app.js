@@ -1,7 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
   _loadCart();
-  renderCatalogo();
   renderCarrito();
+
+  // Cargar productos desde Google Sheets
+  loadPerfumesFromSheets()
+    .then(function() {
+      renderCatalogo();
+    })
+    .catch(function(err) {
+      console.error('Error cargando productos:', err);
+      document.getElementById('catalogo').innerHTML =
+        '<p style="text-align:center;color:#999;padding:2rem;">No se pudieron cargar los productos. Recarga la página.</p>';
+    });
 
   // Search filter
   var buscador = document.getElementById('buscador');

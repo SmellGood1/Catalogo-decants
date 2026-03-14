@@ -9,7 +9,7 @@ function verPerfume(p) {
   document.getElementById('dConc').textContent = p.conc;
   document.getElementById('dMarca').textContent = p.casa;
 
-  document.getElementById('ml').value = '1';
+  document.getElementById('ml').value = '2';
   actualizarPrecioModal();
 
   var fragranticaLink = document.getElementById('fragranticaLink');
@@ -58,8 +58,8 @@ function cerrarDetalle(e) {
 
 function actualizarPrecioModal() {
   var ml = Number(document.getElementById('ml').value);
-  var precio = ml * actual.price;
+  var precio = actual.prices[ml];
 
   document.getElementById('precioModal').textContent = '$' + precio;
-  document.getElementById('textoMlModal').textContent = ml + ' ml seleccionado' + (ml > 1 ? 's' : '');
+  document.getElementById('textoMlModal').textContent = ml + ' ml seleccionados';
 }

@@ -75,7 +75,7 @@ function renderCatalogo(filtroTexto) {
               ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn fragrantica-card-link">Conoce más en Fragrantica</a>'
               : '<div class="starting">' +
                   '<span>Desde</span>' +
-                  '<strong>$' + p.price + '/ml</strong>' +
+                  '<strong>$' + p.prices[2] + '</strong>' +
                 '</div>' +
                 '<button class="small-btn">Ver</button>') +
           '</div>' +

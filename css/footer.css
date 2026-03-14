@@ -32,13 +32,24 @@ footer{
 .social-links{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:10px;
 }
 
 .social-links a{
   color:var(--muted);
   font-size:14px;
   transition:var(--transition);
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+
+.social-links a svg{
+  flex-shrink:0;
+  width:18px;
+  height:18px;
+  vertical-align:middle;
 }
 
 .social-links a:hover{
