@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function() {
       renderCatalogo();
       renderDestacados();
+
+      // Actualizar contador de casas dinámicamente
+      var countCasas = document.getElementById('countCasas');
+      if (countCasas) {
+        countCasas.setAttribute('data-target', Object.keys(PERFUMES).length);
+      }
+      initCountUp();
+
       window.scrollTo(0, 0);
     })
     .catch(function(err) {
