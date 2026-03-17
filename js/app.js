@@ -1,5 +1,72 @@
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
+// Efecto ráfaga de palabras en el hero
+function _initHeroWordShuffle() {
+  var el = document.getElementById('heroWord');
+  if (!el) return;
+
+  var colors = ['#ff6bcb', '#48dbfb', '#ff4d4d', '#2ecc71', '#f9ca24', '#6c5ce7', '#fd79a8', '#00cec9', '#e17055', '#ffeaa7', '#a29bfe', '#55efc4', '#fdcb6e', '#e84393'];
+  var fonts = ['"Courier New", monospace', 'Georgia, serif', 'Impact, sans-serif', '"Comic Sans MS", cursive', '"Arial Black", sans-serif', '"Times New Roman", serif', '"Trebuchet MS", sans-serif', 'Verdana, sans-serif', '"Lucida Console", monospace', 'Garamond, serif', 'Palatino, serif', '"Brush Script MT", cursive', 'Copperplate, serif', 'Futura, sans-serif'];
+  var running = false;
+
+  el.style.cursor = 'pointer';
+
+  el.addEventListener('click', function() {
+    if (running) return;
+    running = true;
+
+    // Posición exacta de la palabra original
+    var rect = el.getBoundingClientRect();
+
+    // Ocultar original (solo color transparente, no cambia layout)
+    el.style.color = 'transparent';
+    el.style.textShadow = 'none';
+
+    // Crear clon flotante encima, mismo tamaño exacto que el original
+    var clone = document.createElement('span');
+    clone.id = 'heroWordClone';
+    clone.textContent = el.textContent;
+    clone.style.left = rect.left + 'px';
+    clone.style.top = rect.top + 'px';
+    clone.style.width = rect.width + 'px';
+    clone.style.height = rect.height + 'px';
+    clone.style.lineHeight = rect.height + 'px';
+    clone.style.fontSize = getComputedStyle(el).fontSize;
+    clone.style.fontWeight = getComputedStyle(el).fontWeight;
+    clone.style.display = 'flex';
+    clone.style.alignItems = 'center';
+    clone.style.justifyContent = 'center';
+    document.body.appendChild(clone);
+
+    var count = 0;
+    var total = 16;
+
+    function step() {
+      if (count >= total) {
+        // Restaurar original
+        el.style.color = '';
+        el.style.textShadow = '';
+        clone.remove();
+        running = false;
+        return;
+      }
+
+      var ci = Math.floor(Math.random() * colors.length);
+      var fi = Math.floor(Math.random() * fonts.length);
+      clone.style.color = colors[ci];
+      clone.style.textShadow = '0 0 24px ' + colors[ci];
+      clone.style.fontFamily = fonts[fi];
+      clone.style.fontStyle = Math.random() > 0.5 ? 'italic' : 'normal';
+      count++;
+
+      var delay = count < total * 0.5 ? 50 : 50 + Math.pow(count - total * 0.5, 2) * 8;
+      setTimeout(step, delay);
+    }
+
+    step();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   _loadCart();
   renderCarrito();
@@ -26,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
   // Extras
+  _initHeroWordShuffle();
   initScrollTop();
   initAnnouncementBar();
 
