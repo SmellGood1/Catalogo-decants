@@ -6,20 +6,7 @@ function _playSpray() {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
     var now = ctx.currentTime;
 
-    // Click mecánico del pump
-    var clickOsc = ctx.createOscillator();
-    var clickGain = ctx.createGain();
-    clickOsc.type = 'square';
-    clickOsc.frequency.setValueAtTime(1200, now);
-    clickOsc.frequency.exponentialRampToValueAtTime(80, now + 0.01);
-    clickGain.gain.setValueAtTime(0.15, now);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
-    clickOsc.connect(clickGain);
-    clickGain.connect(ctx.destination);
-    clickOsc.start(now);
-    clickOsc.stop(now + 0.015);
-
-    // Spray de aire
+    // Spray de aire (solo el ssst)
     var noiseLen = ctx.sampleRate * 0.3;
     var noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
     var noiseData = noiseBuf.getChannelData(0);
@@ -31,9 +18,9 @@ function _playSpray() {
     noiseSrc.buffer = noiseBuf;
 
     var sprayEnv = ctx.createGain();
-    sprayEnv.gain.setValueAtTime(0, now + 0.008);
-    sprayEnv.gain.linearRampToValueAtTime(0.12, now + 0.018);
-    sprayEnv.gain.setValueAtTime(0.12, now + 0.05);
+    sprayEnv.gain.setValueAtTime(0, now);
+    sprayEnv.gain.linearRampToValueAtTime(0.1, now + 0.01);
+    sprayEnv.gain.setValueAtTime(0.1, now + 0.06);
     sprayEnv.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
     var hp = ctx.createBiquadFilter();
@@ -52,7 +39,7 @@ function _playSpray() {
     lp.connect(sprayEnv);
     sprayEnv.connect(ctx.destination);
 
-    noiseSrc.start(now + 0.008);
+    noiseSrc.start(now);
     noiseSrc.stop(now + 0.3);
 
     noiseSrc.onended = function() { ctx.close(); };
