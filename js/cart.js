@@ -140,13 +140,15 @@ function renderCarrito() {
       btnEmptyStateCat.addEventListener('click', function() {
         toggleCarrito(); // Cerrar carrito
 
-        // Impulso hacia abajo y luego scroll al catálogo
+        // Impulso contrario al destino
         var currentY = window.scrollY;
-        var impulso = Math.min(80, currentY * 0.08);
-        window.scrollTo({ top: currentY + impulso, behavior: 'smooth' });
+        var catalogo = document.getElementById('catalogoSection');
+        var catalogoY = catalogo.getBoundingClientRect().top + currentY;
+        var goingDown = currentY < catalogoY;
+        var impulsoY = goingDown ? Math.max(0, currentY - 80) : currentY + 80;
+        window.scrollTo({ top: impulsoY, behavior: 'smooth' });
 
         setTimeout(function() {
-          var catalogo = document.getElementById('catalogoSection');
           catalogo.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
           // Rebote elástico al llegar
@@ -241,9 +243,12 @@ function renderCarrito() {
     listaCarrito.appendChild(div);
   });
 
-  // Discount bar logic
-  var DISCOUNT_THRESHOLD = 500;
-  var DISCOUNT_PERCENT = 10;
+  // Discount bar logic — descuentos escalonados
+  var TIERS = [
+    { threshold: 500, percent: 10 },
+    { threshold: 800, percent: 15 },
+    { threshold: 1200, percent: 20 }
+  ];
   var discountBar = document.getElementById('discountBar');
   var discountMsg = document.getElementById('discountMsg');
   var discountFill = document.getElementById('discountFill');
@@ -251,17 +256,39 @@ function renderCarrito() {
 
   if (carrito.length) {
     discountBar.style.display = 'block';
-    var progress = Math.min((total / DISCOUNT_THRESHOLD) * 100, 100);
-    discountFill.style.width = progress + '%';
 
-    if (total >= DISCOUNT_THRESHOLD) {
-      descuento = Math.round(total * DISCOUNT_PERCENT / 100);
+    // Encontrar tier actual y siguiente
+    var currentTier = null;
+    var nextTier = TIERS[0];
+    for (var t = 0; t < TIERS.length; t++) {
+      if (total >= TIERS[t].threshold) {
+        currentTier = TIERS[t];
+        nextTier = TIERS[t + 1] || null;
+      }
+    }
+
+    if (currentTier && !nextTier) {
+      // Máximo descuento alcanzado
+      var progress = 100;
+      discountFill.style.width = progress + '%';
+      descuento = Math.round(total * currentTier.percent / 100);
       discountBar.classList.add('reached');
-      discountMsg.innerHTML = '¡Desbloqueaste <strong>' + DISCOUNT_PERCENT + '% de descuento!</strong> Ahorras <strong>$' + descuento + '</strong>';
+      discountMsg.innerHTML = '¡<strong>' + currentTier.percent + '% de descuento</strong> desbloqueado! Ahorras <strong>$' + descuento + '</strong> 🔥';
+    } else if (currentTier && nextTier) {
+      // Tiene descuento pero puede subir al siguiente
+      var progress = Math.min((total / nextTier.threshold) * 100, 100);
+      discountFill.style.width = progress + '%';
+      descuento = Math.round(total * currentTier.percent / 100);
+      var falta = nextTier.threshold - total;
+      discountBar.classList.add('reached');
+      discountMsg.innerHTML = '<strong>' + currentTier.percent + '% aplicado</strong> (ahorras $' + descuento + ') · Agrega <strong>$' + falta + ' más</strong> para <strong>' + nextTier.percent + '%</strong>';
     } else {
-      var falta = DISCOUNT_THRESHOLD - total;
+      // Aún no llega al primer tier
+      var progress = Math.min((total / nextTier.threshold) * 100, 100);
+      discountFill.style.width = progress + '%';
+      var falta = nextTier.threshold - total;
       discountBar.classList.remove('reached');
-      discountMsg.innerHTML = 'Agrega <strong>$' + falta + ' más</strong> para obtener <strong>' + DISCOUNT_PERCENT + '% de descuento</strong>';
+      discountMsg.innerHTML = 'Agrega <strong>$' + falta + ' más</strong> para obtener <strong>' + nextTier.percent + '% de descuento</strong>';
     }
   } else {
     discountBar.style.display = 'none';
