@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
   // Extras
-  initCountUp();
   initScrollTop();
   initAnnouncementBar();
 
@@ -35,6 +34,12 @@ document.addEventListener('DOMContentLoaded', function() {
   if (buscador) {
     buscador.addEventListener('input', function(e) {
       renderCatalogo(e.target.value);
+      if (e.target.value.length === 1) {
+        var catalogo = document.getElementById('catalogoSection');
+        if (catalogo) {
+          catalogo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
     });
   }
 

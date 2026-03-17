@@ -171,6 +171,8 @@ select:focus, input:focus{
   font-weight:500;
   cursor:pointer;
   transition:var(--transition);
+  flex-shrink:0;
+  white-space:nowrap;
 }
 
 .filter-pill:hover{

@@ -1,6 +1,71 @@
 let marcaSeleccionada = '';
 var _filtrosListenerReady = false;
 
+// Normalizar: quitar acentos, minúsculas, colapsar letras dobles
+function _norm(s) {
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/(.)\1+/g, '$1'); // lattafa → latafa, xerjoff → xerjof
+}
+
+// Distancia de Levenshtein
+function _lev(a, b) {
+  var m = a.length, n = b.length;
+  var dp = [];
+  for (var i = 0; i <= m; i++) {
+    dp[i] = [i];
+    for (var j = 1; j <= n; j++) {
+      dp[i][j] = i === 0 ? j :
+        Math.min(
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+        );
+    }
+  }
+  return dp[m][n];
+}
+
+// Búsqueda fuzzy: tolera errores, acentos, letras dobles, etc.
+function _fuzzyMatch(texto, busqueda) {
+  if (!busqueda) return true;
+
+  var t = texto.toLowerCase();
+  var b = busqueda.toLowerCase();
+
+  // 1. Coincidencia exacta
+  if (t.indexOf(b) !== -1) return true;
+
+  // 2. Sin acentos + colapsar dobles (oddisey→odisey, lattafa→latafa)
+  var tn = _norm(texto);
+  var bn = _norm(busqueda);
+  if (tn.indexOf(bn) !== -1) return true;
+
+  // 3. Levenshtein contra cada palabra del texto
+  if (bn.length >= 3) {
+    var palabras = tn.split(/\s+/);
+    for (var i = 0; i < palabras.length; i++) {
+      // Comparar contra la palabra completa
+      var umbral = bn.length <= 4 ? 1 : Math.min(Math.floor(bn.length / 2), 3);
+      if (_lev(palabras[i], bn) <= umbral) return true;
+
+      // Comparar contra substring del mismo largo (para palabras largas como "odyssey")
+      if (palabras[i].length > bn.length) {
+        for (var j = 0; j <= palabras[i].length - bn.length; j++) {
+          var sub = palabras[i].substring(j, j + bn.length);
+          if (_lev(sub, bn) <= 1) return true;
+        }
+      }
+    }
+
+    // 4. Levenshtein contra el texto normalizado completo (sin espacios)
+    var tnJoined = tn.replace(/\s+/g, '');
+    if (_lev(tnJoined, bn) <= umbral) return true;
+  }
+
+  return false;
+}
+
 function renderBotoneraFiltros(filtroTexto, skipRebuild) {
   var filtrosContainer = document.getElementById('filtros-marcas');
   if (!filtrosContainer) return;
@@ -79,10 +144,9 @@ function _renderCatalogoGrid(filtroTexto) {
     }
 
     var perfumesFiltrados = PERFUMES[casa].filter(function(p) {
-      var f = filtroTexto.toLowerCase();
-      return p.name.toLowerCase().indexOf(f) !== -1 ||
-             casa.toLowerCase().indexOf(f) !== -1 ||
-             p.conc.toLowerCase().indexOf(f) !== -1;
+      return _fuzzyMatch(p.name, filtroTexto) ||
+             _fuzzyMatch(casa, filtroTexto) ||
+             _fuzzyMatch(p.conc, filtroTexto);
     });
 
     if (!perfumesFiltrados.length) continue;
@@ -101,12 +165,13 @@ function _renderCatalogoGrid(filtroTexto) {
 
     perfumesFiltrados.forEach(function(p, i) {
       var card = document.createElement('article');
-      card.className = p.proximo ? 'card proximo' : 'card';
+      card.className = p.proximo ? (p.muyProonto ? 'card proximo muy-pronto' : 'card proximo') : 'card';
       card.style.setProperty('--delay', ((cardIndex + i) * 0.06) + 's');
+      var soonText = p.muyProonto ? '¡Muy pronto!' : 'Próximamente';
       card.innerHTML =
         '<div class="card-top">' +
           (p.proximo
-            ? '<div class="soon-label">Próximamente</div>'
+            ? '<div class="soon-label' + (p.muyProonto ? ' muy-pronto-label' : '') + '">' + soonText + '</div>'
             : '<span class="pill">' + p.conc + '</span>') +
         '</div>' +
         '<div class="card-img-wrap">' +

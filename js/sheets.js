@@ -97,7 +97,8 @@ function loadPerfumesFromSheets() {
                      row['Notas Base'] || row['Notas Fondo'] || ''
                    ),
           destacado: (row['Destacado'] || row['destacado'] || '').toUpperCase().trim() === 'SI',
-          proximo: enVenta !== 'SI'
+          proximo: enVenta !== 'SI',
+          muyProonto: enVenta === 'MUY PRONTO'
         };
 
         if (!perfumes[casa]) perfumes[casa] = [];
