@@ -1,3 +1,5 @@
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
 document.addEventListener('DOMContentLoaded', function() {
   _loadCart();
   renderCarrito();
@@ -7,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function() {
       renderCatalogo();
       renderDestacados();
+      window.scrollTo(0, 0);
     })
     .catch(function(err) {
       console.error('Error cargando productos:', err);

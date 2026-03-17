@@ -56,7 +56,10 @@
   cursor:pointer;
   transition:all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-shadow:0 20px 40px rgba(0,0,0,0.4);
-  animation: fadeInUp 0.4s ease forwards;
+  opacity:0;
+  transform:translateY(30px) scale(.95);
+  animation:cardReveal .5s cubic-bezier(.2,.8,.2,1) forwards;
+  animation-delay:var(--delay, 0s);
   backdrop-filter:blur(10px);
 }
 
@@ -241,4 +244,22 @@
 
 .card.proximo{
   opacity:.9;
+}
+
+@keyframes cardReveal{
+  0%{opacity:0;transform:translateY(30px) scale(.95)}
+  60%{transform:translateY(-4px) scale(1.01)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.house-title{
+  opacity:0;
+  transform:translateX(-20px);
+  animation:houseTitleIn .4s ease forwards;
+  animation-delay:var(--delay, 0s);
+}
+
+@keyframes houseTitleIn{
+  0%{opacity:0;transform:translateX(-20px)}
+  100%{opacity:1;transform:translateX(0)}
 }

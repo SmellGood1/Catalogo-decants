@@ -81,26 +81,45 @@ select:focus, input:focus{
 #toast{
   position:fixed;
   left:50%;
-  bottom:-90px;
-  transform:translateX(-50%);
+  bottom:26px;
+  transform:translateX(-50%) translateY(120px) scale(.8);
+  opacity:0;
   background:linear-gradient(135deg, #24b266, #2ecc71);
   color:white;
   padding:15px 24px;
   border-radius:999px;
   box-shadow:0 20px 30px rgba(0,0,0,.25);
-  transition:.35s ease;
   z-index:200;
   font-weight:600;
+  pointer-events:none;
+  transition:none;
 }
 
 #toast.show{
-  bottom:26px;
+  animation:toastIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  pointer-events:auto;
+}
+
+#toast.toast-out{
+  animation:toastOut .45s cubic-bezier(.6,-.28,.74,.05) forwards;
 }
 
 .toast-error{
   background:rgba(255,60,60,.18) !important;
   color:#ff4d4d !important;
   border:1px solid rgba(255,60,60,.35) !important;
+}
+
+@keyframes toastIn{
+  0%{transform:translateX(-50%) translateY(120px) scale(.8);opacity:0}
+  60%{transform:translateX(-50%) translateY(-8px) scale(1.05);opacity:1}
+  100%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+}
+
+@keyframes toastOut{
+  0%{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+  30%{transform:translateX(-50%) translateY(-10px) scale(1.05);opacity:1}
+  100%{transform:translateX(-50%) translateY(80px) scale(.6);opacity:0}
 }
 
 .wa-float{
@@ -141,6 +160,8 @@ select:focus, input:focus{
 }
 
 .filter-pill{
+  position:relative;
+  overflow:hidden;
   background:rgba(255,255,255,.04);
   color:var(--muted);
   border:1px solid var(--line);
@@ -162,4 +183,19 @@ select:focus, input:focus{
   color:var(--gold-2);
   border-color:rgba(212,175,55,.35);
   box-shadow:0 4px 12px rgba(212,175,55,.1);
+}
+
+.filter-pill .ripple{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,.5) 0%, rgba(212,175,55,.15) 40%, transparent 70%);
+  transform:scale(0);
+  animation:rippleWave .7s cubic-bezier(.25,.46,.45,.94) forwards;
+  pointer-events:none;
+}
+
+@keyframes rippleWave{
+  0%{transform:scale(0);opacity:1}
+  50%{opacity:.6}
+  100%{transform:scale(4);opacity:0}
 }

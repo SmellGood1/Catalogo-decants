@@ -94,7 +94,7 @@ function loadPerfumesFromSheets() {
           notes:   parseNotes(
                      row['Notas Salida'] || '',
                      row['Notas Corazón'] || row['Notas Corazon'] || '',
-                     row['Notas Fondo'] || ''
+                     row['Notas Base'] || row['Notas Fondo'] || ''
                    ),
           destacado: (row['Destacado'] || row['destacado'] || '').toUpperCase().trim() === 'SI',
           proximo: enVenta !== 'SI'

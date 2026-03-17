@@ -148,6 +148,16 @@ function renderCarrito() {
     document.getElementById('btnEnviarPedido').disabled = true;
     document.getElementById('btnEnviarPedido').style.opacity = '0.5';
     document.getElementById('btnVaciarCarrito').style.display = 'none';
+
+    // Resetear barra de descuento
+    var discountBar = document.getElementById('discountBar');
+    var discountFill = document.getElementById('discountFill');
+    if (discountBar) {
+      discountBar.style.display = 'none';
+      discountBar.classList.remove('reached');
+    }
+    if (discountFill) discountFill.style.width = '0%';
+
     return;
   }
 

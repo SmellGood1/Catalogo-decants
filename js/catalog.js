@@ -1,39 +1,81 @@
 let marcaSeleccionada = '';
+var _filtrosListenerReady = false;
 
-function renderBotoneraFiltros(filtroTexto) {
+function renderBotoneraFiltros(filtroTexto, skipRebuild) {
   var filtrosContainer = document.getElementById('filtros-marcas');
   if (!filtrosContainer) return;
 
-  var marcas = Object.keys(PERFUMES);
-  
-  var htmlFiltros = '<button class="filter-pill ' + (marcaSeleccionada === '' ? 'active' : '') + '" data-marca="">Todas</button>';
-  
-  marcas.forEach(function(marca) {
-    var isActive = (marcaSeleccionada === marca) ? 'active' : '';
-    htmlFiltros += '<button class="filter-pill ' + isActive + '" data-marca="' + marca + '">' + marca + '</button>';
-  });
+  if (!skipRebuild) {
+    var marcas = Object.keys(PERFUMES);
 
-  filtrosContainer.innerHTML = htmlFiltros;
+    var htmlFiltros = '<button class="filter-pill ' + (marcaSeleccionada === '' ? 'active' : '') + '" data-marca="">Todas</button>';
 
-  // Delegation para los pills
-  filtrosContainer.onclick = function(e) {
-    if (e.target.classList.contains('filter-pill')) {
-      marcaSeleccionada = e.target.getAttribute('data-marca');
-      renderCatalogo(filtroTexto);
-    }
-  };
+    marcas.forEach(function(marca) {
+      var isActive = (marcaSeleccionada === marca) ? 'active' : '';
+      htmlFiltros += '<button class="filter-pill ' + isActive + '" data-marca="' + marca + '">' + marca + '</button>';
+    });
+
+    filtrosContainer.innerHTML = htmlFiltros;
+  } else {
+    // Solo actualizar clases active sin reconstruir
+    var pills = filtrosContainer.querySelectorAll('.filter-pill');
+    pills.forEach(function(p) {
+      var marca = p.getAttribute('data-marca');
+      if (marca === marcaSeleccionada) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+  }
+
+  // Listener solo una vez con delegation
+  if (!_filtrosListenerReady) {
+    _filtrosListenerReady = true;
+    filtrosContainer.addEventListener('click', function(e) {
+      var pill = e.target.closest('.filter-pill');
+      if (!pill) return;
+
+      // Crear ripple desde el punto de click
+      var rect = pill.getBoundingClientRect();
+      var size = Math.max(rect.width, rect.height);
+      var ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+      pill.appendChild(ripple);
+
+      ripple.addEventListener('animationend', function() {
+        ripple.remove();
+      });
+
+      marcaSeleccionada = pill.getAttribute('data-marca');
+      // Actualizar clases sin destruir el DOM
+      renderBotoneraFiltros('', true);
+      // Actualizar solo el grid del catálogo (sin reconstruir filtros)
+      var ft = document.getElementById('buscador') ? document.getElementById('buscador').value : '';
+      _renderCatalogoGrid(ft);
+    });
+  }
 }
 
 function renderCatalogo(filtroTexto) {
   filtroTexto = filtroTexto || '';
   renderBotoneraFiltros(filtroTexto);
+  _renderCatalogoGrid(filtroTexto);
+}
 
+function _renderCatalogoGrid(filtroTexto) {
+  filtroTexto = filtroTexto || '';
   var catalogo = document.getElementById('catalogo');
   catalogo.innerHTML = '';
 
+  var cardIndex = 0;
+
   for (var casa in PERFUMES) {
     if (marcaSeleccionada && casa !== marcaSeleccionada) {
-      continue; // Saltar si hay filtro de marca y no coincide
+      continue;
     }
 
     var perfumesFiltrados = PERFUMES[casa].filter(function(p) {
@@ -47,17 +89,20 @@ function renderCatalogo(filtroTexto) {
 
     var houseTitle = document.createElement('div');
     houseTitle.className = 'house-title';
+    houseTitle.style.setProperty('--delay', (cardIndex * 0.06) + 's');
     houseTitle.innerHTML =
       '<h3>' + casa + '</h3>' +
       '<div class="house-line"></div>';
     catalogo.appendChild(houseTitle);
+    cardIndex++;
 
     var grid = document.createElement('div');
     grid.className = 'grid';
 
-    perfumesFiltrados.forEach(function(p) {
+    perfumesFiltrados.forEach(function(p, i) {
       var card = document.createElement('article');
       card.className = p.proximo ? 'card proximo' : 'card';
+      card.style.setProperty('--delay', ((cardIndex + i) * 0.06) + 's');
       card.innerHTML =
         '<div class="card-top">' +
           (p.proximo
@@ -95,6 +140,7 @@ function renderCatalogo(filtroTexto) {
       grid.appendChild(card);
     });
 
+    cardIndex += perfumesFiltrados.length;
     catalogo.appendChild(grid);
   }
 }
