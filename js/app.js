@@ -87,6 +87,67 @@ document.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
   });
 
+  // Spray sound al tocar la imagen del perfume
+  var dImg = document.getElementById('dImg');
+  var _sprayCount = 0;
+  var _sprayTimer = null;
+  if (dImg) {
+    dImg.style.cursor = 'pointer';
+    dImg.addEventListener('click', function() {
+      _sprayCount++;
+      clearTimeout(_sprayTimer);
+      _sprayTimer = setTimeout(function() { _sprayCount = 0; }, 800);
+
+      if (_sprayCount >= 7) {
+        _sprayCount = 0;
+        _playExplosion();
+        dImg.classList.remove('spray-tap');
+        dImg.classList.add('spray-explode');
+        _crearParticulas(dImg);
+        setTimeout(function() { dImg.classList.remove('spray-explode'); }, 800);
+        return;
+      }
+
+      _playSpray();
+      dImg.classList.remove('spray-tap');
+      void dImg.offsetWidth;
+      dImg.classList.add('spray-tap');
+      setTimeout(function() { dImg.classList.remove('spray-tap'); }, 400);
+    });
+  }
+
+  // Efecto agua en la concentración
+  var dConc = document.getElementById('dConc');
+  if (dConc) {
+    dConc.addEventListener('click', function(e) {
+      var rect = dConc.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var size = Math.max(rect.width, rect.height);
+
+      // Wobble gelatinoso
+      dConc.classList.remove('water-wobble');
+      void dConc.offsetWidth;
+      dConc.classList.add('water-wobble');
+
+      // 4 anillos de agua
+      for (var i = 0; i < 4; i++) {
+        var ring = document.createElement('span');
+        ring.className = 'water-ring';
+        ring.style.width = ring.style.height = size + 'px';
+        ring.style.left = (x - size / 2) + 'px';
+        ring.style.top = (y - size / 2) + 'px';
+        dConc.appendChild(ring);
+      }
+
+      setTimeout(function() {
+        var rings = dConc.querySelectorAll('.water-ring');
+        rings.forEach(function(r) { r.remove(); });
+        dConc.classList.remove('water-wobble');
+      }, 1300);
+    });
+  }
+
   if (btnCerrarX) btnCerrarX.addEventListener('click', function() { cerrarDetalle(); });
   if (mlSelect) mlSelect.addEventListener('change', actualizarPrecioModal);
   if (btnAddCart) btnAddCart.addEventListener('click', addCarrito);

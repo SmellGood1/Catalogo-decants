@@ -124,6 +124,33 @@ function initScrollTop() {
   });
 
   btn.addEventListener('click', function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Primero bajar un poco para "tomar impulso"
+    var currentY = window.scrollY;
+    var impulso = Math.min(80, currentY * 0.08);
+
+    window.scrollTo({ top: currentY + impulso, behavior: 'smooth' });
+
+    // Después de bajar, subir al top
+    setTimeout(function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Rebote elástico al llegar arriba
+      var onScroll = function() {
+        if (window.scrollY === 0) {
+          window.removeEventListener('scroll', onScroll);
+          var main = document.querySelector('main') || document.body;
+          main.style.transition = 'transform .25s cubic-bezier(.34,1.56,.64,1)';
+          main.style.transform = 'translateY(18px)';
+          setTimeout(function() {
+            main.style.transform = 'translateY(0)';
+            setTimeout(function() {
+              main.style.transition = '';
+              main.style.transform = '';
+            }, 250);
+          }, 120);
+        }
+      };
+      window.addEventListener('scroll', onScroll);
+    }, 200);
   });
 }
