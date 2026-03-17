@@ -73,7 +73,7 @@
 }
 
 #heroWordClone{
-  position:fixed;
+  position:absolute;
   z-index:50;
   pointer-events:none;
   white-space:nowrap;

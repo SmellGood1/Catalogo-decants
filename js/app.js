@@ -26,8 +26,8 @@ function _initHeroWordShuffle() {
     var clone = document.createElement('span');
     clone.id = 'heroWordClone';
     clone.textContent = el.textContent;
-    clone.style.left = rect.left + 'px';
-    clone.style.top = rect.top + 'px';
+    clone.style.left = (rect.left + window.scrollX) + 'px';
+    clone.style.top = (rect.top + window.scrollY) + 'px';
     clone.style.width = rect.width + 'px';
     clone.style.height = rect.height + 'px';
     clone.style.lineHeight = rect.height + 'px';
