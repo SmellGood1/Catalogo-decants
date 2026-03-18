@@ -459,44 +459,54 @@ function initTypewriter() {
 /* ── Shake to Reveal Easter Egg (Mobile) ──────────────────── */
 
 function initShakeDetect() {
-  // Only on touch devices
   if (!('ontouchstart' in window)) return;
 
   var lastTrigger = 0;
   var cooldown = 3000;
-  var threshold = 25;
+  var threshold = 15;
+  var lastX = null, lastY = null, lastZ = null;
 
   function handleMotion(e) {
-    var acc = e.accelerationIncludingGravity;
-    if (!acc) return;
+    var acc = e.accelerationIncludingGravity || e.acceleration;
+    if (!acc || acc.x === null) return;
 
-    var total = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+    if (lastX !== null) {
+      var deltaX = Math.abs(acc.x - lastX);
+      var deltaY = Math.abs(acc.y - lastY);
+      var deltaZ = Math.abs(acc.z - lastZ);
+      var total = deltaX + deltaY + deltaZ;
 
-    if (total > threshold) {
-      var now = Date.now();
-      if (now - lastTrigger > cooldown) {
-        lastTrigger = now;
-        _triggerDropletRain();
+      if (total > threshold) {
+        var now = Date.now();
+        if (now - lastTrigger > cooldown) {
+          lastTrigger = now;
+          _triggerDropletRain();
+        }
       }
     }
+
+    lastX = acc.x;
+    lastY = acc.y;
+    lastZ = acc.z;
+  }
+
+  function startListening() {
+    window.addEventListener('devicemotion', handleMotion);
   }
 
   // iOS 13+ requires permission
   if (typeof DeviceMotionEvent !== 'undefined' &&
       typeof DeviceMotionEvent.requestPermission === 'function') {
-    // Attach to first user interaction
     document.addEventListener('touchstart', function reqPerm() {
       DeviceMotionEvent.requestPermission()
         .then(function(state) {
-          if (state === 'granted') {
-            window.addEventListener('devicemotion', handleMotion);
-          }
+          if (state === 'granted') startListening();
         })
         .catch(function() {});
       document.removeEventListener('touchstart', reqPerm);
     }, { once: true });
   } else if (typeof DeviceMotionEvent !== 'undefined') {
-    window.addEventListener('devicemotion', handleMotion);
+    startListening();
   }
 }
 
