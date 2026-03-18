@@ -105,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initGlareObserver();
   initMagneticButtons();
   initEasterEgg();
-  initShakeDetect();
 
   // Explorar catálogo con impulso (sube un poco y luego baja)
   var btnExplorar = document.querySelector('a[href="#catalogoSection"]');
