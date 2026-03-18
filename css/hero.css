@@ -139,3 +139,38 @@
   0% { opacity:0; transform:translateY(50px); filter:blur(10px); }
   100% { opacity:1; transform:translateY(0); filter:blur(0); }
 }
+
+/* ── Gold Floating Particles ───────────────────────────────── */
+.hero-particle{
+  position:absolute;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,0.7), rgba(245,215,122,0.3));
+  pointer-events:none;
+  z-index:2;
+  opacity:0;
+  animation:particleFloat var(--duration, 8s) var(--delay, 0s) ease-in-out infinite;
+}
+
+@keyframes particleFloat{
+  0%{
+    opacity:0;
+    transform:translateY(0) translateX(0);
+  }
+  10%{
+    opacity:var(--max-opacity, 0.5);
+  }
+  90%{
+    opacity:var(--max-opacity, 0.5);
+  }
+  100%{
+    opacity:0;
+    transform:translateY(-100vh) translateX(var(--drift, 30px));
+  }
+}
+
+/* ── Hero Parallax ─────────────────────────────────────────── */
+.hero{
+  will-change:background-position;
+}

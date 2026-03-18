@@ -30,8 +30,8 @@
   }
 
   .trust-grid{
-    display:grid;
-    grid-template-columns:repeat(3, minmax(220px, 1fr));
+    display:flex;
+    justify-content:space-between;
     gap:18px;
   }
 
@@ -89,7 +89,7 @@
   }
 
   .trust-grid{
-    grid-template-columns:1fr 1fr;
+    flex-wrap:wrap;
   }
 
   .perfumeNombre{
@@ -137,7 +137,7 @@
   }
 
   .trust-grid{
-    grid-template-columns:1fr;
+    flex-direction:column;
   }
 
   .grid{

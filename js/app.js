@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
         countCasas.setAttribute('data-target', Object.keys(PERFUMES).length);
       }
       initCountUp();
+      initScrollReveal();
 
       window.scrollTo(0, 0);
     })
@@ -96,6 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
   _initHeroWordShuffle();
   initScrollTop();
   initAnnouncementBar();
+
+  // Visual effects
+  initHeroParticles();
+  initHeroParallax();
+  initCardTilt();
+  initGlareObserver();
+  initMagneticButtons();
+  initEasterEgg();
+  initShakeDetect();
 
   // Explorar catálogo con impulso (sube un poco y luego baja)
   var btnExplorar = document.querySelector('a[href="#catalogoSection"]');

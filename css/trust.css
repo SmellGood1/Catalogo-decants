@@ -3,17 +3,22 @@
 }
 
 .trust-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
+  display:flex;
+  justify-content:space-between;
   gap:16px;
 }
 
 .trust-card{
+  flex:0 1 48%;
   border:1px solid var(--line);
   background:rgba(255,255,255,.03);
   border-radius:22px;
-  padding:18px;
+  padding:24px;
   transition:var(--transition);
+  min-height:120px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
 
 .trust-card:hover{

@@ -58,8 +58,6 @@
   box-shadow:0 20px 40px rgba(0,0,0,0.4);
   opacity:0;
   transform:translateY(30px) scale(.95);
-  animation:cardReveal .5s cubic-bezier(.2,.8,.2,1) forwards;
-  animation-delay:var(--delay, 0s);
   backdrop-filter:blur(10px);
 }
 
@@ -266,6 +264,11 @@
   opacity:.9;
 }
 
+.card.revealed{
+  animation:cardReveal .5s cubic-bezier(.2,.8,.2,1) forwards;
+  animation-delay:var(--delay, 0s);
+}
+
 @keyframes cardReveal{
   0%{opacity:0;transform:translateY(30px) scale(.95)}
   60%{transform:translateY(-4px) scale(1.01)}
@@ -275,6 +278,9 @@
 .house-title{
   opacity:0;
   transform:translateX(-20px);
+}
+
+.house-title.revealed{
   animation:houseTitleIn .4s ease forwards;
   animation-delay:var(--delay, 0s);
 }
@@ -282,4 +288,139 @@
 @keyframes houseTitleIn{
   0%{opacity:0;transform:translateX(-20px)}
   100%{opacity:1;transform:translateX(0)}
+}
+
+/* ── 3D Tilt Effect on Cards ───────────────────────────────── */
+.card{
+  transform-style:preserve-3d;
+}
+
+.card.tilt-active{
+  transition:none !important;
+}
+
+.card .tilt-glare{
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  pointer-events:none;
+  z-index:20;
+  opacity:0;
+  background:radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 60%);
+  transition:opacity .3s ease;
+}
+
+.card.tilt-active .tilt-glare{
+  opacity:1;
+}
+
+/* ── Custom Cursor (Global) ───────────────────────────────── */
+body.custom-cursor-active,
+body.custom-cursor-active *{
+  cursor:none !important;
+}
+
+#custom-cursor{
+  position:fixed;
+  width:24px;
+  height:32px;
+  pointer-events:none;
+  z-index:9999;
+  opacity:0;
+  transition:opacity .25s ease;
+  transform:translate(-20%, -10%) rotate(-35deg);
+}
+
+#custom-cursor.visible{
+  opacity:1;
+}
+
+#custom-cursor .droplet{
+  width:100%;
+  height:100%;
+  position:relative;
+}
+
+#custom-cursor .droplet::before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:16px;
+  height:16px;
+  background:radial-gradient(circle at 40% 35%, #f5d77a, #d4af37);
+  border-radius:50%;
+  box-shadow:0 2px 8px rgba(212,175,55,.45);
+}
+
+#custom-cursor .droplet::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-bottom:18px solid #d4af37;
+}
+
+/* ── Easter Egg Droplet Rain ─────────────────────────────── */
+.ee-droplet{
+  position:fixed;
+  top:-40px;
+  width:14px;
+  height:22px;
+  pointer-events:none;
+  z-index:10000;
+  animation:eeDropFall var(--fall-duration, 2.5s) cubic-bezier(.2,.6,.4,1) forwards;
+  animation-delay:var(--ee-delay, 0s);
+  opacity:0;
+}
+
+.ee-droplet::before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:10px;
+  height:10px;
+  background:radial-gradient(circle at 40% 35%, #f5d77a, #d4af37);
+  border-radius:50%;
+  box-shadow:0 2px 10px rgba(212,175,55,.5);
+}
+
+.ee-droplet::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:4px solid transparent;
+  border-right:4px solid transparent;
+  border-bottom:14px solid #d4af37;
+}
+
+@keyframes eeDropFall{
+  0%{
+    opacity:0;
+    top:-40px;
+    transform:translateX(0) rotate(0deg);
+  }
+  10%{
+    opacity:.9;
+  }
+  70%{
+    opacity:.7;
+  }
+  100%{
+    opacity:0;
+    top:105vh;
+    transform:translateX(var(--ee-sway, 30px)) rotate(var(--ee-rotate, 45deg));
+  }
 }
