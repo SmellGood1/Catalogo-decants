@@ -77,6 +77,8 @@
   position:relative;
   scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
+  mask-image:linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
 
 .bestsellers-wrapper::-webkit-scrollbar{
@@ -87,17 +89,7 @@
   display:flex;
   gap:24px;
   width:max-content;
-  padding:10px 0 20px;
-  animation:bsScroll var(--bs-duration, 60s) linear 3s infinite;
-}
-
-.bestsellers-track.scroll-paused{
-  animation-play-state:paused;
-}
-
-@keyframes bsScroll{
-  0%{ transform:translateX(0); }
-  100%{ transform:translateX(-50%); }
+  padding:10px 48px 20px;
 }
 
 .bestseller-card{

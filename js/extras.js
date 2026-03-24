@@ -69,36 +69,79 @@ function renderDestacados() {
     return card;
   }
 
-  // Render original + clon para loop infinito
+  // Render cards
   destacados.forEach(function(item, i) {
     container.appendChild(buildCard(item, i));
   });
-  destacados.forEach(function(item, i) {
-    var clone = buildCard(item, i);
-    clone.setAttribute('aria-hidden', 'true');
-    container.appendChild(clone);
-  });
 
-  // Ajustar velocidad según cantidad de cards
-  var speed = destacados.length * 12; // ~12s por card
-  container.style.setProperty('--bs-duration', speed + 's');
-
-  // Scroll manual: pausar auto-scroll, reanudar después de 4s sin tocar
+  // Auto-scroll
   var wrapper = container.closest('.bestsellers-wrapper');
   if (wrapper) {
+    var scrollInterval = null;
     var resumeTimer = null;
 
-    function pauseAutoScroll() {
-      container.classList.add('scroll-paused');
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(function() {
-        container.classList.remove('scroll-paused');
-      }, 4000);
+    var rewinding = false;
+
+    function rewind() {
+      rewinding = true;
+      clearInterval(scrollInterval);
+      scrollInterval = null;
+
+      // Rebobinar hacia la izquierda
+      var startPos = wrapper.scrollLeft;
+      var startTime = Date.now();
+      var duration = 1200; // ms
+
+      var rewindId = setInterval(function() {
+        var elapsed = Date.now() - startTime;
+        var t = Math.min(elapsed / duration, 1);
+
+        // easeInOutCubic: arranca suave, acelera, frena suave
+        var ease = t < 0.5
+          ? 4 * t * t * t
+          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+        wrapper.scrollLeft = startPos * (1 - ease);
+
+        if (t >= 1) {
+          wrapper.scrollLeft = 0;
+          clearInterval(rewindId);
+          rewinding = false;
+          setTimeout(startScroll, 800);
+        }
+      }, 16);
     }
 
-    wrapper.addEventListener('scroll', pauseAutoScroll);
-    wrapper.addEventListener('touchstart', pauseAutoScroll, { passive: true });
-    wrapper.addEventListener('mousedown', pauseAutoScroll);
+    function startScroll() {
+      if (scrollInterval || rewinding) return;
+      scrollInterval = setInterval(function() {
+        var max = wrapper.scrollWidth - wrapper.clientWidth;
+        if (wrapper.scrollLeft >= max - 2) {
+          rewind();
+        } else {
+          wrapper.scrollLeft += 0.5;
+        }
+      }, 30);
+    }
+
+    function stopScroll() {
+      clearInterval(scrollInterval);
+      scrollInterval = null;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(startScroll, 4000);
+    }
+
+    wrapper.addEventListener('pointerdown', stopScroll);
+    wrapper.addEventListener('wheel', stopScroll, { passive: true });
+
+    // Iniciar solo cuando el usuario vea la sección
+    var obs = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        obs.disconnect();
+        setTimeout(startScroll, 2000);
+      }
+    }, { threshold: 0.3 });
+    obs.observe(wrapper);
   }
 }
 
