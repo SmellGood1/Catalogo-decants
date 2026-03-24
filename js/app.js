@@ -380,6 +380,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btnVaciarCarrito) btnVaciarCarrito.addEventListener('click', vaciarCarrito);
   if (btnEnviarPedido) btnEnviarPedido.addEventListener('click', enviarPedido);
 
+  var btnApplyPromo = document.getElementById('btnApplyPromo');
+  if (btnApplyPromo) btnApplyPromo.addEventListener('click', applyPromoCode);
+  var promoInput = document.getElementById('promoInput');
+  if (promoInput) promoInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') applyPromoCode();
+  });
+
   // UI Event Listeners (Modal Detalle)
   const detalleModalWrapper = document.getElementById('detalle');
   const detalleBox = document.getElementById('detalleBox');

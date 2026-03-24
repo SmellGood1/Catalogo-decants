@@ -1,5 +1,11 @@
 var carrito = [];
 var _nextCartId = 1;
+var _activePromo = null;
+
+// Códigos de descuento (solo decants)
+var PROMO_CODES = {
+  'SMELL10': { percent: 10, expires: new Date('2026-03-25T11:00:00-05:00') }
+};
 
 function _saveCart() {
   try {
@@ -367,11 +373,91 @@ function renderCarrito() {
     discountBar.classList.remove('reached');
   }
 
-  var totalFinal = total - descuento;
+  // Descuento por código promo (aplica sobre decants, se suma al de volumen)
+  var promoDescuento = 0;
+  if (_activePromo && totalDecants > 0) {
+    promoDescuento = Math.round(totalDecants * _activePromo.percent / 100);
+  }
+
+  var descuentoTotal = descuento + promoDescuento;
+  var totalFinal = total - descuentoTotal;
   totalCarrito.textContent = '$' + totalFinal;
-  if (descuento) {
+  if (descuentoTotal) {
     totalCarrito.innerHTML = '<s style="color:var(--muted);font-size:16px;font-weight:400">$' + total + '</s> $' + totalFinal;
   }
+}
+
+function _getUsedCodes() {
+  try {
+    return JSON.parse(localStorage.getItem('sg_used_codes') || '[]');
+  } catch(e) { return []; }
+}
+
+function _markCodeUsed(code) {
+  var used = _getUsedCodes();
+  if (used.indexOf(code) === -1) {
+    used.push(code);
+    localStorage.setItem('sg_used_codes', JSON.stringify(used));
+  }
+}
+
+function applyPromoCode() {
+  var input = document.getElementById('promoInput');
+  var msg = document.getElementById('promoMsg');
+  var wrap = input.closest('.promo-code-wrap');
+  var code = (input.value || '').trim().toUpperCase();
+
+  if (!code) {
+    msg.textContent = '';
+    msg.className = 'promo-msg';
+    return;
+  }
+
+  var promo = PROMO_CODES[code];
+
+  if (!promo) {
+    msg.textContent = 'Código no válido';
+    msg.className = 'promo-msg error';
+    _activePromo = null;
+    renderCarrito();
+    return;
+  }
+
+  if (new Date() > promo.expires) {
+    msg.textContent = 'Este código ya expiró';
+    msg.className = 'promo-msg error';
+    _activePromo = null;
+    renderCarrito();
+    return;
+  }
+
+  // Verificar si ya lo usó
+  var used = _getUsedCodes();
+  if (used.indexOf(code) !== -1) {
+    msg.textContent = 'Ya usaste este código';
+    msg.className = 'promo-msg error';
+    _activePromo = null;
+    renderCarrito();
+    return;
+  }
+
+  // Aplicar
+  _activePromo = promo;
+  _activePromo.code = code;
+  msg.textContent = promo.percent + '% de descuento aplicado en decants';
+  msg.className = 'promo-msg success';
+  wrap.classList.add('applied');
+
+  // Animación en el total
+  var cartTotal = document.querySelector('.cart-total');
+  if (cartTotal) {
+    cartTotal.classList.remove('total-updated');
+    void cartTotal.offsetWidth;
+    cartTotal.classList.add('total-updated');
+    setTimeout(function() { cartTotal.classList.remove('total-updated'); }, 600);
+  }
+
+  renderCarrito();
 }
 
 function toggleCarrito() {

@@ -48,11 +48,28 @@ function enviarPedido() {
 
   if (tierPercent > 0) {
     descuento = Math.round(totalDecants * tierPercent / 100);
+  }
+
+  // Código promo
+  var promoDescuento = 0;
+  if (_activePromo && totalDecants > 0) {
+    promoDescuento = Math.round(totalDecants * _activePromo.percent / 100);
+  }
+
+  var descuentoTotal = descuento + promoDescuento;
+
+  if (descuentoTotal > 0) {
     texto += '\nSubtotal: $' + total;
-    texto += '\nDescuento ' + tierPercent + '% en decants: -$' + descuento;
-    texto += '\nTotal de mi pedido: $' + (total - descuento);
+    if (descuento > 0) texto += '\nDescuento ' + tierPercent + '% (volumen): -$' + descuento;
+    if (promoDescuento > 0) texto += '\nCódigo promo (' + _activePromo.percent + '%): -$' + promoDescuento;
+    texto += '\nTotal de mi pedido: $' + (total - descuentoTotal);
   } else {
     texto += '\nTotal de mi pedido: $' + total;
+  }
+
+  // Marcar código como usado al enviar
+  if (_activePromo && _activePromo.code) {
+    _markCodeUsed(_activePromo.code);
   }
 
   var url = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent(texto);
