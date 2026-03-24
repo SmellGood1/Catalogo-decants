@@ -297,14 +297,10 @@
   opacity:1;
 }
 
-/* New site fades in */
-.site-zone.site-entering{
-  animation:siteEnter .5s cubic-bezier(.4,0,.2,1) forwards;
-}
-
-@keyframes siteEnter{
-  0%{ opacity:0; }
-  100%{ opacity:1; }
+/* Section switch overlay */
+.gateway-overlay.switch-active{
+  transition:opacity .35s ease;
+  opacity:1;
 }
 
 /* ── Site Zones ──────────────────────────────────────────────── */
@@ -348,6 +344,31 @@
 .switch-btn:hover{
   background:rgba(212,175,55,.2);
   border-color:rgba(212,175,55,.4);
+}
+
+/* ── Switch Section Button ───────────────────────────────────── */
+.switch-section-bar{
+  text-align:center;
+  padding:48px 0 24px;
+}
+
+.switch-section-btn{
+  background:transparent;
+  border:1px solid rgba(212,175,55,.25);
+  color:var(--gold-2);
+  padding:14px 32px;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  letter-spacing:.3px;
+  transition:all .3s ease;
+}
+
+.switch-section-btn:hover{
+  background:rgba(212,175,55,.1);
+  border-color:rgba(212,175,55,.5);
+  transform:translateY(-2px);
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */

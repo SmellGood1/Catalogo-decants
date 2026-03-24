@@ -1,8 +1,8 @@
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
 // Efecto ráfaga de palabras en el hero
-function _initHeroWordShuffle() {
-  var el = document.getElementById('heroWord');
+function _initHeroWordShuffle(elementId) {
+  var el = document.getElementById(elementId || 'heroWord');
   if (!el) return;
 
   var colors = ['#ff6bcb', '#48dbfb', '#ff4d4d', '#2ecc71', '#f9ca24', '#6c5ce7', '#fd79a8', '#00cec9', '#e17055', '#ffeaa7', '#a29bfe', '#55efc4', '#fdcb6e', '#e84393'];
@@ -72,10 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
   renderCarrito();
 
   // Cargar productos desde Google Sheets
-  loadPerfumesFromSheets()
+  Promise.all([loadPerfumesFromSheets(), loadCompletosFromSheets()])
     .then(function() {
       renderCatalogo();
       renderDestacados();
+      if (typeof renderCompletos === 'function') renderCompletos();
 
       // Actualizar contador de casas dinámicamente
       var countCasas = document.getElementById('countCasas');
@@ -94,7 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
   // Extras
-  _initHeroWordShuffle();
+  _initHeroWordShuffle('heroWord');
+  _initHeroWordShuffle('heroWordCompletos');
   initScrollTop();
   initAnnouncementBar();
 
@@ -230,11 +232,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function backToGateway() {
-    siteDecants.classList.add('site-hidden');
-    siteCompletos.classList.add('site-hidden');
-    gateway.style.display = '';
-    gateway.classList.remove('gateway-exit');
-    window.scrollTo(0, 0);
+    var from = siteDecants.classList.contains('site-hidden') ? siteCompletos : siteDecants;
+
+    overlay.classList.add('switch-active');
+
+    setTimeout(function() {
+      from.classList.add('site-hidden');
+      gateway.style.display = '';
+      gateway.classList.remove('gateway-exit');
+
+      requestAnimationFrame(function() {
+        overlay.classList.remove('switch-active');
+      });
+    }, 380);
   }
 
   if (doorDecants) doorDecants.addEventListener('click', function() {
@@ -250,11 +260,56 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnGoToDecants = document.getElementById('btnGoToDecants');
 
   if (btnBackToGateway) btnBackToGateway.addEventListener('click', backToGateway);
+
+  var btnBackToGatewayDecants = document.getElementById('btnBackToGatewayDecants');
+  if (btnBackToGatewayDecants) btnBackToGatewayDecants.addEventListener('click', backToGateway);
   if (btnGoToDecants) btnGoToDecants.addEventListener('click', function() {
     siteCompletos.classList.add('site-hidden');
     siteDecants.classList.remove('site-hidden');
     window.scrollTo(0, 0);
   });
+
+  // Switch between sections
+  function switchSite(from, to) {
+    // 1. Fade a negro
+    overlay.classList.add('switch-active');
+
+    // 2. Cuando está negro: ocultar from (scroll se resetea solo)
+    setTimeout(function() {
+      from.classList.add('site-hidden');
+    }, 380);
+
+    // 3. Mostrar new section y fade out del overlay
+    setTimeout(function() {
+      to.classList.remove('site-hidden');
+      overlay.classList.remove('switch-active');
+    }, 420);
+  }
+
+  var btnGoToCompletos = document.getElementById('btnGoToCompletos');
+  var btnGoToDecants2 = document.getElementById('btnGoToDecants2');
+  var btnGoToDecants3 = document.getElementById('btnGoToDecants3');
+  var btnCartCompletos = document.getElementById('btnCartCompletos');
+
+  if (btnGoToCompletos) btnGoToCompletos.addEventListener('click', function() {
+    switchSite(siteDecants, siteCompletos);
+  });
+  if (btnGoToDecants2) btnGoToDecants2.addEventListener('click', function() {
+    switchSite(siteCompletos, siteDecants);
+  });
+  if (btnGoToDecants3) btnGoToDecants3.addEventListener('click', function() {
+    switchSite(siteCompletos, siteDecants);
+  });
+  if (btnCartCompletos) btnCartCompletos.addEventListener('click', toggleCarrito);
+
+  // Smooth scroll for completos hero CTA
+  var btnVerCatCompletos = document.querySelector('a[href="#completosCatalogo"]');
+  if (btnVerCatCompletos) {
+    btnVerCatCompletos.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('completosCatalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
   // Logo click -> back to gateway
   document.querySelectorAll('.logo-text').forEach(function(logo) {
@@ -440,14 +495,16 @@ window.onload = function() {
   }
   window.scrollTo(0, 0);
 
-  // Scroll Header Opacity Effect
-  const header = document.querySelector('header');
+  // Scroll Header Opacity Effect (all headers)
+  var allHeaders = document.querySelectorAll('header');
   window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
+    allHeaders.forEach(function(h) {
+      if (window.scrollY > 50) {
+        h.classList.add('scrolled');
+      } else {
+        h.classList.remove('scrolled');
+      }
+    });
   });
 
   // Scroll Reveal Observer

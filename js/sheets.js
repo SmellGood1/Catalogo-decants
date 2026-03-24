@@ -110,3 +110,51 @@ function loadPerfumesFromSheets() {
       return perfumes;
     });
 }
+
+/* ── Frascos Completos ────────────────────────────────────────── */
+
+var COMPLETOS_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vT31Q_qgQbxSCGNxeJ09rE-VqtnaLhgyjwyY5cdsU_C2VT6WAz1RYTFVFEcNQvr7pt58TyNhHnn0lGk/pub?gid=1024551337&single=true&output=csv';
+
+function loadCompletosFromSheets() {
+  return fetch(COMPLETOS_CSV_URL)
+    .then(function(response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.text();
+    })
+    .then(function(csvText) {
+      var rows = parseCSV(csvText);
+      if (!rows.length) throw new Error('CSV vacío');
+
+      var completos = {};
+
+      rows.forEach(function(row) {
+        var casa = row['Casa'] || row['casa'] || '';
+        if (!casa) return;
+
+        var enVenta = (row['En venta'] || row['En Venta'] || '').toUpperCase().trim();
+
+        var perfume = {
+          name:    row['Perfume'] || row['perfume'] || '',
+          conc:    row['Concentración'] || row['Concentracion'] || '',
+          img:     row['Imagen'] || row['imagen'] || '',
+          link:    row['Link'] || row['link'] || '',
+          price:   cleanPrice(row['Precio'] || row['precio'] || ''),
+          ml:      row['Mililitros'] || row['ml'] || '',
+          notes:   parseNotes(
+                     row['Notas salida'] || row['Notas Salida'] || '',
+                     row['Notas corazón'] || row['Notas Corazón'] || row['Notas corazón '] || '',
+                     row['Notas base'] || row['Notas Base'] || ''
+                   ),
+          proximo: enVenta !== 'SI',
+          muyProonto: enVenta === 'MUY PRONTO'
+        };
+
+        if (!completos[casa]) completos[casa] = [];
+        completos[casa].push(perfume);
+      });
+
+      window.COMPLETOS = completos;
+      return completos;
+    });
+}

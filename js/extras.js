@@ -1,6 +1,83 @@
 /*
- * extras.js — Destacados, contadores animados, botón scroll-top
+ * extras.js — Destacados, completos, contadores animados, botón scroll-top
  */
+
+/* ── Catálogo Completos ─────────────────────────────────────── */
+
+function renderCompletos() {
+  var container = document.getElementById('catalogoCompletos');
+  console.log('[COMPLETOS] container:', !!container, 'data:', !!window.COMPLETOS, 'casas:', window.COMPLETOS ? Object.keys(COMPLETOS).length : 0);
+  if (!container || !window.COMPLETOS) return;
+
+  var casas = Object.keys(COMPLETOS);
+  if (!casas.length) {
+    container.innerHTML = '<p style="text-align:center;color:var(--muted);padding:3rem 1rem;">Próximamente — estamos preparando esta sección.</p>';
+    return;
+  }
+
+  container.innerHTML = '';
+
+  casas.forEach(function(casa) {
+    // Título de casa
+    var titleDiv = document.createElement('div');
+    titleDiv.className = 'house-title revealed';
+    titleDiv.style.opacity = '1';
+    titleDiv.style.transform = 'none';
+    titleDiv.innerHTML = '<h3>' + casa + '</h3><div class="house-line"></div>';
+    container.appendChild(titleDiv);
+
+    // Grid de cards
+    var grid = document.createElement('div');
+    grid.className = 'grid';
+
+    COMPLETOS[casa].forEach(function(p) {
+      var card = document.createElement('article');
+      card.className = 'card revealed' + (p.proximo ? ' proximo' : '');
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+
+      var topPills = '';
+      if (p.conc) topPills += '<span class="pill">' + p.conc + '</span>';
+      if (p.ml) topPills += '<span class="pill">' + p.ml + ' ml</span>';
+      if (p.proximo && p.muyProonto) {
+        topPills += '<span class="soon-label muy-pronto-label">Muy pronto</span>';
+      } else if (p.proximo) {
+        topPills += '<span class="soon-label">Próximamente</span>';
+      }
+
+      card.innerHTML =
+        '<div class="card-top">' + topPills + '</div>' +
+        '<div class="card-img-wrap">' +
+          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
+        '</div>' +
+        '<div class="card-content">' +
+          '<h4>' + p.name + '</h4>' +
+          '<div class="brand">' + casa + '</div>' +
+          '<div class="bottom">' +
+            '<div class="starting">' +
+              '<span>Frasco completo</span>' +
+              '<strong>$' + p.price + '</strong>' +
+            '</div>' +
+            (!p.proximo ? '<span class="small-btn">Ver</span>' : '') +
+          '</div>' +
+        '</div>';
+
+      if (!p.proximo) {
+        card.addEventListener('click', function() {
+          var perfumeConCasa = {};
+          for (var key in p) { perfumeConCasa[key] = p[key]; }
+          perfumeConCasa.casa = casa;
+          perfumeConCasa.isCompleto = true;
+          verPerfume(perfumeConCasa);
+        });
+      }
+
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+  });
+}
 
 /* ── Destacados ──────────────────────────────────────────────── */
 
@@ -53,7 +130,7 @@ function renderDestacados() {
             '<span>Desde</span>' +
             '<strong>$' + p.prices[2] + '</strong>' +
           '</div>' +
-          '<span class="bs-cta">Ver detalle →</span>' +
+          '<span class="bs-cta">Ver</span>' +
         '</div>' +
       '</div>';
 

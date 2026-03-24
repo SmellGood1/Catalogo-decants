@@ -24,16 +24,27 @@ function _loadCart() {
 function addCarrito() {
   if (!actual) return;
 
-  var ml = Number(document.getElementById('ml').value);
-  var precio = actual.prices[ml];
+  if (actual.isCompleto) {
+    carrito.push({
+      id: _nextCartId++,
+      nombre: actual.name,
+      ml: actual.ml || 'completo',
+      precio: actual.price,
+      img: actual.img || '',
+      isCompleto: true
+    });
+  } else {
+    var ml = Number(document.getElementById('ml').value);
+    var precio = actual.prices[ml];
 
-  carrito.push({
-    id: _nextCartId++,
-    nombre: actual.name,
-    ml: ml,
-    precio: precio,
-    img: actual.img || ''
-  });
+    carrito.push({
+      id: _nextCartId++,
+      nombre: actual.name,
+      ml: ml,
+      precio: precio,
+      img: actual.img || ''
+    });
+  }
 
   _saveCart();
   renderCarrito();
@@ -49,6 +60,45 @@ function addCarrito() {
     setTimeout(function() {
       contador.classList.remove('pop');
     }, 400); // 400ms dura el keyframe popBadge en header.css
+  }
+
+  // Confetti burst
+  _triggerConfetti();
+}
+
+function _triggerConfetti() {
+  var colors = ['#d4af37', '#f5d77a', '#f9e29a', '#fff8e1', '#e8c86d', '#c9a82c', '#fffdf5', '#ffeebb'];
+  var count = 30;
+  var cx = window.innerWidth / 2;
+  var cy = window.innerHeight / 2;
+
+  for (var i = 0; i < count; i++) {
+    var piece = document.createElement('div');
+    var isCircle = Math.random() > 0.5;
+    piece.className = 'confetti-piece ' + (isCircle ? 'circle' : 'rect');
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.left = cx + 'px';
+    piece.style.top = cy + 'px';
+
+    var angle = (Math.random() * Math.PI * 2);
+    var velocity = 80 + Math.random() * 200;
+    var tx = Math.cos(angle) * velocity;
+    var ty = Math.sin(angle) * velocity - 60 + Math.random() * 300;
+    var rot = (Math.random() - 0.5) * 1440;
+    var duration = 0.8 + Math.random() * 0.8;
+
+    piece.style.setProperty('--tx', tx + 'px');
+    piece.style.setProperty('--ty', ty + 'px');
+    piece.style.setProperty('--rot', rot + 'deg');
+    piece.style.setProperty('--fall-duration', duration + 's');
+    piece.style.width = (4 + Math.random() * 6) + 'px';
+    piece.style.height = (4 + Math.random() * 8) + 'px';
+
+    document.body.appendChild(piece);
+
+    (function(el, dur) {
+      setTimeout(function() { el.remove(); }, dur * 1000 + 100);
+    })(piece, duration);
   }
 }
 
@@ -119,10 +169,12 @@ function vaciarCarrito() {
 
 function renderCarrito() {
   var contador = document.getElementById('contador');
+  var contadorCompletos = document.getElementById('contadorCompletos');
   var listaCarrito = document.getElementById('listaCarrito');
   var totalCarrito = document.getElementById('totalCarrito');
 
   contador.textContent = carrito.length;
+  if (contadorCompletos) contadorCompletos.textContent = carrito.length;
 
   if (!carrito.length) {
     listaCarrito.innerHTML = `
@@ -208,6 +260,7 @@ function renderCarrito() {
         ml: item.ml,
         precio: item.precio,
         img: item.img,
+        isCompleto: item.isCompleto || false,
         cantidad: 1,
         ids: [item.id]
       };
@@ -226,10 +279,12 @@ function renderCarrito() {
     var div = document.createElement('div');
     div.className = 'cart-item';
 
+    var mlLabel = item.isCompleto ? 'Frasco completo' : item.ml + ' ml';
+
     div.innerHTML =
       '<div class="cart-left">' +
         '<strong>' + item.nombre + '</strong>' +
-        '<div class="meta">' + item.ml + ' ml &times; <strong>' + item.cantidad + '</strong></div>' +
+        '<div class="meta">' + mlLabel + ' &times; <strong>' + item.cantidad + '</strong></div>' +
         '<div class="meta">$' + precioTotal + '</div>' +
         '<div class="qty-controls">' +
           '<button class="qty-btn" data-action="decrement" data-ids="' + item.ids.join(',') + '" aria-label="Reducir cantidad">&minus;</button>' +
@@ -243,7 +298,7 @@ function renderCarrito() {
     listaCarrito.appendChild(div);
   });
 
-  // Discount bar logic — descuentos escalonados
+  // Discount bar logic — descuentos escalonados (solo aplica a decants)
   var TIERS = [
     { threshold: 500, percent: 10 },
     { threshold: 800, percent: 15 },
@@ -254,6 +309,12 @@ function renderCarrito() {
   var discountFill = document.getElementById('discountFill');
   var descuento = 0;
 
+  // Solo contar decants para el descuento
+  var totalDecants = 0;
+  carrito.forEach(function(item) {
+    if (!item.isCompleto) totalDecants += item.precio;
+  });
+
   if (carrito.length) {
     discountBar.style.display = 'block';
 
@@ -261,7 +322,7 @@ function renderCarrito() {
     var currentTier = null;
     var nextTier = TIERS[0];
     for (var t = 0; t < TIERS.length; t++) {
-      if (total >= TIERS[t].threshold) {
+      if (totalDecants >= TIERS[t].threshold) {
         currentTier = TIERS[t];
         nextTier = TIERS[t + 1] || null;
       }
@@ -271,24 +332,24 @@ function renderCarrito() {
       // Máximo descuento alcanzado
       var progress = 100;
       discountFill.style.width = progress + '%';
-      descuento = Math.round(total * currentTier.percent / 100);
+      descuento = Math.round(totalDecants * currentTier.percent / 100);
       discountBar.classList.add('reached');
-      discountMsg.innerHTML = '¡<strong>' + currentTier.percent + '% de descuento</strong> desbloqueado! Ahorras <strong>$' + descuento + '</strong> 🔥';
+      discountMsg.innerHTML = '¡<strong>' + currentTier.percent + '% de descuento</strong> en decants! Ahorras <strong>$' + descuento + '</strong> 🔥';
     } else if (currentTier && nextTier) {
       // Tiene descuento pero puede subir al siguiente
-      var progress = Math.min((total / nextTier.threshold) * 100, 100);
+      var progress = Math.min((totalDecants / nextTier.threshold) * 100, 100);
       discountFill.style.width = progress + '%';
-      descuento = Math.round(total * currentTier.percent / 100);
-      var falta = nextTier.threshold - total;
+      descuento = Math.round(totalDecants * currentTier.percent / 100);
+      var falta = nextTier.threshold - totalDecants;
       discountBar.classList.add('reached');
-      discountMsg.innerHTML = '<strong>' + currentTier.percent + '% aplicado</strong> (ahorras $' + descuento + ') · Agrega <strong>$' + falta + ' más</strong> para <strong>' + nextTier.percent + '%</strong>';
+      discountMsg.innerHTML = '<strong>' + currentTier.percent + '% en decants</strong> (ahorras $' + descuento + ') · Agrega <strong>$' + falta + ' más</strong> para <strong>' + nextTier.percent + '%</strong>';
     } else {
       // Aún no llega al primer tier
-      var progress = Math.min((total / nextTier.threshold) * 100, 100);
+      var progress = Math.min((totalDecants / nextTier.threshold) * 100, 100);
       discountFill.style.width = progress + '%';
-      var falta = nextTier.threshold - total;
+      var falta = nextTier.threshold - totalDecants;
       discountBar.classList.remove('reached');
-      discountMsg.innerHTML = 'Agrega <strong>$' + falta + ' más</strong> para obtener <strong>' + nextTier.percent + '% de descuento</strong>';
+      discountMsg.innerHTML = 'Agrega <strong>$' + falta + ' más en decants</strong> para obtener <strong>' + nextTier.percent + '% de descuento</strong>';
     }
   } else {
     discountBar.style.display = 'none';

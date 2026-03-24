@@ -178,8 +178,23 @@ function verPerfume(p) {
   document.getElementById('dConc').textContent = p.conc;
   document.getElementById('dMarca').textContent = p.casa;
 
-  document.getElementById('ml').value = '2';
-  actualizarPrecioModal();
+  // Adaptar modal para completos vs decants
+  var mlField = document.getElementById('ml').closest('.field');
+  var precioModal = document.getElementById('precioModal');
+  var textoMl = document.getElementById('textoMlModal');
+  var btnAdd = document.getElementById('btnAddCart');
+
+  if (p.isCompleto) {
+    mlField.style.display = 'none';
+    precioModal.textContent = '$' + p.price;
+    textoMl.textContent = p.ml ? p.ml + ' ml — Frasco completo' : 'Frasco completo';
+    btnAdd.textContent = 'Añadir al carrito';
+  } else {
+    mlField.style.display = '';
+    document.getElementById('ml').value = '2';
+    actualizarPrecioModal();
+    btnAdd.textContent = 'Añadir al carrito';
+  }
 
   var fragranticaLink = document.getElementById('fragranticaLink');
   if (p.link && p.link.trim() !== '') {
@@ -226,6 +241,8 @@ function cerrarDetalle(e) {
 }
 
 function actualizarPrecioModal() {
+  if (actual && actual.isCompleto) return; // completos no usan selector de ml
+
   var ml = Number(document.getElementById('ml').value);
   var precio = actual.prices[ml];
 

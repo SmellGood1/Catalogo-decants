@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="css/aroma.css">
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/faq.css">
-  <link rel="stylesheet" href="css/category-picker.css?v=12">
+  <link rel="stylesheet" href="css/category-picker.css?v=18">
   <link rel="stylesheet" href="css/extras.css?v=7">
   <link rel="stylesheet" href="css/responsive.css?v=4">
 </head>
@@ -81,7 +81,7 @@
           </div>
           <span class="door-kicker">Frasco completo</span>
           <h3>Perfumes</h3>
-          <p>Frascos originales sellados al mejor precio. Tu fragancia favorita, completa.</p>
+          <p>Frascos originales sellados. Una selección que se renueva constantemente.</p>
           <span class="door-cta">Ver perfumes <span class="door-arrow">→</span></span>
         </button>
 
@@ -119,6 +119,8 @@
         </div>
 
         <div class="nav-actions">
+          <button id="btnBackToGatewayDecants" class="switch-btn">← Volver</button>
+
           <div class="search-wrap">
             <input type="text" id="buscador" placeholder="Buscar perfume o casa..." aria-label="Buscar perfume o casa">
           </div>
@@ -191,6 +193,10 @@
         </div>
       </section>
 
+      <div class="switch-section-bar container">
+        <button id="btnGoToCompletos" class="switch-section-btn">Ver frascos completos →</button>
+      </div>
+
       <section class="aroma-section">
         <div class="container aroma-box">
           <h2>Tu aroma, a tu ritmo</h2>
@@ -220,103 +226,6 @@
       </section>
     </main>
 
-  <!-- MODAL DETALLE -->
-  <div id="detalle" role="dialog" aria-modal="true" aria-label="Detalle del perfume">
-    <div class="detalleBox" id="detalleBox">
-      <div class="detalle-left">
-        <img id="dImg" alt="Perfume" loading="lazy">
-      </div>
-
-      <div class="detalle-right">
-        <button id="btnCerrarX" class="cerrarX" aria-label="Cerrar detalle">&times;</button>
-
-        <div class="modal-brand" id="dMarca"></div>
-        <div class="perfumeNombre" id="dNombre"></div>
-        <div class="concentracion" id="dConc"></div>
-
-        <div id="dNotas" class="notas-section" style="display:none"></div>
-
-        <div class="field">
-          <label for="ml">Selecciona tus mililitros</label>
-          <select id="ml">
-            <option value="2">2 ml</option>
-            <option value="5">5 ml</option>
-            <option value="10">10 ml</option>
-          </select>
-        </div>
-
-        <div class="price-box">
-          <div>
-            <span>Precio estimado</span>
-            <strong id="precioModal">$8</strong>
-          </div>
-          <div>
-            <span id="textoMlModal">1 ml seleccionado</span>
-          </div>
-        </div>
-
-        <div class="modal-actions">
-          <button id="btnAddCart" class="full-btn primary">Añadir al carrito</button>
-          <button id="btnCerrarDetalle" class="full-btn secondary">Cerrar</button>
-        </div>
-
-        <a id="fragranticaLink" class="fragrantica-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
-          Conoce más en Fragrantica ↗
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- OVERLAY CARRITO -->
-  <div id="cartOverlay"></div>
-
-  <!-- CARRITO -->
-  <aside id="carritoPanel" aria-label="Carrito de compras">
-    <div class="cart-head">
-      <h2>Carrito</h2>
-      <button id="btnCerrarCarrito" class="close-cart" aria-label="Cerrar carrito">&times;</button>
-    </div>
-
-    <div id="discountBar" class="discount-bar" style="display:none">
-      <p id="discountMsg"></p>
-      <div class="discount-track">
-        <div id="discountFill" class="discount-fill"></div>
-        <div class="discount-goal">
-          <span>Hasta 20% OFF</span>
-        </div>
-      </div>
-    </div>
-
-    <div id="listaCarrito"></div>
-
-    <div class="cart-total">
-      <span>Total de tu pedido</span>
-      <strong id="totalCarrito">$0</strong>
-    </div>
-
-    <button id="btnVaciarCarrito" class="vaciar-btn">Vaciar carrito</button>
-
-    <input id="nombreCliente" placeholder="Tu nombre" aria-label="Tu nombre para el pedido">
-
-    <div style="height:14px"></div>
-
-    <button id="btnEnviarPedido" class="full-btn primary">Enviar pedido por WhatsApp</button>
-  </aside>
-
-  <!-- MODAL CONFIRMAR VACIAR -->
-  <div id="confirmOverlay" class="confirm-overlay">
-    <div class="confirm-box">
-      <div class="confirm-icon">🗑️</div>
-      <h3>¿Vaciar carrito?</h3>
-      <p>Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
-      <div class="confirm-actions">
-        <button id="confirmCancel" class="confirm-btn cancel">Cancelar</button>
-        <button id="confirmAccept" class="confirm-btn accept">Sí, vaciar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast">Añadido exitosamente</div>
 
     <a class="wa-float" href="https://wa.me/529213042001" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">💬</a>
 
@@ -419,23 +328,60 @@
           </a>
         </div>
         <div class="nav-actions">
-          <button id="btnBackToGateway" class="switch-btn" style="margin-left:auto;">← Volver a elegir</button>
+          <button id="btnBackToGateway" class="switch-btn">← Volver</button>
+          <button id="btnCartCompletos" class="cart-btn" aria-label="Abrir carrito de compras">
+            <span>🛒 Carrito</span>
+            <span class="badge" id="contadorCompletos">0</span>
+          </button>
         </div>
       </nav>
     </header>
 
     <main>
-      <section class="completos-hero">
-        <div class="container" style="text-align:center; padding:120px 20px 80px;">
-          <span class="section-kicker">Frascos originales</span>
-          <h1 style="font-family:'Playfair Display',serif; font-size:clamp(36px,5vw,56px); margin-bottom:20px;">Perfumes Completos</h1>
-          <p style="color:var(--muted); font-size:18px; max-width:560px; margin:0 auto 40px; line-height:1.7;">Frascos sellados de fábrica al mejor precio. Tu fragancia favorita, completa.</p>
-          <div style="background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:20px; padding:48px 32px; max-width:500px; margin:0 auto;">
-            <p style="font-size:48px; margin-bottom:16px;">🧴</p>
-            <h3 style="font-family:'Playfair Display',serif; font-size:24px; margin-bottom:12px;">Próximamente</h3>
-            <p style="color:var(--muted); line-height:1.7;">Estamos preparando una selección exclusiva de frascos completos. Mientras tanto, explora nuestros decants.</p>
-            <button id="btnGoToDecants" class="btn btn-primary glass-btn" style="margin-top:24px;">Explorar decants</button>
+      <section class="hero completos-hero">
+        <div class="glow-orb orb-1" style="background:radial-gradient(circle, rgba(168,130,255,.15), transparent 70%);"></div>
+        <div class="glow-orb orb-2" style="background:radial-gradient(circle, rgba(212,175,55,.1), transparent 70%);"></div>
+
+        <div class="container hero-content">
+          <h1 class="cinematic-reveal">Frascos originales <em id="heroWordCompletos">sellados</em></h1>
+          <p class="cinematic-reveal">
+            Una selección curada que se renueva constantemente. Encuentra algo único.
+          </p>
+          <div class="hero-actions cinematic-reveal">
+            <a href="#completosCatalogo" class="btn btn-primary glass-btn">Ver catálogo</a>
+            <button id="btnGoToDecants3" class="btn btn-secondary glass-btn">Explorar decants</button>
           </div>
+        </div>
+      </section>
+
+      <section class="trust">
+        <div class="container trust-grid">
+          <div class="trust-card reveal">
+            <strong>100% originales</strong>
+            <p>Cada frasco es original y sellado de fábrica. Garantía de autenticidad.</p>
+          </div>
+          <div class="trust-card reveal">
+            <strong>Mejores precios</strong>
+            <p>Precios competitivos sin intermediarios. Directo a tu puerta en Cancún.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="completosCatalogo" class="container">
+        <div class="section-head reveal">
+          <div>
+            <span class="section-kicker">Frascos originales</span>
+            <h2>Catálogo</h2>
+            <p>Explora nuestra selección. Cada frasco se abre con vista detallada, notas olfativas y acceso a Fragrantica.</p>
+          </div>
+        </div>
+
+        <div id="catalogoCompletos">
+          <p style="text-align:center;color:#999;padding:3rem 1rem;">Cargando catálogo...</p>
+        </div>
+
+        <div class="switch-section-bar">
+          <button id="btnGoToDecants2" class="switch-section-btn">Ver decants →</button>
         </div>
       </section>
     </main>
@@ -452,15 +398,96 @@
   </div><!-- /siteCompletos -->
 
   <!-- MODALS & OVERLAYS (fuera de las zonas para que siempre funcionen) -->
+
+  <div id="detalle" role="dialog" aria-modal="true" aria-label="Detalle del perfume">
+    <div class="detalleBox" id="detalleBox">
+      <div class="detalle-left">
+        <img id="dImg" alt="Perfume" loading="lazy">
+      </div>
+      <div class="detalle-right">
+        <button id="btnCerrarX" class="cerrarX" aria-label="Cerrar detalle">&times;</button>
+        <div class="modal-brand" id="dMarca"></div>
+        <div class="perfumeNombre" id="dNombre"></div>
+        <div class="concentracion" id="dConc"></div>
+        <div id="dNotas" class="notas-section" style="display:none"></div>
+        <div class="field">
+          <label for="ml">Selecciona tus mililitros</label>
+          <select id="ml">
+            <option value="2">2 ml</option>
+            <option value="5">5 ml</option>
+            <option value="10">10 ml</option>
+          </select>
+        </div>
+        <div class="price-box">
+          <div>
+            <span>Precio estimado</span>
+            <strong id="precioModal">$8</strong>
+          </div>
+          <div>
+            <span id="textoMlModal">1 ml seleccionado</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btnAddCart" class="full-btn primary">Añadir al carrito</button>
+          <button id="btnCerrarDetalle" class="full-btn secondary">Cerrar</button>
+        </div>
+        <a id="fragranticaLink" class="fragrantica-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+          Conoce más en Fragrantica ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartOverlay"></div>
+
+  <aside id="carritoPanel" aria-label="Carrito de compras">
+    <div class="cart-head">
+      <h2>Carrito</h2>
+      <button id="btnCerrarCarrito" class="close-cart" aria-label="Cerrar carrito">&times;</button>
+    </div>
+    <div id="discountBar" class="discount-bar" style="display:none">
+      <p id="discountMsg"></p>
+      <div class="discount-track">
+        <div id="discountFill" class="discount-fill"></div>
+        <div class="discount-goal">
+          <span>Hasta 20% OFF</span>
+        </div>
+      </div>
+    </div>
+    <div id="listaCarrito"></div>
+    <div class="cart-total">
+      <span>Total de tu pedido</span>
+      <strong id="totalCarrito">$0</strong>
+    </div>
+    <button id="btnVaciarCarrito" class="vaciar-btn">Vaciar carrito</button>
+    <input id="nombreCliente" placeholder="Tu nombre" aria-label="Tu nombre para el pedido">
+    <div style="height:14px"></div>
+    <button id="btnEnviarPedido" class="full-btn primary">Enviar pedido por WhatsApp</button>
+  </aside>
+
+  <div id="confirmOverlay" class="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <h3>¿Vaciar carrito?</h3>
+      <p>Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="confirm-btn cancel">Cancelar</button>
+        <button id="confirmAccept" class="confirm-btn accept">Sí, vaciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Añadido exitosamente</div>
+
   <script src="js/config.js" defer></script>
-  <script src="js/sheets.js?v=4" defer></script>
+  <script src="js/sheets.js?v=5" defer></script>
   <script src="js/toast.js" defer></script>
-  <script src="js/cart.js?v=4" defer></script>
-  <script src="js/modal.js?v=2" defer></script>
+  <script src="js/cart.js?v=6" defer></script>
+  <script src="js/modal.js?v=4" defer></script>
   <script src="js/whatsapp.js" defer></script>
   <script src="js/catalog.js?v=5" defer></script>
-  <script src="js/extras.js?v=19" defer></script>
+  <script src="js/extras.js?v=24" defer></script>
   <script src="js/faq.js" defer></script>
-  <script src="js/app.js?v=15" defer></script>
+  <script src="js/app.js?v=30" defer></script>
 </body>
 </html>
