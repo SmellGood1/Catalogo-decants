@@ -140,6 +140,130 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  // Gateway — show/hide sites
+  var gateway = document.getElementById('gateway');
+  var siteDecants = document.getElementById('siteDecants');
+  var siteCompletos = document.getElementById('siteCompletos');
+  var doorDecants = document.getElementById('doorDecants');
+  var doorCompletos = document.getElementById('doorCompletos');
+
+  var overlay = document.getElementById('gatewayOverlay');
+
+  function spawnDust(rect, isGold) {
+    var count = 50;
+    var baseColor = isGold ? [212, 175, 55] : [168, 130, 255];
+
+    for (var i = 0; i < count; i++) {
+      var p = document.createElement('div');
+      p.className = 'dust-particle';
+
+      var size = 2 + Math.random() * 4;
+      var startX = rect.left + Math.random() * rect.width;
+      var startY = rect.top + Math.random() * rect.height;
+
+      var driftX = (Math.random() - 0.5) * 120;
+      var driftY = -20 - Math.random() * 80;
+      var dur = 1.5 + Math.random() * 1;
+      var delay = Math.random() * 0.8;
+      var alpha = 0.3 + Math.random() * 0.5;
+
+      p.style.left = startX + 'px';
+      p.style.top = startY + 'px';
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.background = 'rgba(' + baseColor[0] + ',' + baseColor[1] + ',' + baseColor[2] + ',' + alpha + ')';
+      p.style.boxShadow = '0 0 ' + (size * 2) + 'px rgba(' + baseColor[0] + ',' + baseColor[1] + ',' + baseColor[2] + ',.2)';
+      p.style.setProperty('--dust-x', driftX + 'px');
+      p.style.setProperty('--dust-y', driftY + 'px');
+      p.style.setProperty('--dust-dur', dur + 's');
+      p.style.setProperty('--dust-delay', delay + 's');
+
+      document.body.appendChild(p);
+    }
+
+    setTimeout(function() {
+      document.querySelectorAll('.dust-particle').forEach(function(el) { el.remove(); });
+    }, 3500);
+  }
+
+  function enterSite(siteToShow, clickedDoor) {
+    var isGold = !clickedDoor.classList.contains('door-completos');
+
+    // 1. Lift the selected card gently
+    gateway.classList.add('launching');
+    clickedDoor.classList.add('door-selected');
+
+    // 2. Start dust gradually
+    setTimeout(function() {
+      var rect = clickedDoor.getBoundingClientRect();
+      spawnDust(rect, isGold);
+    }, 500);
+
+    // 3. Card starts dissolving
+    setTimeout(function() {
+      clickedDoor.classList.add('door-dissolving');
+    }, 700);
+
+    // 4. Fade to black smoothly
+    setTimeout(function() {
+      overlay.classList.add('active');
+    }, 1200);
+
+    // 5. Swap content behind overlay
+    setTimeout(function() {
+      gateway.style.display = 'none';
+      siteToShow.classList.remove('site-hidden');
+      window.scrollTo(0, 0);
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          overlay.classList.remove('active');
+        });
+      });
+    }, 2000);
+
+    // 6. Cleanup
+    setTimeout(function() {
+      gateway.classList.remove('launching');
+      clickedDoor.classList.remove('door-selected', 'door-dissolving');
+    }, 2800);
+  }
+
+  function backToGateway() {
+    siteDecants.classList.add('site-hidden');
+    siteCompletos.classList.add('site-hidden');
+    gateway.style.display = '';
+    gateway.classList.remove('gateway-exit');
+    window.scrollTo(0, 0);
+  }
+
+  if (doorDecants) doorDecants.addEventListener('click', function() {
+    enterSite(siteDecants, doorDecants);
+  });
+
+  if (doorCompletos) doorCompletos.addEventListener('click', function() {
+    enterSite(siteCompletos, doorCompletos);
+  });
+
+  // Back buttons
+  var btnBackToGateway = document.getElementById('btnBackToGateway');
+  var btnGoToDecants = document.getElementById('btnGoToDecants');
+
+  if (btnBackToGateway) btnBackToGateway.addEventListener('click', backToGateway);
+  if (btnGoToDecants) btnGoToDecants.addEventListener('click', function() {
+    siteCompletos.classList.add('site-hidden');
+    siteDecants.classList.remove('site-hidden');
+    window.scrollTo(0, 0);
+  });
+
+  // Logo click -> back to gateway
+  document.querySelectorAll('.logo-text').forEach(function(logo) {
+    logo.addEventListener('click', function(e) {
+      e.preventDefault();
+      backToGateway();
+    });
+  });
+
   // Search filter
   var buscador = document.getElementById('buscador');
   if (buscador) {
@@ -151,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: impulsoArriba, behavior: 'smooth' });
 
         setTimeout(function() {
-          var catalogo = document.getElementById('catalogoSection');
-          catalogo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var catalogoEl = document.getElementById('catalogoSection');
+          catalogoEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
           var onScroll = function() {
             var rect = catalogo.getBoundingClientRect();

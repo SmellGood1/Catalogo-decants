@@ -1,0 +1,382 @@
+/* ── Gateway — Pantalla de entrada ────────────────────────────── */
+.gateway{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  background:var(--bg);
+}
+
+.gateway-glow{
+  position:absolute;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  pointer-events:none;
+  filter:blur(120px);
+  opacity:.35;
+}
+
+.gateway-glow-1{
+  top:-15%;
+  left:-10%;
+  background:radial-gradient(circle, rgba(212,175,55,.25), transparent 70%);
+}
+
+.gateway-glow-2{
+  bottom:-15%;
+  right:-10%;
+  background:radial-gradient(circle, rgba(168,130,255,.2), transparent 70%);
+}
+
+.gateway-content{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding:40px 20px;
+  width:100%;
+  max-width:800px;
+}
+
+.gateway-brand{
+  margin-bottom:48px;
+}
+
+.gateway-brand strong{
+  display:block;
+  font-family:"Playfair Display", serif;
+  font-size:clamp(36px, 6vw, 52px);
+  background:linear-gradient(135deg, var(--gold-2), var(--gold));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:-1px;
+}
+
+.gateway-brand span{
+  display:block;
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-top:6px;
+  transition:color .4s ease;
+}
+
+.gateway-brand:hover span{
+  color:#c8a8ff;
+}
+
+.gateway-title{
+  font-family:"Playfair Display", serif;
+  font-size:clamp(22px, 3.5vw, 32px);
+  color:var(--text);
+  margin-bottom:40px;
+  font-weight:500;
+}
+
+.gateway-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+/* ── Door Cards (shared with gateway) ────────────────────────── */
+.gateway-door{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:48px 32px 40px;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(15,15,17,.6);
+  backdrop-filter:blur(16px);
+  overflow:hidden;
+  cursor:pointer;
+  color:var(--text);
+  font-family:inherit;
+  font-size:inherit;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),
+             border-color .4s ease,
+             box-shadow .4s ease;
+}
+
+.gateway-door:hover{
+  transform:translateY(-6px);
+  border-color:rgba(212,175,55,.3);
+  box-shadow:0 32px 64px rgba(0,0,0,.4);
+}
+
+/* Glow background */
+.door-glow{
+  position:absolute;
+  top:-40%;
+  left:50%;
+  transform:translateX(-50%);
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(212,175,55,.12), transparent 70%);
+  opacity:0;
+  transition:opacity .5s ease;
+  pointer-events:none;
+}
+
+.gateway-door:hover .door-glow{
+  opacity:1;
+}
+
+/* Completos door accent */
+.door-completos .door-glow{
+  background:radial-gradient(circle, rgba(168,130,255,.12), transparent 70%);
+}
+
+.door-completos:hover{
+  border-color:rgba(168,130,255,.3);
+}
+
+/* Icon */
+.door-icon{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:24px;
+  border:1px solid rgba(212,175,55,.15);
+  background:rgba(212,175,55,.06);
+  color:var(--gold-2);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1),
+             background .3s ease,
+             border-color .3s ease;
+}
+
+.gateway-door:hover .door-icon{
+  transform:scale(1.1);
+  background:rgba(212,175,55,.12);
+  border-color:rgba(212,175,55,.3);
+}
+
+.door-completos .door-icon{
+  border-color:rgba(168,130,255,.15);
+  background:rgba(168,130,255,.06);
+  color:#c8a8ff;
+}
+
+.door-completos:hover .door-icon{
+  background:rgba(168,130,255,.12);
+  border-color:rgba(168,130,255,.3);
+}
+
+/* Kicker */
+.door-kicker{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--gold-2);
+  margin-bottom:8px;
+}
+
+.door-completos .door-kicker{
+  color:#c8a8ff;
+}
+
+/* Title */
+.gateway-door h3{
+  font-family:"Playfair Display", serif;
+  font-size:clamp(28px, 4vw, 38px);
+  margin-bottom:12px;
+  letter-spacing:-0.5px;
+}
+
+/* Description */
+.gateway-door p{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  max-width:320px;
+  margin-bottom:24px;
+  flex:1;
+}
+
+/* CTA */
+.door-cta{
+  font-size:14px;
+  font-weight:600;
+  color:var(--gold-2);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:color .3s ease;
+}
+
+.door-completos .door-cta{
+  color:#c8a8ff;
+}
+
+.door-arrow{
+  transition:transform .3s ease;
+}
+
+.gateway-door:hover .door-arrow{
+  transform:translateX(4px);
+}
+
+.gateway-door:hover .door-cta{
+  color:var(--white);
+}
+
+/* ── Premium Transition ──────────────────────────────────────── */
+.gateway.launching{
+  pointer-events:none;
+}
+
+/* The selected card lifts then dissolves */
+.gateway-door.door-selected{
+  transition:transform .6s cubic-bezier(.2,.8,.2,1),
+             box-shadow .6s ease;
+  transform:translateY(-8px) scale(1.01);
+  box-shadow:0 32px 64px rgba(0,0,0,.4);
+  z-index:10;
+}
+
+.gateway-door.door-dissolving{
+  transition:opacity 1s ease !important;
+  opacity:0 !important;
+}
+
+/* Dust particles */
+.dust-particle{
+  position:fixed;
+  pointer-events:none;
+  z-index:9999;
+  border-radius:50%;
+  opacity:0;
+  animation:dustFloat var(--dust-dur, 2s) ease-out forwards;
+  animation-delay:var(--dust-delay, 0s);
+}
+
+@keyframes dustFloat{
+  0%{
+    opacity:0;
+    transform:translate(0, 0) scale(.5);
+  }
+  15%{
+    opacity:1;
+    transform:translate(calc(var(--dust-x) * .1), calc(var(--dust-y) * .1)) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:translate(var(--dust-x, 40px), var(--dust-y, -80px)) scale(0);
+  }
+}
+
+/* Overlay transition más suave */
+.gateway-overlay{
+  transition:opacity .8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Overlay that fades in dark + blur */
+.gateway-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:var(--bg);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s cubic-bezier(.4,0,.2,1);
+}
+
+.gateway-overlay.active{
+  opacity:1;
+}
+
+/* New site fades in */
+.site-zone.site-entering{
+  animation:siteEnter .5s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+@keyframes siteEnter{
+  0%{ opacity:0; }
+  100%{ opacity:1; }
+}
+
+/* ── Site Zones ──────────────────────────────────────────────── */
+.site-hidden{
+  display:none;
+}
+
+.site-zone{
+  animation:zoneReveal .5s ease forwards;
+}
+
+@keyframes zoneReveal{
+  0%{ opacity:0; }
+  100%{ opacity:1; }
+}
+
+/* Gateway exit animation */
+.gateway.gateway-exit{
+  animation:gatewayExit .5s ease forwards;
+  pointer-events:none;
+}
+
+@keyframes gatewayExit{
+  0%{ opacity:1; transform:scale(1); }
+  100%{ opacity:0; transform:scale(1.05); }
+}
+
+/* Switch btn (reusable) */
+.switch-btn{
+  background:rgba(212,175,55,.1);
+  color:var(--gold-2);
+  border:1px solid rgba(212,175,55,.2);
+  padding:10px 20px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .28s ease;
+}
+
+.switch-btn:hover{
+  background:rgba(212,175,55,.2);
+  border-color:rgba(212,175,55,.4);
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width:640px){
+  .gateway-grid{
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+
+  .gateway-door{
+    padding:36px 24px 32px;
+  }
+
+  .door-icon{
+    width:64px;
+    height:64px;
+  }
+
+  .door-icon svg{
+    width:36px;
+    height:36px;
+  }
+
+  .gateway-brand strong{
+    font-size:36px;
+  }
+
+  .gateway-glow{
+    width:300px;
+    height:300px;
+  }
+}

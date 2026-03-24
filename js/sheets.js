@@ -96,7 +96,8 @@ function loadPerfumesFromSheets() {
                      row['Notas Corazón'] || row['Notas Corazon'] || '',
                      row['Notas Base'] || row['Notas Fondo'] || ''
                    ),
-          destacado: (row['Destacado'] || row['destacado'] || '').toUpperCase().trim() === 'SI',
+          destacado: (row['Destacado'] || row['destacado'] || row['Destacados'] || row['destacados'] || '').toUpperCase().trim() === 'SI',
+          ranking: parseInt(row['Ranking'] || row['ranking'] || '0', 10) || 0,
           proximo: enVenta !== 'SI',
           muyProonto: enVenta === 'MUY PRONTO'
         };

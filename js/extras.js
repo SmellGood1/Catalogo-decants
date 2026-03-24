@@ -18,31 +18,43 @@ function renderDestacados() {
     });
   }
 
+  // Ordenar por ranking (menor número = más vendido)
+  destacados.sort(function(a, b) {
+    return (a.perfume.ranking || 999) - (b.perfume.ranking || 999);
+  });
+
   // Si no hay destacados marcados, no mostrar la sección
   if (!destacados.length) {
-    var section = container.closest('.destacados-section');
+    var section = container.closest('.bestsellers-section');
     if (section) section.style.display = 'none';
     return;
   }
 
   container.innerHTML = '';
 
-  destacados.forEach(function(item) {
+  function buildCard(item, index) {
     var p = item.perfume;
     var casa = item.casa;
 
     var card = document.createElement('article');
-    card.className = 'destacado-card';
+    card.className = 'bestseller-card';
     card.innerHTML =
-      '<div class="destacado-badge">Popular</div>' +
-      '<div class="card-img-wrap">' +
+      '<span class="bestseller-rank">#' + (index + 1) + '</span>' +
+      '<div class="bestseller-badge">Bestseller</div>' +
+      '<div class="bs-img-wrap">' +
         '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
       '</div>' +
-      '<h4>' + p.name + '</h4>' +
-      '<div class="brand">' + casa + '</div>' +
-      '<div class="starting">' +
-        '<span>Desde</span>' +
-        '<strong>$' + p.prices[2] + '</strong>' +
+      '<div class="bestseller-content">' +
+        '<div class="bs-brand">' + casa + '</div>' +
+        '<h4>' + p.name + '</h4>' +
+        (p.conc ? '<div class="bs-conc">' + p.conc + '</div>' : '<div class="bs-conc">&nbsp;</div>') +
+        '<div class="bestseller-bottom">' +
+          '<div class="bs-price">' +
+            '<span>Desde</span>' +
+            '<strong>$' + p.prices[2] + '</strong>' +
+          '</div>' +
+          '<span class="bs-cta">Ver detalle →</span>' +
+        '</div>' +
       '</div>';
 
     card.addEventListener('click', (function(perfume, casaNombre) {
@@ -54,8 +66,40 @@ function renderDestacados() {
       };
     })(p, casa));
 
-    container.appendChild(card);
+    return card;
+  }
+
+  // Render original + clon para loop infinito
+  destacados.forEach(function(item, i) {
+    container.appendChild(buildCard(item, i));
   });
+  destacados.forEach(function(item, i) {
+    var clone = buildCard(item, i);
+    clone.setAttribute('aria-hidden', 'true');
+    container.appendChild(clone);
+  });
+
+  // Ajustar velocidad según cantidad de cards
+  var speed = destacados.length * 12; // ~12s por card
+  container.style.setProperty('--bs-duration', speed + 's');
+
+  // Scroll manual: pausar auto-scroll, reanudar después de 4s sin tocar
+  var wrapper = container.closest('.bestsellers-wrapper');
+  if (wrapper) {
+    var resumeTimer = null;
+
+    function pauseAutoScroll() {
+      container.classList.add('scroll-paused');
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function() {
+        container.classList.remove('scroll-paused');
+      }, 4000);
+    }
+
+    wrapper.addEventListener('scroll', pauseAutoScroll);
+    wrapper.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+    wrapper.addEventListener('mousedown', pauseAutoScroll);
+  }
 }
 
 /* ── Gold Floating Particles in Hero ──────────────────────────── */

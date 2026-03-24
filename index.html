@@ -34,134 +34,191 @@
   <link rel="stylesheet" href="css/aroma.css">
   <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/faq.css">
-  <link rel="stylesheet" href="css/extras.css?v=1">
-  <link rel="stylesheet" href="css/responsive.css?v=3">
+  <link rel="stylesheet" href="css/category-picker.css?v=12">
+  <link rel="stylesheet" href="css/extras.css?v=4">
+  <link rel="stylesheet" href="css/responsive.css?v=4">
 </head>
 <body>
 
-  <!-- BANNER ANUNCIO -->
-  <div class="announcement-bar">
-    <div class="announcement-track">
-      <span>✦ Hasta 20% OFF en pedidos grandes</span>
-      <span>✦ Entregas en todo Cancún</span>
-      <span>✦ Perfumes 100% originales</span>
-      <span>✦ Pedido rápido por WhatsApp</span>
-    </div>
-    <div class="announcement-track" aria-hidden="true">
-      <span>✦ Hasta 20% OFF en pedidos grandes</span>
-      <span>✦ Entregas en todo Cancún</span>
-      <span>✦ Perfumes 100% originales</span>
-      <span>✦ Pedido rápido por WhatsApp</span>
+  <!-- ============ GATEWAY — Pantalla de entrada ============ -->
+  <div id="gateway" class="gateway">
+    <div class="gateway-glow gateway-glow-1"></div>
+    <div class="gateway-glow gateway-glow-2"></div>
+
+    <div class="gateway-content">
+      <div class="gateway-brand">
+        <strong>SmellGood</strong>
+        <span>Luxury Decants</span>
+      </div>
+
+      <h1 class="gateway-title">¿Qué estás buscando?</h1>
+
+      <div class="gateway-grid">
+
+        <button class="gateway-door" id="doorDecants">
+          <div class="door-glow"></div>
+          <div class="door-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M24 4v40M20 8c0 0-8 4-8 16s8 16 8 16M28 8c0 0 8 4 8 16s-8 16-8 16"/>
+              <circle cx="24" cy="24" r="3" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <span class="door-kicker">Prueba primero</span>
+          <h3>Decants</h3>
+          <p>Porciones desde 2ml para descubrir fragancias sin comprar el frasco completo.</p>
+          <span class="door-cta">Explorar decants <span class="door-arrow">→</span></span>
+        </button>
+
+        <button class="gateway-door door-completos" id="doorCompletos">
+          <div class="door-glow"></div>
+          <div class="door-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="14" y="12" width="20" height="30" rx="4"/>
+              <path d="M20 12V8h8v4"/>
+              <path d="M14 26h20"/>
+              <circle cx="24" cy="34" r="3" fill="currentColor" stroke="none"/>
+            </svg>
+          </div>
+          <span class="door-kicker">Frasco completo</span>
+          <h3>Perfumes</h3>
+          <p>Frascos originales sellados al mejor precio. Tu fragancia favorita, completa.</p>
+          <span class="door-cta">Ver perfumes <span class="door-arrow">→</span></span>
+        </button>
+
+      </div>
     </div>
   </div>
 
-  <header>
-    <nav class="container nav" aria-label="Navegación principal">
-      <div class="logo">
-        <a href="/" class="logo-text">
-          <strong>SmellGood</strong>
-          <span>Luxury Decants</span>
-        </a>
-      </div>
+  <div id="gatewayOverlay" class="gateway-overlay"></div>
 
-      <div class="nav-actions">
-        <div class="search-wrap">
-          <input type="text" id="buscador" placeholder="Buscar perfume o casa..." aria-label="Buscar perfume o casa">
+  <!-- ============ SITIO DECANTS (oculto hasta elegir) ============ -->
+  <div id="siteDecants" class="site-zone site-hidden">
+
+    <div class="announcement-bar">
+      <div class="announcement-track">
+        <span>✦ Hasta 20% OFF en pedidos grandes</span>
+        <span>✦ Entregas en todo Cancún</span>
+        <span>✦ Perfumes 100% originales</span>
+        <span>✦ Pedido rápido por WhatsApp</span>
+      </div>
+      <div class="announcement-track" aria-hidden="true">
+        <span>✦ Hasta 20% OFF en pedidos grandes</span>
+        <span>✦ Entregas en todo Cancún</span>
+        <span>✦ Perfumes 100% originales</span>
+        <span>✦ Pedido rápido por WhatsApp</span>
+      </div>
+    </div>
+
+    <header>
+      <nav class="container nav" aria-label="Navegación principal">
+        <div class="logo">
+          <a href="/" class="logo-text">
+            <strong>SmellGood</strong>
+            <span>Luxury Decants</span>
+          </a>
         </div>
 
-        <button id="btnToggleCartNav" class="cart-btn" aria-label="Abrir carrito de compras">
-          <span>🛒 Carrito</span>
-          <span class="badge" id="contador">0</span>
-        </button>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <!-- Orbes Animados en el Fondo -->
-      <div class="glow-orb orb-1"></div>
-      <div class="glow-orb orb-2"></div>
-
-      <div class="container hero-content">
-        <h1 class="cinematic-reveal">Fragancias <em id="heroWord">increíbles</em> sin comprar el frasco completo</h1>
-        <p class="cinematic-reveal">
-          Elige tus aromas favoritos y arma tu pedido rápido por WhatsApp.
-        </p>
-
-        <div class="hero-actions cinematic-reveal">
-          <a href="#catalogoSection" class="btn btn-primary glass-btn">Explorar catálogo</a>
-          <button id="btnToggleCartHero" class="btn btn-secondary glass-btn">Ver carrito</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="trust">
-      <div class="container trust-grid">
-        <div class="trust-card reveal">
-          <strong>Prueba antes de invertir</strong>
-          <p>Descubre si realmente amas una fragancia antes de comprarla completa.</p>
-        </div>
-        <div class="trust-card reveal">
-          <strong>Atención directa</strong>
-          <p>Recibe tu pedido personalizado por WhatsApp, sin vueltas innecesarias.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- DESTACADOS -->
-    <section class="destacados-section container">
-      <div class="section-head reveal">
-        <div>
-          <span class="section-kicker">Top picks</span>
-          <h2>Los más pedidos</h2>
-        </div>
-      </div>
-      <div id="destacados" class="destacados-grid"></div>
-    </section>
-
-    <section id="catalogoSection" class="container">
-      <div class="section-head reveal">
-        <div>
-          <h2>Catálogo</h2>
-          <p>Explora tu colección por casas. Cada perfume se abre con vista detallada, selección de mililitros y acceso a Fragrantica.</p>
-        </div>
-      </div>
-
-      <div id="filtros-marcas" class="filters-container"></div>
-      <div id="catalogo">
-        <p id="catalogo-loading" style="text-align:center;color:#999;padding:3rem 1rem;">Cargando catálogo...</p>
-      </div>
-    </section>
-
-    <section class="aroma-section">
-      <div class="container aroma-box">
-        <h2>Tu aroma, a tu ritmo</h2>
-
-        <p>
-          Prueba antes de invertir en botella completa. Descubre nuevas fragancias,
-          crea tu colección y encuentra ese aroma que realmente conecta contigo.
-        </p>
-
-        <div class="stats">
-          <div class="stat">
-            <strong><span class="count-up" data-target="19">0</span>+</strong>
-            <span>Fragancias disponibles</span>
+        <div class="nav-actions">
+          <div class="search-wrap">
+            <input type="text" id="buscador" placeholder="Buscar perfume o casa..." aria-label="Buscar perfume o casa">
           </div>
 
-          <div class="stat">
-            <strong><span class="count-up" id="countCasas" data-target="0">0</span></strong>
-            <span>Casas de perfumería</span>
-          </div>
+          <button id="btnToggleCartNav" class="cart-btn" aria-label="Abrir carrito de compras">
+            <span>🛒 Carrito</span>
+            <span class="badge" id="contador">0</span>
+          </button>
+        </div>
+      </nav>
+    </header>
 
-          <div class="stat">
-            <strong><span class="count-up" data-target="3">0</span></strong>
-            <span>Tamaños disponibles</span>
+    <main>
+      <section class="hero">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+
+        <div class="container hero-content">
+          <h1 class="cinematic-reveal">Fragancias <em id="heroWord">increíbles</em> sin comprar el frasco completo</h1>
+          <p class="cinematic-reveal">
+            Elige tus aromas favoritos y arma tu pedido rápido por WhatsApp.
+          </p>
+
+          <div class="hero-actions cinematic-reveal">
+            <a href="#catalogoSection" class="btn btn-primary glass-btn">Explorar catálogo</a>
+            <button id="btnToggleCartHero" class="btn btn-secondary glass-btn">Ver carrito</button>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+
+      <section class="trust">
+        <div class="container trust-grid">
+          <div class="trust-card reveal">
+            <strong>Prueba antes de invertir</strong>
+            <p>Descubre si realmente amas una fragancia antes de comprarla completa.</p>
+          </div>
+          <div class="trust-card reveal">
+            <strong>Atención directa</strong>
+            <p>Recibe tu pedido personalizado por WhatsApp, sin vueltas innecesarias.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÁS VENDIDOS -->
+      <section class="bestsellers-section">
+        <div class="container">
+          <div class="section-head reveal">
+            <div>
+              <span class="section-kicker">Bestsellers</span>
+              <h2>Los más vendidos</h2>
+            </div>
+          </div>
+        </div>
+        <div class="bestsellers-wrapper">
+          <div id="destacados" class="bestsellers-track"></div>
+        </div>
+      </section>
+
+      <section id="catalogoSection" class="container">
+        <div class="section-head reveal">
+          <div>
+            <h2>Catálogo</h2>
+            <p>Explora tu colección por casas. Cada perfume se abre con vista detallada, selección de mililitros y acceso a Fragrantica.</p>
+          </div>
+        </div>
+
+        <div id="filtros-marcas" class="filters-container"></div>
+        <div id="catalogo">
+          <p id="catalogo-loading" style="text-align:center;color:#999;padding:3rem 1rem;">Cargando catálogo...</p>
+        </div>
+      </section>
+
+      <section class="aroma-section">
+        <div class="container aroma-box">
+          <h2>Tu aroma, a tu ritmo</h2>
+
+          <p>
+            Prueba antes de invertir en botella completa. Descubre nuevas fragancias,
+            crea tu colección y encuentra ese aroma que realmente conecta contigo.
+          </p>
+
+          <div class="stats">
+            <div class="stat">
+              <strong><span class="count-up" data-target="19">0</span>+</strong>
+              <span>Fragancias disponibles</span>
+            </div>
+
+            <div class="stat">
+              <strong><span class="count-up" id="countCasas" data-target="0">0</span></strong>
+              <span>Casas de perfumería</span>
+            </div>
+
+            <div class="stat">
+              <strong><span class="count-up" data-target="3">0</span></strong>
+              <span>Tamaños disponibles</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
   <!-- MODAL DETALLE -->
   <div id="detalle" role="dialog" aria-modal="true" aria-label="Detalle del perfume">
@@ -261,51 +318,51 @@
 
   <div id="toast">Añadido exitosamente</div>
 
-  <a class="wa-float" href="https://wa.me/529213042001" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">💬</a>
+    <a class="wa-float" href="https://wa.me/529213042001" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">💬</a>
 
-  <!-- BOTÓN VOLVER ARRIBA -->
-  <button id="btnScrollTop" class="scroll-top-btn" aria-label="Volver arriba">↑</button>
+    <!-- BOTÓN VOLVER ARRIBA -->
+    <button id="btnScrollTop" class="scroll-top-btn" aria-label="Volver arriba">↑</button>
 
-  <section class="faq-section">
-    <div class="container">
-      <span class="faq-kicker">Preguntas frecuentes</span>
-      <h2 class="faq-title">Todo lo que necesitas saber</h2>
+    <section class="faq-section">
+      <div class="container">
+        <span class="faq-kicker">Preguntas frecuentes</span>
+        <h2 class="faq-title">Todo lo que necesitas saber</h2>
 
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary>¿Qué es un decant?</summary>
-          <div class="faq-answer"><p>Un decant es una porción de perfume original extraída directamente de su frasco y trasvasada a un atomizador más pequeño. Es la forma más accesible de probar fragancias sin comprar la botella completa.</p></div>
-        </details>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>¿Qué es un decant?</summary>
+            <div class="faq-answer"><p>Un decant es una porción de perfume original extraída directamente de su frasco y trasvasada a un atomizador más pequeño. Es la forma más accesible de probar fragancias sin comprar la botella completa.</p></div>
+          </details>
 
-        <details class="faq-item">
-          <summary>¿Son perfumes originales?</summary>
-          <div class="faq-answer"><p>Sí, todos nuestros decants provienen de frascos originales sellados. No trabajamos con imitaciones ni réplicas. Cada fragancia es 100% auténtica.</p></div>
-        </details>
+          <details class="faq-item">
+            <summary>¿Son perfumes originales?</summary>
+            <div class="faq-answer"><p>Sí, todos nuestros decants provienen de frascos originales sellados. No trabajamos con imitaciones ni réplicas. Cada fragancia es 100% auténtica.</p></div>
+          </details>
 
-        <details class="faq-item">
-          <summary>¿Cuánto perfume trae un decant?</summary>
-          <div class="faq-answer">
-            <p>Manejamos 3 tamaños:</p>
-            <p>2 ml: 30 atomizaciones</p>
-            <p>5 ml: 90 atomizaciones</p>
-            <p>10 ml: 180 atomizaciones</p>
-          </div>
-        </details>
+          <details class="faq-item">
+            <summary>¿Cuánto perfume trae un decant?</summary>
+            <div class="faq-answer">
+              <p>Manejamos 3 tamaños:</p>
+              <p>2 ml: 30 atomizaciones</p>
+              <p>5 ml: 90 atomizaciones</p>
+              <p>10 ml: 180 atomizaciones</p>
+            </div>
+          </details>
 
-        <details class="faq-item">
-          <summary>¿No se evaporan los perfumes si los pones en la botella del decant?</summary>
-          <div class="faq-answer"><p>No. Nuestros atomizadores son herméticos y están diseñados específicamente para conservar perfumes. La fragancia mantiene su calidad, proyección y duración igual que en el frasco original.</p></div>
-        </details>
+          <details class="faq-item">
+            <summary>¿No se evaporan los perfumes si los pones en la botella del decant?</summary>
+            <div class="faq-answer"><p>No. Nuestros atomizadores son herméticos y están diseñados específicamente para conservar perfumes. La fragancia mantiene su calidad, proyección y duración igual que en el frasco original.</p></div>
+          </details>
 
-        <details class="faq-item">
-          <summary>¿Cómo hago mi pedido?</summary>
-          <div class="faq-answer"><p>Elige los perfumes que te gusten, selecciona los mililitros de cada uno y agrégalos al carrito. Cuando estés listo, envía tu pedido directo por WhatsApp. Te respondemos al momento para confirmar y coordinar la entrega.</p></div>
-        </details>
+          <details class="faq-item">
+            <summary>¿Cómo hago mi pedido?</summary>
+            <div class="faq-answer"><p>Elige los perfumes que te gusten, selecciona los mililitros de cada uno y agrégalos al carrito. Cuando estés listo, envía tu pedido directo por WhatsApp. Te respondemos al momento para confirmar y coordinar la entrega.</p></div>
+          </details>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <footer>
+    <footer>
     <div class="container footer-wrap">
       <div class="footer-brand">
         <strong style="font-family:'Playfair Display', serif; font-size:24px; color:var(--gold-2);">SmellGood</strong><br>
@@ -331,17 +388,79 @@
         </div>
       </div>
     </div>
-  </footer>
+    </footer>
 
+  </div><!-- /siteDecants -->
+
+  <!-- ============ SITIO PERFUMES COMPLETOS (oculto hasta elegir) ============ -->
+  <div id="siteCompletos" class="site-zone site-hidden">
+
+    <div class="announcement-bar">
+      <div class="announcement-track">
+        <span>✦ Perfumes originales sellados</span>
+        <span>✦ Entregas en todo Cancún</span>
+        <span>✦ Los mejores precios</span>
+        <span>✦ Pedido rápido por WhatsApp</span>
+      </div>
+      <div class="announcement-track" aria-hidden="true">
+        <span>✦ Perfumes originales sellados</span>
+        <span>✦ Entregas en todo Cancún</span>
+        <span>✦ Los mejores precios</span>
+        <span>✦ Pedido rápido por WhatsApp</span>
+      </div>
+    </div>
+
+    <header>
+      <nav class="container nav" aria-label="Navegación principal">
+        <div class="logo">
+          <a href="/" class="logo-text">
+            <strong>SmellGood</strong>
+            <span>Perfumes Completos</span>
+          </a>
+        </div>
+        <div class="nav-actions">
+          <button id="btnBackToGateway" class="switch-btn" style="margin-left:auto;">← Volver a elegir</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="completos-hero">
+        <div class="container" style="text-align:center; padding:120px 20px 80px;">
+          <span class="section-kicker">Frascos originales</span>
+          <h1 style="font-family:'Playfair Display',serif; font-size:clamp(36px,5vw,56px); margin-bottom:20px;">Perfumes Completos</h1>
+          <p style="color:var(--muted); font-size:18px; max-width:560px; margin:0 auto 40px; line-height:1.7;">Frascos sellados de fábrica al mejor precio. Tu fragancia favorita, completa.</p>
+          <div style="background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.2); border-radius:20px; padding:48px 32px; max-width:500px; margin:0 auto;">
+            <p style="font-size:48px; margin-bottom:16px;">🧴</p>
+            <h3 style="font-family:'Playfair Display',serif; font-size:24px; margin-bottom:12px;">Próximamente</h3>
+            <p style="color:var(--muted); line-height:1.7;">Estamos preparando una selección exclusiva de frascos completos. Mientras tanto, explora nuestros decants.</p>
+            <button id="btnGoToDecants" class="btn btn-primary glass-btn" style="margin-top:24px;">Explorar decants</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-wrap">
+        <div class="footer-brand">
+          <strong style="font-family:'Playfair Display', serif; font-size:24px; color:var(--gold-2);">SmellGood</strong><br>
+          Tu experiencia en perfumes.
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /siteCompletos -->
+
+  <!-- MODALS & OVERLAYS (fuera de las zonas para que siempre funcionen) -->
   <script src="js/config.js" defer></script>
-  <script src="js/sheets.js?v=2" defer></script>
+  <script src="js/sheets.js?v=4" defer></script>
   <script src="js/toast.js" defer></script>
   <script src="js/cart.js?v=4" defer></script>
   <script src="js/modal.js?v=2" defer></script>
   <script src="js/whatsapp.js" defer></script>
   <script src="js/catalog.js?v=5" defer></script>
-  <script src="js/extras.js?v=1" defer></script>
+  <script src="js/extras.js?v=4" defer></script>
   <script src="js/faq.js" defer></script>
-  <script src="js/app.js?v=3" defer></script>
+  <script src="js/app.js?v=15" defer></script>
 </body>
 </html>

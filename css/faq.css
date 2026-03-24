@@ -91,6 +91,7 @@
   font-size:15px;
   margin:0;
   padding:0;
+  transition:padding .55s cubic-bezier(.25,.46,.45,.94);
 }
 
 .faq-item.active .faq-answer{

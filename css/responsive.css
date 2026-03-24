@@ -222,5 +222,26 @@
   .hero-content{
     padding-top:180px !important;
   }
+
+  .bestseller-card{
+    flex:0 0 240px;
+  }
+
+  .bestseller-card .bs-img-wrap{
+    height:200px;
+    padding:24px 16px 8px;
+  }
+
+  .bestseller-card .bs-img-wrap img{
+    max-height:160px;
+  }
+
+  .bestseller-rank{
+    font-size:38px;
+  }
+
+  .bestseller-content h4{
+    font-size:17px;
+  }
 }
 
