@@ -12,9 +12,20 @@ function _loadCart() {
     var saved = localStorage.getItem('sg_carrito');
     if (saved) {
       carrito = JSON.parse(saved);
+      // Migrar items viejos
+      carrito.forEach(function(item) {
+        console.log('[CART] item:', item.nombre, 'ml:', item.ml, 'isCompleto:', item.isCompleto, 'precio:', item.precio);
+        if (item.isCompleto === undefined) {
+          var mlNum = Number(item.ml);
+          if (mlNum !== 2 && mlNum !== 5 && mlNum !== 10) {
+            item.isCompleto = true;
+          }
+        }
+      });
       _nextCartId = carrito.reduce(function(max, item) {
         return Math.max(max, (item.id || 0) + 1);
       }, 1);
+      _saveCart();
     }
   } catch (e) {
     carrito = [];

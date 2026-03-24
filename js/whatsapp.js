@@ -13,18 +13,43 @@ function enviarPedido() {
   }
 
   var total = 0;
-  var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido de decants.\n\n';
+  var totalDecants = 0;
+  var hasDecants = false;
+  var hasCompletos = false;
+
+  var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido.\n\n';
 
   carrito.forEach(function(p) {
-    texto += '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml ($' + p.precio + ')\n';
+    var mlLabel = p.isCompleto ? 'Frasco completo' : p.ml + ' ml';
+    texto += '\u2022 ' + p.nombre + ' - ' + mlLabel + ' ($' + p.precio + ')\n';
     total += p.precio;
+    if (!p.isCompleto) {
+      totalDecants += p.precio;
+      hasDecants = true;
+    } else {
+      hasCompletos = true;
+    }
   });
 
+  // Descuento escalonado solo sobre decants
+  var TIERS = [
+    { threshold: 500, percent: 10 },
+    { threshold: 800, percent: 15 },
+    { threshold: 1200, percent: 20 }
+  ];
+
   var descuento = 0;
-  if (total >= 500) {
-    descuento = Math.round(total * 10 / 100);
+  var tierPercent = 0;
+  for (var t = 0; t < TIERS.length; t++) {
+    if (totalDecants >= TIERS[t].threshold) {
+      tierPercent = TIERS[t].percent;
+    }
+  }
+
+  if (tierPercent > 0) {
+    descuento = Math.round(totalDecants * tierPercent / 100);
     texto += '\nSubtotal: $' + total;
-    texto += '\nDescuento 10%: -$' + descuento;
+    texto += '\nDescuento ' + tierPercent + '% en decants: -$' + descuento;
     texto += '\nTotal de mi pedido: $' + (total - descuento);
   } else {
     texto += '\nTotal de mi pedido: $' + total;
