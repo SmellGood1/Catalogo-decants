@@ -4,7 +4,7 @@
   background:rgba(0,0,0,.68);
   display:none;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start;
   padding:24px;
   z-index:120;
   backdrop-filter:blur(0px);
@@ -42,6 +42,7 @@
   border:1px solid rgba(255,255,255,.08);
   box-shadow:0 30px 80px rgba(0,0,0,.45);
   position:relative;
+  margin:auto;
   transform:scale(.92) translateY(30px);
   opacity:0;
   filter:blur(0px);
