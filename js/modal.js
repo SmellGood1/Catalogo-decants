@@ -187,7 +187,9 @@ function verPerfume(p) {
   if (p.isCompleto) {
     mlField.style.display = 'none';
     precioModal.textContent = '$' + p.price;
-    textoMl.textContent = p.ml ? p.ml + ' ml — Frasco completo' : 'Frasco completo';
+    var mlText = p.ml ? p.ml + ' ml — Frasco completo' : 'Frasco completo';
+    if (p.entrega) mlText += ' · 📦 ' + p.entrega;
+    textoMl.textContent = mlText;
     btnAdd.textContent = 'Añadir al carrito';
   } else {
     mlField.style.display = '';

@@ -53,6 +53,7 @@ function renderCompletos() {
         '<div class="card-content">' +
           '<h4>' + p.name + '</h4>' +
           '<div class="brand">' + casa + '</div>' +
+          (p.entrega && !p.proximo ? '<div class="entrega-label">📦 ' + p.entrega + '</div>' : '') +
           '<div class="bottom">' +
             '<div class="starting">' +
               '<span>Frasco completo</span>' +

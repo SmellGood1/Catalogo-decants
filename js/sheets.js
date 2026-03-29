@@ -147,7 +147,8 @@ function loadCompletosFromSheets() {
                      row['Notas base'] || row['Notas Base'] || ''
                    ),
           proximo: enVenta !== 'SI',
-          muyProonto: enVenta === 'MUY PRONTO'
+          muyProonto: enVenta === 'MUY PRONTO',
+          entrega: (row['Entrega'] || row['entrega'] || '').trim()
         };
 
         if (!completos[casa]) completos[casa] = [];

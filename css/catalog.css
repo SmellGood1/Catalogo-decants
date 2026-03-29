@@ -197,6 +197,13 @@
   color:var(--gold-2);
 }
 
+.entrega-label{
+  font-size:12px;
+  color:var(--success);
+  margin-top:6px;
+  margin-bottom:4px;
+}
+
 .card .bottom{
   display:flex;
   justify-content:space-between;
