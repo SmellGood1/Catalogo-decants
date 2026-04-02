@@ -132,7 +132,6 @@ function renderCombos() {
     }
 
     card.innerHTML =
-      (combo.video ? '<video class="combo-video" autoplay muted loop playsinline webkit-playsinline><source src="assets/' + combo.video + '" type="video/mp4"></video>' : '') +
       '<div class="combo-header">' +
         '<h3>' + combo.name + '</h3>' +
         '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
@@ -201,6 +200,23 @@ function renderCombos() {
     });
 
     container.appendChild(card);
+
+    // Crear video por DOM (no innerHTML) para que iOS respete playsinline
+    if (combo.video) {
+      var vid = document.createElement('video');
+      vid.className = 'combo-video';
+      vid.autoplay = true;
+      vid.muted = true;
+      vid.defaultMuted = true;
+      vid.loop = true;
+      vid.playsInline = true;
+      vid.setAttribute('playsinline', '');
+      vid.setAttribute('webkit-playsinline', '');
+      vid.setAttribute('muted', '');
+      vid.preload = 'auto';
+      vid.src = 'assets/' + combo.video;
+      card.insertBefore(vid, card.firstChild);
+    }
   });
 
 }
