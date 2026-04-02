@@ -131,8 +131,12 @@ function renderCombos() {
       return orig - combo.prices[ml];
     }
 
+    // Guardar referencia al video para lazy-load
+    if (combo.video) {
+      card.setAttribute('data-video', 'assets/' + combo.video);
+    }
+
     card.innerHTML =
-      (combo.video ? '<video class="combo-video" autoplay muted loop playsinline preload="none" data-src="assets/' + combo.video + '"></video>' : '') +
       '<div class="combo-header">' +
         '<h3>' + combo.name + '</h3>' +
         '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
@@ -201,6 +205,45 @@ function renderCombos() {
     });
 
     container.appendChild(card);
+  });
+
+  // Lazy-load videos: crear <video> por DOM cuando el combo sea visible
+  var videoObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var card = entry.target;
+      var src = card.getAttribute('data-video');
+      if (!src) return;
+
+      if (entry.isIntersecting) {
+        // Solo crear el video si no existe
+        if (!card.querySelector('.combo-video')) {
+          var vid = document.createElement('video');
+          vid.className = 'combo-video';
+          vid.muted = true;
+          vid.loop = true;
+          vid.playsInline = true;
+          vid.setAttribute('playsinline', '');
+          vid.setAttribute('webkit-playsinline', '');
+          vid.setAttribute('muted', '');
+          vid.src = src;
+          card.insertBefore(vid, card.firstChild);
+          vid.play().catch(function() {});
+        }
+      } else {
+        // Quitar el video al salir del viewport para liberar recursos
+        var existing = card.querySelector('.combo-video');
+        if (existing) {
+          existing.pause();
+          existing.removeAttribute('src');
+          existing.load();
+          existing.remove();
+        }
+      }
+    });
+  }, { threshold: 0.1 });
+
+  container.querySelectorAll('.combo-card[data-video]').forEach(function(card) {
+    videoObserver.observe(card);
   });
 }
 
