@@ -201,8 +201,8 @@ function renderCombos() {
 
     container.appendChild(card);
 
-    // Crear video por DOM (no innerHTML) para que iOS respete playsinline
-    if (combo.video) {
+    // Solo cargar video de fondo en escritorio (iOS abre reproductor nativo)
+    if (combo.video && window.innerWidth > 768) {
       var vid = document.createElement('video');
       vid.className = 'combo-video';
       vid.autoplay = true;
@@ -211,9 +211,7 @@ function renderCombos() {
       vid.loop = true;
       vid.playsInline = true;
       vid.setAttribute('playsinline', '');
-      vid.setAttribute('webkit-playsinline', '');
       vid.setAttribute('muted', '');
-      vid.preload = 'auto';
       vid.src = 'assets/' + combo.video;
       card.insertBefore(vid, card.firstChild);
     }
