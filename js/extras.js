@@ -201,23 +201,9 @@ function renderCombos() {
 
     container.appendChild(card);
 
-    // Crear video sin src (se activa cuando la sección sea visible)
+    // Video de fondo: se guarda la URL, se activa al mostrar la sección
     if (combo.video) {
-      var vid = document.createElement('video');
-      vid.className = 'combo-video';
-      vid.muted = true;
-      vid.defaultMuted = true;
-      vid.loop = true;
-      vid.playsInline = true;
-      vid.controls = false;
-      vid.setAttribute('playsinline', '');
-      vid.setAttribute('webkit-playsinline', '');
-      vid.setAttribute('muted', '');
-      vid.setAttribute('x-webkit-airplay', 'deny');
-      vid.setAttribute('disableRemotePlayback', '');
-      vid.disableRemotePlayback = true;
-      vid.dataset.src = 'assets/' + combo.video;
-      card.insertBefore(vid, card.firstChild);
+      card.dataset.video = 'assets/' + combo.video;
     }
   });
 
