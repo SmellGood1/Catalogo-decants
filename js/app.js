@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // WA float button
   var waFloats = document.querySelectorAll('.wa-float');
   waFloats.forEach(function(el) {
-    el.href = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent('Hola ' + CONFIG.WA_CONTACT + ', vi su catálogo y me gustaría más información 👋');
+    el.href = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent('Hola ' + CONFIG.WA_CONTACT + ', vi tu catálogo y me gustaría más información 👋');
   });
 
   // UI Event Listeners (Nav, Hero)
