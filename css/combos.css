@@ -243,4 +243,8 @@
     gap:10px;
     align-items:flex-start;
   }
+
+  .combo-card .combo-video{
+    display:none;
+  }
 }
