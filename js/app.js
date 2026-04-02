@@ -218,6 +218,11 @@ document.addEventListener('DOMContentLoaded', function() {
       siteToShow.classList.remove('site-hidden');
       window.scrollTo(0, 0);
 
+      // Iniciar videos de combos al entrar a la sección
+      siteToShow.querySelectorAll('.combo-video').forEach(function(v) {
+        v.play().catch(function() {});
+      });
+
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
           overlay.classList.remove('active');
@@ -236,6 +241,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var from = siteDecants.classList.contains('site-hidden') ? siteCompletos : siteDecants;
 
     overlay.classList.add('switch-active');
+
+    // Pausar videos al salir de la sección
+    from.querySelectorAll('.combo-video').forEach(function(v) {
+      v.pause();
+    });
 
     setTimeout(function() {
       from.classList.add('site-hidden');
@@ -265,13 +275,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnBackToGatewayDecants = document.getElementById('btnBackToGatewayDecants');
   if (btnBackToGatewayDecants) btnBackToGatewayDecants.addEventListener('click', backToGateway);
   if (btnGoToDecants) btnGoToDecants.addEventListener('click', function() {
+    siteCompletos.querySelectorAll('.combo-video').forEach(function(v) { v.pause(); });
     siteCompletos.classList.add('site-hidden');
     siteDecants.classList.remove('site-hidden');
+    siteDecants.querySelectorAll('.combo-video').forEach(function(v) {
+      v.play().catch(function() {});
+    });
     window.scrollTo(0, 0);
   });
 
   // Switch between sections
   function switchSite(from, to) {
+    // Pausar videos de la sección que se oculta
+    from.querySelectorAll('.combo-video').forEach(function(v) { v.pause(); });
+
     // 1. Fade a negro
     overlay.classList.add('switch-active');
 
@@ -283,6 +300,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 3. Mostrar new section y fade out del overlay
     setTimeout(function() {
       to.classList.remove('site-hidden');
+      // Iniciar videos de la sección que se muestra
+      to.querySelectorAll('.combo-video').forEach(function(v) {
+        v.play().catch(function() {});
+      });
       overlay.classList.remove('switch-active');
     }, 420);
   }

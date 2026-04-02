@@ -132,7 +132,7 @@ function renderCombos() {
     }
 
     card.innerHTML =
-      (combo.video ? '<video class="combo-video" autoplay muted loop playsinline><source src="assets/' + combo.video + '" type="video/mp4"></video>' : '') +
+      (combo.video ? '<video class="combo-video" muted loop playsinline preload="none"><source src="assets/' + combo.video + '" type="video/mp4"></video>' : '') +
       '<div class="combo-header">' +
         '<h3>' + combo.name + '</h3>' +
         '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
@@ -201,12 +201,6 @@ function renderCombos() {
     });
 
     container.appendChild(card);
-
-    // Forzar autoplay en móviles (iOS bloquea autoplay vía innerHTML)
-    var vid = card.querySelector('.combo-video');
-    if (vid) {
-      vid.play().catch(function() {});
-    }
   });
 }
 
