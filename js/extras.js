@@ -201,6 +201,12 @@ function renderCombos() {
     });
 
     container.appendChild(card);
+
+    // Forzar autoplay en móviles (iOS bloquea autoplay vía innerHTML)
+    var vid = card.querySelector('.combo-video');
+    if (vid) {
+      vid.play().catch(function() {});
+    }
   });
 }
 
