@@ -67,9 +67,15 @@ function _initHeroWordShuffle(elementId) {
   });
 }
 
-// Crear videos de fondo en combos (solo escritorio)
+// Detectar si estamos en un navegador in-app de redes sociales
+var _isInAppBrowser = (function() {
+  var ua = navigator.userAgent || '';
+  return /Instagram|FBAN|FBAV|Twitter|TikTok|Snapchat|LinkedInApp|Pinterest|Line\//i.test(ua);
+})();
+
+// Crear videos de fondo en combos (no en apps de redes sociales)
 function _activateComboVideos(container) {
-  if (window.innerWidth <= 768) return;
+  if (_isInAppBrowser) return;
   container.querySelectorAll('.combo-card[data-video]').forEach(function(card) {
     if (card.querySelector('.combo-video')) return;
     var vid = document.createElement('video');
