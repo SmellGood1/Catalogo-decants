@@ -218,6 +218,14 @@ document.addEventListener('DOMContentLoaded', function() {
       siteToShow.classList.remove('site-hidden');
       window.scrollTo(0, 0);
 
+      // Activar videos de fondo DESPUÉS de que la sección sea visible
+      setTimeout(function() {
+        siteToShow.querySelectorAll('.combo-video[data-src]').forEach(function(v) {
+          v.src = v.dataset.src;
+          v.play().catch(function() {});
+        });
+      }, 500);
+
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
           overlay.classList.remove('active');
@@ -236,6 +244,12 @@ document.addEventListener('DOMContentLoaded', function() {
     var from = siteDecants.classList.contains('site-hidden') ? siteCompletos : siteDecants;
 
     overlay.classList.add('switch-active');
+
+    // Pausar y quitar src de videos al salir
+    from.querySelectorAll('.combo-video').forEach(function(v) {
+      v.pause();
+      v.removeAttribute('src');
+    });
 
     setTimeout(function() {
       from.classList.add('site-hidden');
@@ -265,13 +279,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnBackToGatewayDecants = document.getElementById('btnBackToGatewayDecants');
   if (btnBackToGatewayDecants) btnBackToGatewayDecants.addEventListener('click', backToGateway);
   if (btnGoToDecants) btnGoToDecants.addEventListener('click', function() {
+    siteCompletos.querySelectorAll('.combo-video').forEach(function(v) { v.pause(); v.removeAttribute('src'); });
     siteCompletos.classList.add('site-hidden');
     siteDecants.classList.remove('site-hidden');
+    setTimeout(function() {
+      siteDecants.querySelectorAll('.combo-video[data-src]').forEach(function(v) { v.src = v.dataset.src; v.play().catch(function(){}); });
+    }, 500);
     window.scrollTo(0, 0);
   });
 
   // Switch between sections
   function switchSite(from, to) {
+    // Pausar videos de la sección que se oculta
+    from.querySelectorAll('.combo-video').forEach(function(v) { v.pause(); v.removeAttribute('src'); });
+
     // 1. Fade a negro
     overlay.classList.add('switch-active');
 
@@ -283,6 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // 3. Mostrar new section y fade out del overlay
     setTimeout(function() {
       to.classList.remove('site-hidden');
+      // Activar videos de la nueva sección
+      setTimeout(function() {
+        to.querySelectorAll('.combo-video[data-src]').forEach(function(v) { v.src = v.dataset.src; v.play().catch(function(){}); });
+      }, 500);
       overlay.classList.remove('switch-active');
     }, 420);
   }

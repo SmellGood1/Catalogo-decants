@@ -201,18 +201,22 @@ function renderCombos() {
 
     container.appendChild(card);
 
-    // Solo cargar video de fondo en escritorio (iOS abre reproductor nativo)
-    if (combo.video && window.innerWidth > 768) {
+    // Crear video sin src (se activa cuando la sección sea visible)
+    if (combo.video) {
       var vid = document.createElement('video');
       vid.className = 'combo-video';
-      vid.autoplay = true;
       vid.muted = true;
       vid.defaultMuted = true;
       vid.loop = true;
       vid.playsInline = true;
+      vid.controls = false;
       vid.setAttribute('playsinline', '');
+      vid.setAttribute('webkit-playsinline', '');
       vid.setAttribute('muted', '');
-      vid.src = 'assets/' + combo.video;
+      vid.setAttribute('x-webkit-airplay', 'deny');
+      vid.setAttribute('disableRemotePlayback', '');
+      vid.disableRemotePlayback = true;
+      vid.dataset.src = 'assets/' + combo.video;
       card.insertBefore(vid, card.firstChild);
     }
   });
