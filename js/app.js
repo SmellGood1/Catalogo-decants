@@ -67,10 +67,15 @@ function _initHeroWordShuffle(elementId) {
   });
 }
 
-// Detectar si estamos en un navegador in-app de redes sociales
+// Detectar si estamos en un navegador in-app (redes sociales, webviews)
 var _isInAppBrowser = (function() {
   var ua = navigator.userAgent || '';
-  return /Instagram|FBAN|FBAV|Twitter|TikTok|Snapchat|LinkedInApp|Pinterest|Line\//i.test(ua);
+  // Detectar apps conocidas
+  if (/Instagram|FBAN|FBAV|FB_IAB|Twitter|TikTok|BytedanceWebview|Snapchat|LinkedInApp|Pinterest|Line\/|WhatsApp|Telegram|Weibo|MicroMessenger|musical_ly/i.test(ua)) return true;
+  // Detectar WebViews genéricos en iOS (no Safari real)
+  var isIOS = /iPhone|iPad|iPod/i.test(ua);
+  if (isIOS && !/Safari/i.test(ua)) return true;
+  return false;
 })();
 
 // Crear videos de fondo en combos (no en apps de redes sociales)
