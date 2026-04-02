@@ -67,10 +67,11 @@ function _initHeroWordShuffle(elementId) {
   });
 }
 
-// Crear/eliminar videos de fondo en combos (sin .play(), solo autoplay nativo)
+// Crear videos de fondo en combos (solo escritorio)
 function _activateComboVideos(container) {
+  if (window.innerWidth <= 768) return;
   container.querySelectorAll('.combo-card[data-video]').forEach(function(card) {
-    if (card.querySelector('.combo-video')) return; // ya tiene video
+    if (card.querySelector('.combo-video')) return;
     var vid = document.createElement('video');
     vid.className = 'combo-video';
     vid.autoplay = true;
@@ -80,7 +81,6 @@ function _activateComboVideos(container) {
     vid.playsInline = true;
     vid.controls = false;
     vid.setAttribute('playsinline', '');
-    vid.setAttribute('webkit-playsinline', '');
     vid.setAttribute('muted', '');
     vid.src = card.dataset.video;
     card.insertBefore(vid, card.firstChild);
