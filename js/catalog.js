@@ -165,35 +165,43 @@ function _renderCatalogoGrid(filtroTexto) {
 
     perfumesFiltrados.forEach(function(p, i) {
       var card = document.createElement('article');
-      card.className = p.proximo ? (p.muyProonto ? 'card proximo muy-pronto' : 'card proximo') : 'card';
+      card.className = p.proximo ? (p.muyProonto ? 'card proximo muy-pronto' : 'card proximo') : (p.agotado ? 'card agotado' : 'card');
       card.style.setProperty('--delay', ((cardIndex + i) * 0.06) + 's');
       var soonText = p.muyProonto ? '¡Muy pronto!' : 'Próximamente';
+
+      var topContent = '';
+      if (p.agotado) {
+        topContent = '<div class="agotado-label">Agotado</div>';
+      } else if (p.proximo) {
+        topContent = '<div class="soon-label' + (p.muyProonto ? ' muy-pronto-label' : '') + '">' + soonText + '</div>';
+      } else {
+        topContent = '<span class="pill">' + p.conc + '</span>';
+      }
+
+      var bottomContent = '';
+      if (p.agotado) {
+        bottomContent = '<div class="starting"><span>Agotado</span></div>' +
+          (p.link ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn agotado-link">Fragrantica</a>' : '');
+      } else if (p.proximo) {
+        bottomContent = '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn fragrantica-card-link">Conoce más en Fragrantica</a>';
+      } else {
+        bottomContent = '<div class="starting"><span>Desde</span><strong>$' + p.prices[2] + '</strong></div><button class="small-btn">Ver</button>';
+      }
+
       card.innerHTML =
-        '<div class="card-top">' +
-          (p.proximo
-            ? '<div class="soon-label' + (p.muyProonto ? ' muy-pronto-label' : '') + '">' + soonText + '</div>'
-            : '<span class="pill">' + p.conc + '</span>') +
-        '</div>' +
+        '<div class="card-top">' + topContent + '</div>' +
         '<div class="card-img-wrap">' +
           '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
         '</div>' +
         '<div class="card-content">' +
           '<h4>' + p.name + '</h4>' +
           '<div class="brand">' + casa + '</div>' +
-          '<div class="bottom">' +
-            (p.proximo
-              ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn fragrantica-card-link">Conoce más en Fragrantica</a>'
-              : '<div class="starting">' +
-                  '<span>Desde</span>' +
-                  '<strong>$' + p.prices[2] + '</strong>' +
-                '</div>' +
-                '<button class="small-btn">Ver</button>') +
-          '</div>' +
+          '<div class="bottom">' + bottomContent + '</div>' +
         '</div>';
 
       card.addEventListener('click', (function(perfume, casaNombre) {
         return function(e) {
-          if (perfume.proximo) return;
+          if (perfume.proximo || perfume.agotado) return;
           if (e.target.closest('a')) return;
           var perfumeConCasa = {};
           for (var key in perfume) { perfumeConCasa[key] = perfume[key]; }

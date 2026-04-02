@@ -20,15 +20,19 @@ function enviarPedido() {
   var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido.\n\n';
 
   carrito.forEach(function(p) {
-    var mlLabel = p.isCompleto ? 'Frasco completo' : p.ml + ' ml';
-    texto += '\u2022 ' + p.nombre + ' - ' + mlLabel + ' ($' + p.precio + ')\n';
-    total += p.precio;
-    if (!p.isCompleto) {
+    if (p.isCombo) {
+      texto += '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml c/u ($' + p.precio + ')\n';
+      if (p.comboItems) {
+        texto += '   (' + p.comboItems.join(', ') + ')\n';
+      }
       totalDecants += p.precio;
-      hasDecants = true;
+    } else if (p.isCompleto) {
+      texto += '\u2022 ' + p.nombre + ' - Frasco completo ($' + p.precio + ')\n';
     } else {
-      hasCompletos = true;
+      texto += '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml ($' + p.precio + ')\n';
+      totalDecants += p.precio;
     }
+    total += p.precio;
   });
 
   // Descuento escalonado solo sobre decants

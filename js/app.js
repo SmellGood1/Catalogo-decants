@@ -72,11 +72,12 @@ document.addEventListener('DOMContentLoaded', function() {
   renderCarrito();
 
   // Cargar productos desde Google Sheets
-  Promise.all([loadPerfumesFromSheets(), loadCompletosFromSheets()])
+  Promise.all([loadPerfumesFromSheets(), loadCompletosFromSheets(), loadCombosFromSheets()])
     .then(function() {
       renderCatalogo();
       renderDestacados();
       if (typeof renderCompletos === 'function') renderCompletos();
+      if (typeof renderCombos === 'function') renderCombos();
 
       // Actualizar contador de casas dinámicamente
       var countCasas = document.getElementById('countCasas');

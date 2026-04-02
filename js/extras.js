@@ -32,17 +32,37 @@ function renderCompletos() {
 
     COMPLETOS[casa].forEach(function(p) {
       var card = document.createElement('article');
-      card.className = 'card revealed' + (p.proximo ? ' proximo' : '');
+      card.className = 'card revealed' + (p.proximo ? ' proximo' : '') + (p.agotado ? ' agotado' : '');
       card.style.opacity = '1';
       card.style.transform = 'none';
 
       var topPills = '';
-      if (p.conc) topPills += '<span class="pill">' + p.conc + '</span>';
-      if (p.ml) topPills += '<span class="pill">' + p.ml + ' ml</span>';
-      if (p.proximo && p.muyProonto) {
-        topPills += '<span class="soon-label muy-pronto-label">Muy pronto</span>';
+      if (p.agotado) {
+        topPills = '<div class="agotado-label">Agotado</div>';
+      } else if (p.proximo && p.muyProonto) {
+        topPills = '<span class="soon-label muy-pronto-label">Muy pronto</span>';
       } else if (p.proximo) {
-        topPills += '<span class="soon-label">Próximamente</span>';
+        topPills = '<span class="soon-label">Próximamente</span>';
+      } else {
+        if (p.conc) topPills += '<span class="pill">' + p.conc + '</span>';
+        if (p.ml) topPills += '<span class="pill">' + p.ml + ' ml</span>';
+      }
+
+      var bottomContent = '';
+      if (p.agotado) {
+        bottomContent = '<div class="bottom"><div class="starting"><span>Agotado</span></div>' +
+          (p.link ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn agotado-link">Fragrantica</a>' : '') +
+          '</div>';
+      } else {
+        bottomContent =
+          (p.entrega && !p.proximo ? '<div class="entrega-label">📦 ' + p.entrega + '</div>' : '') +
+          '<div class="bottom">' +
+            '<div class="starting">' +
+              '<span>Frasco completo</span>' +
+              '<strong>$' + p.price + '</strong>' +
+            '</div>' +
+            (!p.proximo ? '<span class="small-btn">Ver</span>' : '') +
+          '</div>';
       }
 
       card.innerHTML =
@@ -53,17 +73,10 @@ function renderCompletos() {
         '<div class="card-content">' +
           '<h4>' + p.name + '</h4>' +
           '<div class="brand">' + casa + '</div>' +
-          (p.entrega && !p.proximo ? '<div class="entrega-label">📦 ' + p.entrega + '</div>' : '') +
-          '<div class="bottom">' +
-            '<div class="starting">' +
-              '<span>Frasco completo</span>' +
-              '<strong>$' + p.price + '</strong>' +
-            '</div>' +
-            (!p.proximo ? '<span class="small-btn">Ver</span>' : '') +
-          '</div>' +
+          bottomContent +
         '</div>';
 
-      if (!p.proximo) {
+      if (!p.proximo && !p.agotado) {
         card.addEventListener('click', function() {
           var perfumeConCasa = {};
           for (var key in p) { perfumeConCasa[key] = p[key]; }
@@ -77,6 +90,117 @@ function renderCompletos() {
     });
 
     container.appendChild(grid);
+  });
+}
+
+/* ── Combos ──────────────────────────────────────────────────── */
+
+function renderCombos() {
+  var container = document.getElementById('combosContainer');
+  if (!container || !window.COMBOS || !window.PERFUMES) return;
+
+  var combos = COMBOS.filter(function(c) { return !c.agotado; });
+
+  if (!combos.length) {
+    var section = container.closest('.combos-section');
+    if (section) section.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = '';
+
+  combos.forEach(function(combo) {
+    // Buscar los 3 perfumes por código
+    var perfumes = combo.codes.map(function(code) {
+      return findPerfumeByCode(code);
+    }).filter(Boolean);
+
+    if (perfumes.length < 3) return;
+
+    var card = document.createElement('article');
+    card.className = 'combo-card';
+
+    // Calcular precio original sumado (5ml como referencia)
+    var originalSum = perfumes.reduce(function(sum, p) {
+      return sum + (p.prices[5] || 0);
+    }, 0);
+    var savings = originalSum - combo.prices[5];
+
+    function calcSavings(ml) {
+      var orig = perfumes.reduce(function(sum, p) { return sum + (p.prices[ml] || 0); }, 0);
+      return orig - combo.prices[ml];
+    }
+
+    card.innerHTML =
+      (combo.video ? '<video class="combo-video" autoplay muted loop playsinline><source src="assets/' + combo.video + '" type="video/mp4"></video>' : '') +
+      '<div class="combo-header">' +
+        '<h3>' + combo.name + '</h3>' +
+        '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
+      '</div>' +
+      '<div class="combo-perfumes">' +
+        perfumes.map(function(p) {
+          return '<div class="combo-perfume">' +
+            '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
+            '<span class="combo-perfume-name">' + p.name + '</span>' +
+            '<span class="combo-perfume-brand">' + p.casa + '</span>' +
+          '</div>';
+        }).join('<span class="combo-plus">+</span>') +
+      '</div>' +
+      '<div class="combo-footer">' +
+        '<div class="combo-prices">' +
+          '<div class="combo-price-tag" data-ml="2" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[2]||0)},0) + '"><span>2ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[2]||0)},0) + '</s><strong>$' + combo.prices[2] + '</strong></div>' +
+          '<div class="combo-price-tag active" data-ml="5" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[5]||0)},0) + '"><span>5ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[5]||0)},0) + '</s><strong>$' + combo.prices[5] + '</strong></div>' +
+          '<div class="combo-price-tag" data-ml="10" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[10]||0)},0) + '"><span>10ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[10]||0)},0) + '</s><strong>$' + combo.prices[10] + '</strong></div>' +
+        '</div>' +
+        '<button class="btn btn-primary combo-add-btn">Añadir combo</button>' +
+      '</div>';
+
+    // Click en price tags — actualizar ahorro
+    card.addEventListener('click', function(e) {
+      var tag = e.target.closest('.combo-price-tag');
+      if (tag) {
+        card.querySelectorAll('.combo-price-tag').forEach(function(t) { t.classList.remove('active'); });
+        tag.classList.add('active');
+        var ml = Number(tag.dataset.ml);
+        var s = calcSavings(ml);
+        var savingsEl = card.querySelector('.combo-savings');
+        savingsEl.textContent = 'Ahorras $' + s;
+        if (s <= 0) savingsEl.style.display = 'none';
+        else savingsEl.style.display = '';
+      }
+    });
+
+    // Añadir combo al carrito
+    var addBtn = card.querySelector('.combo-add-btn');
+    addBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var activeTag = card.querySelector('.combo-price-tag.active');
+      var ml = Number(activeTag.dataset.ml);
+
+      carrito.push({
+        id: _nextCartId++,
+        nombre: combo.name,
+        ml: ml,
+        precio: combo.prices[ml],
+        img: perfumes[1].img || '',
+        isCombo: true,
+        comboItems: perfumes.map(function(p) { return p.name; })
+      });
+
+      _saveCart();
+      renderCarrito();
+      mostrarToast('Combo añadido al carrito');
+
+      var contador = document.getElementById('contador');
+      if (contador) {
+        contador.classList.remove('pop');
+        void contador.offsetWidth;
+        contador.classList.add('pop');
+      }
+      _triggerConfetti();
+    });
+
+    container.appendChild(card);
   });
 }
 

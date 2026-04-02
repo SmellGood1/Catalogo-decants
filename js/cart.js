@@ -281,6 +281,8 @@ function renderCarrito() {
         precio: item.precio,
         img: item.img,
         isCompleto: item.isCompleto || false,
+        isCombo: item.isCombo || false,
+        comboItems: item.comboItems || null,
         cantidad: 1,
         ids: [item.id]
       };
@@ -299,7 +301,7 @@ function renderCarrito() {
     var div = document.createElement('div');
     div.className = 'cart-item';
 
-    var mlLabel = item.isCompleto ? 'Frasco completo' : item.ml + ' ml';
+    var mlLabel = item.isCompleto ? 'Frasco completo' : (item.isCombo ? item.ml + ' ml c/u' : item.ml + ' ml');
 
     div.innerHTML =
       '<div class="cart-left">' +

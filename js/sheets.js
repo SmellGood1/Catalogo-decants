@@ -61,6 +61,21 @@ function parseNotes(salida, corazon, fondo) {
   return notes;
 }
 
+function findPerfumeByCode(code) {
+  if (!window.PERFUMES) return null;
+  for (var casa in PERFUMES) {
+    for (var i = 0; i < PERFUMES[casa].length; i++) {
+      if (String(PERFUMES[casa][i].codigo) === String(code)) {
+        var p = {};
+        for (var k in PERFUMES[casa][i]) p[k] = PERFUMES[casa][i][k];
+        p.casa = casa;
+        return p;
+      }
+    }
+  }
+  return null;
+}
+
 /* ── Fetch & Build ───────────────────────────────────────────── */
 
 function loadPerfumesFromSheets() {
@@ -82,6 +97,7 @@ function loadPerfumesFromSheets() {
         var enVenta = (row['En venta'] || '').toUpperCase().trim();
 
         var perfume = {
+          codigo:  row['codigo'] || row['Codigo'] || '',
           name:    row['perfume'] || '',
           conc:    row['Concentración'] || row['Concentracion'] || '',
           img:     row['imagen'] || '',
@@ -98,7 +114,8 @@ function loadPerfumesFromSheets() {
                    ),
           destacado: (row['Destacado'] || row['destacado'] || row['Destacados'] || row['destacados'] || '').toUpperCase().trim() === 'SI',
           ranking: parseInt(row['Ranking'] || row['ranking'] || '0', 10) || 0,
-          proximo: enVenta !== 'SI',
+          proximo: enVenta !== 'SI' && enVenta !== 'NO',
+          agotado: enVenta === 'NO',
           muyProonto: enVenta === 'MUY PRONTO'
         };
 
@@ -146,7 +163,8 @@ function loadCompletosFromSheets() {
                      row['Notas corazón'] || row['Notas Corazón'] || row['Notas corazón '] || '',
                      row['Notas base'] || row['Notas Base'] || ''
                    ),
-          proximo: enVenta !== 'SI',
+          proximo: enVenta !== 'SI' && enVenta !== 'NO',
+          agotado: enVenta === 'NO',
           muyProonto: enVenta === 'MUY PRONTO',
           entrega: (row['Entrega'] || row['entrega'] || '').trim()
         };
@@ -157,5 +175,49 @@ function loadCompletosFromSheets() {
 
       window.COMPLETOS = completos;
       return completos;
+    });
+}
+
+/* ── Combos ───────────────────────────────────────────────────── */
+
+var COMBOS_CSV_URL =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vT31Q_qgQbxSCGNxeJ09rE-VqtnaLhgyjwyY5cdsU_C2VT6WAz1RYTFVFEcNQvr7pt58TyNhHnn0lGk/pub?gid=596726274&single=true&output=csv';
+
+function loadCombosFromSheets() {
+  return fetch(COMBOS_CSV_URL)
+    .then(function(response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.text();
+    })
+    .then(function(csvText) {
+      var rows = parseCSV(csvText);
+      var combos = [];
+
+      rows.forEach(function(row) {
+        var nombre = row['Nombre'] || row['nombre'] || '';
+        if (!nombre) return;
+
+        var enVenta = (row['En venta'] || row['En Venta'] || 'SI').toUpperCase().trim();
+
+        combos.push({
+          name: nombre,
+          codes: [
+            String(row['Código 1'] || row['Codigo 1'] || '').trim(),
+            String(row['Código 2'] || row['Codigo 2'] || '').trim(),
+            String(row['Código 3'] || row['Codigo 3'] || '').trim()
+          ],
+          prices: {
+            2:  cleanPrice(row['Precio 2ml'] || ''),
+            5:  cleanPrice(row['Precio 5ml'] || ''),
+            10: cleanPrice(row['Precio 10ml'] || '')
+          },
+          proximo: enVenta !== 'SI' && enVenta !== 'NO',
+          agotado: enVenta === 'NO',
+          video: (row['Video'] || row['video'] || '').trim()
+        });
+      });
+
+      window.COMBOS = combos;
+      return combos;
     });
 }
