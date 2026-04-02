@@ -132,7 +132,7 @@ function renderCombos() {
     }
 
     card.innerHTML =
-      (combo.video ? '<video class="combo-video" muted loop playsinline preload="none"><source src="assets/' + combo.video + '" type="video/mp4"></video>' : '') +
+      (combo.video ? '<video class="combo-video" autoplay muted loop playsinline preload="none" data-src="assets/' + combo.video + '"></video>' : '') +
       '<div class="combo-header">' +
         '<h3>' + combo.name + '</h3>' +
         '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
