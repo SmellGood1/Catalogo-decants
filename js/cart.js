@@ -2,13 +2,8 @@ var carrito = [];
 var _nextCartId = 1;
 var _activePromo = null;
 
-// Códigos de descuento (solo decants)
-var PROMO_CODES = {
-  'SMELL10': { percent: 10, expires: new Date('2026-03-25T11:00:00-05:00') },
-  'SM27A':   { percent: 27, expires: null },
-  'SM27B':   { percent: 27, expires: null },
-  'SM27C':   { percent: 27, expires: null }
-};
+// Códigos de descuento se cargan desde CONFIG (config.js)
+var PROMO_CODES = (window.CONFIG && CONFIG.PROMO_CODES) || {};
 
 function _saveCart() {
   try {

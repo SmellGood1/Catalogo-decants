@@ -191,7 +191,7 @@ function _renderCatalogoGrid(filtroTexto) {
       card.innerHTML =
         '<div class="card-top">' + topContent + '</div>' +
         '<div class="card-img-wrap">' +
-          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
+          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.opacity=\'0.3\';this.src=\'assets/favicon.svg\'">' +
         '</div>' +
         '<div class="card-content">' +
           '<h4>' + p.name + '</h4>' +

@@ -131,8 +131,16 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(function(err) {
       console.error('Error cargando productos:', err);
-      document.getElementById('catalogo').innerHTML =
-        '<p style="text-align:center;color:#999;padding:2rem;">No se pudieron cargar los productos. Recarga la página.</p>';
+      var errorHTML = '<div style="text-align:center;padding:3rem 1rem;">' +
+        '<div style="font-size:48px;margin-bottom:16px;">⚠️</div>' +
+        '<h3 style="color:var(--text);margin-bottom:8px;">No se pudo cargar el catálogo</h3>' +
+        '<p style="color:var(--muted);margin-bottom:20px;">Verifica tu conexión a internet e intenta de nuevo.</p>' +
+        '<button onclick="location.reload()" class="btn btn-primary" style="display:inline-block;">Reintentar</button>' +
+        '</div>';
+      var catalogo = document.getElementById('catalogo');
+      if (catalogo) catalogo.innerHTML = errorHTML;
+      var catalogoCompletos = document.getElementById('catalogoCompletos');
+      if (catalogoCompletos) catalogoCompletos.innerHTML = errorHTML;
     });
 
   // Extras
@@ -369,11 +377,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Search filter
+  // Search filter (con debounce para no reconstruir el grid en cada tecla)
   var buscador = document.getElementById('buscador');
+  var _searchTimer = null;
   if (buscador) {
     buscador.addEventListener('input', function(e) {
-      renderCatalogo(e.target.value);
+      clearTimeout(_searchTimer);
+      var valor = e.target.value;
+      _searchTimer = setTimeout(function() {
+        renderCatalogo(valor);
+      }, 200);
       if (e.target.value.length === 1) {
         var currentY = window.scrollY;
         var impulsoArriba = Math.max(0, currentY - 80);

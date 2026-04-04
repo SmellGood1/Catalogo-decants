@@ -36,6 +36,36 @@ header.scrolled{
   font-weight:700;
   color:var(--gold-2);
   letter-spacing:.4px;
+  transition:text-shadow .4s ease, color .4s ease;
+}
+
+.logo-text:hover strong{
+  color:#f5d77a;
+  text-shadow:
+    0 0 8px rgba(212,175,55,.4),
+    0 0 20px rgba(212,175,55,.2),
+    0 0 40px rgba(212,175,55,.1);
+  animation:logoGlowPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoGlowPulse{
+  0%,100%{
+    text-shadow:
+      0 0 8px rgba(212,175,55,.4),
+      0 0 20px rgba(212,175,55,.2),
+      0 0 40px rgba(212,175,55,.1);
+  }
+  50%{
+    text-shadow:
+      0 0 12px rgba(212,175,55,.6),
+      0 0 28px rgba(212,175,55,.3),
+      0 0 50px rgba(212,175,55,.15);
+  }
+}
+
+.logo-text:hover span{
+  color:var(--gold-2);
+  transition:color .4s ease;
 }
 
 .logo span{

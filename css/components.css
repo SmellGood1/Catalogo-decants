@@ -1,3 +1,9 @@
+/* Focus visible global — accesibilidad para navegación por teclado */
+:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+}
+
 select, input{
   width:100%;
   padding:14px 15px;
@@ -69,6 +75,23 @@ select:focus, input:focus{
 
 .btn-secondary:hover{
   background:rgba(255,255,255,.08);
+}
+
+.btn:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:3px;
+}
+
+.filter-pill:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+}
+
+.cart-btn:focus-visible,
+.small-btn:focus-visible,
+.qty-btn:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
 }
 
 .btn-proximo{
@@ -200,4 +223,36 @@ select:focus, input:focus{
   0%{transform:scale(0);opacity:1}
   50%{opacity:.6}
   100%{transform:scale(4);opacity:0}
+}
+
+/* ── Confetti on Add to Cart ───────────────────────────────── */
+.confetti-piece{
+  position:fixed;
+  width:8px;
+  height:8px;
+  pointer-events:none;
+  z-index:9999;
+  opacity:1;
+  animation:confettiFall var(--fall-duration, 1.2s) cubic-bezier(.25,.46,.45,.94) forwards;
+}
+
+.confetti-piece.circle{
+  border-radius:50%;
+}
+
+.confetti-piece.rect{
+  border-radius:2px;
+  width:6px;
+  height:10px;
+}
+
+@keyframes confettiFall{
+  0%{
+    opacity:1;
+    transform:translate(0,0) rotate(0deg) scale(1);
+  }
+  100%{
+    opacity:0;
+    transform:translate(var(--tx, 0px), var(--ty, 300px)) rotate(var(--rot, 720deg)) scale(0.3);
+  }
 }
