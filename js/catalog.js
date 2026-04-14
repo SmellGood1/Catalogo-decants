@@ -1,219 +1,249 @@
-let marcaSeleccionada = '';
-var _filtrosListenerReady = false;
+/*
+ * catalog.js — Render del catálogo de decants y lógica de búsqueda.
+ * Datos externos (Google Sheets) siempre se insertan vía textContent o dataset,
+ * nunca por innerHTML con interpolación — prevención de XSS.
+ */
+(function (SG) {
+  'use strict';
 
-// Normalizar: quitar acentos, minúsculas, colapsar letras dobles
-function _norm(s) {
-  return s.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/(.)\1+/g, '$1'); // lattafa → latafa, xerjoff → xerjof
-}
+  var el = SG.el, $ = SG.$, byId = SG.byId;
 
-// Distancia de Levenshtein
-function _lev(a, b) {
-  var m = a.length, n = b.length;
-  var dp = [];
-  for (var i = 0; i <= m; i++) {
-    dp[i] = [i];
-    for (var j = 1; j <= n; j++) {
-      dp[i][j] = i === 0 ? j :
-        Math.min(
-          dp[i - 1][j] + 1,
-          dp[i][j - 1] + 1,
-          dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-        );
-    }
+  var marcaSeleccionada = '';
+  var _filtrosListenerReady = false;
+
+  /* ── Búsqueda fuzzy ──────────────────────────────────────────── */
+
+  function _norm(s) {
+    return s.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/(.)\1+/g, '$1');
   }
-  return dp[m][n];
-}
 
-// Búsqueda fuzzy: tolera errores, acentos, letras dobles, etc.
-function _fuzzyMatch(texto, busqueda) {
-  if (!busqueda) return true;
+  function _lev(a, b) {
+    var m = a.length, n = b.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+      dp[i] = [i];
+      for (var j = 1; j <= n; j++) {
+        dp[i][j] = i === 0 ? j :
+          Math.min(
+            dp[i - 1][j] + 1,
+            dp[i][j - 1] + 1,
+            dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+          );
+      }
+    }
+    return dp[m][n];
+  }
 
-  var t = texto.toLowerCase();
-  var b = busqueda.toLowerCase();
+  function _fuzzyMatch(texto, busqueda) {
+    if (!busqueda) return true;
+    var t = texto.toLowerCase();
+    var b = busqueda.toLowerCase();
+    if (t.indexOf(b) !== -1) return true;
 
-  // 1. Coincidencia exacta
-  if (t.indexOf(b) !== -1) return true;
+    var tn = _norm(texto);
+    var bn = _norm(busqueda);
+    if (tn.indexOf(bn) !== -1) return true;
 
-  // 2. Sin acentos + colapsar dobles (oddisey→odisey, lattafa→latafa)
-  var tn = _norm(texto);
-  var bn = _norm(busqueda);
-  if (tn.indexOf(bn) !== -1) return true;
-
-  // 3. Levenshtein contra cada palabra del texto
-  if (bn.length >= 3) {
-    var palabras = tn.split(/\s+/);
-    for (var i = 0; i < palabras.length; i++) {
-      // Comparar contra la palabra completa
+    if (bn.length >= 3) {
+      var palabras = tn.split(/\s+/);
       var umbral = bn.length <= 4 ? 1 : Math.min(Math.floor(bn.length / 2), 3);
-      if (_lev(palabras[i], bn) <= umbral) return true;
-
-      // Comparar contra substring del mismo largo (para palabras largas como "odyssey")
-      if (palabras[i].length > bn.length) {
-        for (var j = 0; j <= palabras[i].length - bn.length; j++) {
-          var sub = palabras[i].substring(j, j + bn.length);
-          if (_lev(sub, bn) <= 1) return true;
+      for (var i = 0; i < palabras.length; i++) {
+        if (_lev(palabras[i], bn) <= umbral) return true;
+        if (palabras[i].length > bn.length) {
+          for (var j = 0; j <= palabras[i].length - bn.length; j++) {
+            if (_lev(palabras[i].substring(j, j + bn.length), bn) <= 1) return true;
+          }
         }
       }
+      if (_lev(tn.replace(/\s+/g, ''), bn) <= umbral) return true;
     }
-
-    // 4. Levenshtein contra el texto normalizado completo (sin espacios)
-    var tnJoined = tn.replace(/\s+/g, '');
-    if (_lev(tnJoined, bn) <= umbral) return true;
+    return false;
   }
 
-  return false;
-}
+  /* ── Construcción segura de cards ─────────────────────────────── */
 
-function renderBotoneraFiltros(filtroTexto, skipRebuild) {
-  var filtrosContainer = document.getElementById('filtros-marcas');
-  if (!filtrosContainer) return;
-
-  if (!skipRebuild) {
-    var marcas = Object.keys(PERFUMES);
-
-    var htmlFiltros = '<button class="filter-pill ' + (marcaSeleccionada === '' ? 'active' : '') + '" data-marca="">Todas</button>';
-
-    marcas.forEach(function(marca) {
-      var isActive = (marcaSeleccionada === marca) ? 'active' : '';
-      htmlFiltros += '<button class="filter-pill ' + isActive + '" data-marca="' + marca + '">' + marca + '</button>';
-    });
-
-    filtrosContainer.innerHTML = htmlFiltros;
-  } else {
-    // Solo actualizar clases active sin reconstruir
-    var pills = filtrosContainer.querySelectorAll('.filter-pill');
-    pills.forEach(function(p) {
-      var marca = p.getAttribute('data-marca');
-      if (marca === marcaSeleccionada) {
-        p.classList.add('active');
-      } else {
-        p.classList.remove('active');
-      }
-    });
+  function cardClass(p) {
+    if (p.proximo) return 'card proximo' + (p.muyPronto ? ' muy-pronto' : '');
+    if (p.agotado) return 'card agotado';
+    return 'card';
   }
 
-  // Listener solo una vez con delegation
-  if (!_filtrosListenerReady) {
-    _filtrosListenerReady = true;
-    filtrosContainer.addEventListener('click', function(e) {
-      var pill = e.target.closest('.filter-pill');
-      if (!pill) return;
-
-      // Crear ripple desde el punto de click
-      var rect = pill.getBoundingClientRect();
-      var size = Math.max(rect.width, rect.height);
-      var ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      ripple.style.width = ripple.style.height = size + 'px';
-      ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-      ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-      pill.appendChild(ripple);
-
-      ripple.addEventListener('animationend', function() {
-        ripple.remove();
+  function buildTopContent(p) {
+    if (p.agotado) return el('div', { class: 'agotado-label', text: 'Agotado' });
+    if (p.proximo) {
+      return el('div', {
+        class: 'soon-label' + (p.muyPronto ? ' muy-pronto-label' : ''),
+        text: p.muyPronto ? '¡Muy pronto!' : 'Próximamente'
       });
-
-      marcaSeleccionada = pill.getAttribute('data-marca');
-      // Actualizar clases sin destruir el DOM
-      renderBotoneraFiltros('', true);
-      // Actualizar solo el grid del catálogo (sin reconstruir filtros)
-      var ft = document.getElementById('buscador') ? document.getElementById('buscador').value : '';
-      _renderCatalogoGrid(ft);
-    });
+    }
+    return el('span', { class: 'pill', text: p.conc || '' });
   }
-}
 
-function renderCatalogo(filtroTexto) {
-  filtroTexto = filtroTexto || '';
-  renderBotoneraFiltros(filtroTexto);
-  _renderCatalogoGrid(filtroTexto);
-}
+  function buildBottomContent(p) {
+    if (p.agotado) {
+      var frag = document.createDocumentFragment();
+      frag.appendChild(el('div', { class: 'starting' }, [ el('span', { text: 'Agotado' }) ]));
+      if (p.link) {
+        frag.appendChild(el('a', {
+          href: p.link, target: '_blank', rel: 'noopener noreferrer',
+          class: 'small-btn agotado-link', text: 'Fragrantica'
+        }));
+      }
+      return frag;
+    }
+    if (p.proximo) {
+      if (!p.link) return document.createDocumentFragment();
+      return el('a', {
+        href: p.link, target: '_blank', rel: 'noopener noreferrer',
+        class: 'small-btn fragrantica-card-link', text: 'Conoce más en Fragrantica'
+      });
+    }
+    var f = document.createDocumentFragment();
+    f.appendChild(el('div', { class: 'starting' }, [
+      el('span', { text: 'Desde' }),
+      el('strong', { text: '$' + p.prices[2] })
+    ]));
+    f.appendChild(el('button', { class: 'small-btn', type: 'button', text: 'Ver' }));
+    return f;
+  }
 
-function _renderCatalogoGrid(filtroTexto) {
-  filtroTexto = filtroTexto || '';
-  var catalogo = document.getElementById('catalogo');
-  catalogo.innerHTML = '';
+  function buildImage(p) {
+    var img = el('img', {
+      src: p.img || 'assets/favicon.svg',
+      alt: p.name || '',
+      loading: 'lazy'
+    });
+    img.addEventListener('error', function () {
+      img.style.opacity = '0.3';
+      img.src = 'assets/favicon.svg';
+    }, { once: true });
+    return img;
+  }
 
-  var cardIndex = 0;
+  function buildCard(p, casa, delayIndex) {
+    var card = el('article', { class: cardClass(p) });
+    card.style.setProperty('--delay', (delayIndex * 0.06) + 's');
 
-  for (var casa in PERFUMES) {
-    if (marcaSeleccionada && casa !== marcaSeleccionada) {
-      continue;
+    var top     = el('div', { class: 'card-top' }, [ buildTopContent(p) ]);
+    var imgWrap = el('div', { class: 'card-img-wrap' }, [ buildImage(p) ]);
+    var content = el('div', { class: 'card-content' }, [
+      el('h4',   { text: p.name }),
+      el('div',  { class: 'brand', text: casa }),
+      el('div',  { class: 'bottom' }, [ buildBottomContent(p) ])
+    ]);
+
+    card.appendChild(top);
+    card.appendChild(imgWrap);
+    card.appendChild(content);
+
+    card.addEventListener('click', function (e) {
+      if (p.proximo || p.agotado) return;
+      if (e.target.closest('a')) return;
+      var perfumeConCasa = {};
+      for (var k in p) { if (Object.prototype.hasOwnProperty.call(p, k)) perfumeConCasa[k] = p[k]; }
+      perfumeConCasa.casa = casa;
+      verPerfume(perfumeConCasa);
+    });
+
+    return card;
+  }
+
+  function buildHouseTitle(casa, delayIndex) {
+    var title = el('div', { class: 'house-title' }, [
+      el('h3', { text: casa }),
+      el('div', { class: 'house-line' })
+    ]);
+    title.style.setProperty('--delay', (delayIndex * 0.06) + 's');
+    return title;
+  }
+
+  /* ── Filtros ──────────────────────────────────────────────────── */
+
+  function renderBotoneraFiltros(skipRebuild) {
+    var container = byId('filtros-marcas');
+    if (!container) return;
+
+    if (!skipRebuild) {
+      container.textContent = '';
+      container.appendChild(el('button', {
+        class: 'filter-pill' + (marcaSeleccionada === '' ? ' active' : ''),
+        type: 'button', dataset: { marca: '' }, text: 'Todas'
+      }));
+      Object.keys(window.PERFUMES || {}).forEach(function (marca) {
+        container.appendChild(el('button', {
+          class: 'filter-pill' + (marcaSeleccionada === marca ? ' active' : ''),
+          type: 'button', dataset: { marca: marca }, text: marca
+        }));
+      });
+    } else {
+      SG.$$('.filter-pill', container).forEach(function (p) {
+        p.classList.toggle('active', p.dataset.marca === marcaSeleccionada);
+      });
     }
 
-    var perfumesFiltrados = PERFUMES[casa].filter(function(p) {
-      return _fuzzyMatch(p.name, filtroTexto) ||
-             _fuzzyMatch(casa, filtroTexto) ||
-             _fuzzyMatch(p.conc, filtroTexto);
-    });
+    if (!_filtrosListenerReady) {
+      _filtrosListenerReady = true;
+      container.addEventListener('click', function (e) {
+        var pill = e.target.closest('.filter-pill');
+        if (!pill) return;
 
-    if (!perfumesFiltrados.length) continue;
+        var rect = pill.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        var ripple = el('span', { class: 'ripple' });
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+        pill.appendChild(ripple);
+        ripple.addEventListener('animationend', function () { ripple.remove(); });
 
-    var houseTitle = document.createElement('div');
-    houseTitle.className = 'house-title';
-    houseTitle.style.setProperty('--delay', (cardIndex * 0.06) + 's');
-    houseTitle.innerHTML =
-      '<h3>' + casa + '</h3>' +
-      '<div class="house-line"></div>';
-    catalogo.appendChild(houseTitle);
-    cardIndex++;
-
-    var grid = document.createElement('div');
-    grid.className = 'grid';
-
-    perfumesFiltrados.forEach(function(p, i) {
-      var card = document.createElement('article');
-      card.className = p.proximo ? (p.muyProonto ? 'card proximo muy-pronto' : 'card proximo') : (p.agotado ? 'card agotado' : 'card');
-      card.style.setProperty('--delay', ((cardIndex + i) * 0.06) + 's');
-      var soonText = p.muyProonto ? '¡Muy pronto!' : 'Próximamente';
-
-      var topContent = '';
-      if (p.agotado) {
-        topContent = '<div class="agotado-label">Agotado</div>';
-      } else if (p.proximo) {
-        topContent = '<div class="soon-label' + (p.muyProonto ? ' muy-pronto-label' : '') + '">' + soonText + '</div>';
-      } else {
-        topContent = '<span class="pill">' + p.conc + '</span>';
-      }
-
-      var bottomContent = '';
-      if (p.agotado) {
-        bottomContent = '<div class="starting"><span>Agotado</span></div>' +
-          (p.link ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn agotado-link">Fragrantica</a>' : '');
-      } else if (p.proximo) {
-        bottomContent = '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn fragrantica-card-link">Conoce más en Fragrantica</a>';
-      } else {
-        bottomContent = '<div class="starting"><span>Desde</span><strong>$' + p.prices[2] + '</strong></div><button class="small-btn">Ver</button>';
-      }
-
-      card.innerHTML =
-        '<div class="card-top">' + topContent + '</div>' +
-        '<div class="card-img-wrap">' +
-          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy" onerror="this.style.opacity=\'0.3\';this.src=\'assets/favicon.svg\'">' +
-        '</div>' +
-        '<div class="card-content">' +
-          '<h4>' + p.name + '</h4>' +
-          '<div class="brand">' + casa + '</div>' +
-          '<div class="bottom">' + bottomContent + '</div>' +
-        '</div>';
-
-      card.addEventListener('click', (function(perfume, casaNombre) {
-        return function(e) {
-          if (perfume.proximo || perfume.agotado) return;
-          if (e.target.closest('a')) return;
-          var perfumeConCasa = {};
-          for (var key in perfume) { perfumeConCasa[key] = perfume[key]; }
-          perfumeConCasa.casa = casaNombre;
-          verPerfume(perfumeConCasa);
-        };
-      })(p, casa));
-
-      grid.appendChild(card);
-    });
-
-    cardIndex += perfumesFiltrados.length;
-    catalogo.appendChild(grid);
+        marcaSeleccionada = pill.dataset.marca || '';
+        renderBotoneraFiltros(true);
+        var input = byId('buscador');
+        _renderCatalogoGrid(input ? input.value : '');
+      });
+    }
   }
-}
+
+  /* ── Grid ─────────────────────────────────────────────────────── */
+
+  function _renderCatalogoGrid(filtroTexto) {
+    filtroTexto = filtroTexto || '';
+    var catalogo = byId('catalogo');
+    if (!catalogo) return;
+    catalogo.textContent = '';
+
+    var perfumes = window.PERFUMES || {};
+    var cardIndex = 0;
+
+    Object.keys(perfumes).forEach(function (casa) {
+      if (marcaSeleccionada && casa !== marcaSeleccionada) return;
+      var list = perfumes[casa].filter(function (p) {
+        return _fuzzyMatch(p.name, filtroTexto) ||
+               _fuzzyMatch(casa, filtroTexto) ||
+               _fuzzyMatch(p.conc || '', filtroTexto);
+      });
+      if (!list.length) return;
+
+      catalogo.appendChild(buildHouseTitle(casa, cardIndex));
+      cardIndex++;
+
+      var grid = el('div', { class: 'grid' });
+      list.forEach(function (p, i) {
+        grid.appendChild(buildCard(p, casa, cardIndex + i));
+      });
+      cardIndex += list.length;
+      catalogo.appendChild(grid);
+    });
+  }
+
+  function renderCatalogo(filtroTexto) {
+    filtroTexto = filtroTexto || '';
+    renderBotoneraFiltros(false);
+    _renderCatalogoGrid(filtroTexto);
+  }
+
+  // Exponer solo lo público
+  window.renderCatalogo = renderCatalogo;
+})(window.SG);

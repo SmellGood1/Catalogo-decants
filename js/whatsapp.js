@@ -1,81 +1,58 @@
-function enviarPedido() {
-  var nombreInput = document.getElementById('nombreCliente');
-  var nombre = nombreInput.value.trim();
+/*
+ * whatsapp.js — Armado del mensaje y apertura de wa.me.
+ * La lógica de precios y descuentos es la misma que ve el usuario en el panel:
+ * siempre proviene de SG.pricing.calculate, nunca se recalcula aquí.
+ */
+(function (SG) {
+  'use strict';
 
-  if (!nombre) {
-    mostrarToast('Escribe tu nombre', true);
-    return;
-  }
+  var byId = SG.byId;
 
-  if (!carrito.length) {
-    mostrarToast('Tu carrito está vacío', true);
-    return;
-  }
-
-  var total = 0;
-  var totalDecants = 0;
-  var hasDecants = false;
-  var hasCompletos = false;
-
-  var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido.\n\n';
-
-  carrito.forEach(function(p) {
+  function _formatLine(p) {
     if (p.isCombo) {
-      texto += '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml c/u ($' + p.precio + ')\n';
-      if (p.comboItems) {
-        texto += '   (' + p.comboItems.join(', ') + ')\n';
+      var line = '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml c/u ($' + p.precio + ')\n';
+      if (p.comboItems && p.comboItems.length) {
+        line += '   (' + p.comboItems.join(', ') + ')\n';
       }
-      totalDecants += p.precio;
-    } else if (p.isCompleto) {
-      texto += '\u2022 ' + p.nombre + ' - Frasco completo ($' + p.precio + ')\n';
+      return line;
+    }
+    if (p.isCompleto) {
+      return '\u2022 ' + p.nombre + ' - Frasco completo ($' + p.precio + ')\n';
+    }
+    return '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml ($' + p.precio + ')\n';
+  }
+
+  function enviarPedido() {
+    var nombreInput = byId('nombreCliente');
+    var nombre = nombreInput.value.trim();
+
+    if (!nombre) { mostrarToast('Escribe tu nombre', true); return; }
+    if (!window.carrito.length) { mostrarToast('Tu carrito está vacío', true); return; }
+
+    var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido.\n\n';
+    window.carrito.forEach(function (p) { texto += _formatLine(p); });
+
+    var b = SG.pricing.calculate(window.carrito, window._activePromo);
+
+    if (b.totalDiscount > 0) {
+      texto += '\nSubtotal: $' + b.subtotal;
+      if (b.volumeDiscount > 0) {
+        texto += '\nDescuento ' + b.tierCurrent.percent + '% (volumen): -$' + b.volumeDiscount;
+      }
+      if (b.promoDiscount > 0) {
+        texto += '\nCódigo promo (' + window._activePromo.percent + '%): -$' + b.promoDiscount;
+      }
+      texto += '\nTotal de mi pedido: $' + b.total;
     } else {
-      texto += '\u2022 ' + p.nombre + ' - ' + p.ml + ' ml ($' + p.precio + ')\n';
-      totalDecants += p.precio;
+      texto += '\nTotal de mi pedido: $' + b.total;
     }
-    total += p.precio;
-  });
 
-  // Descuento escalonado solo sobre decants
-  var TIERS = [
-    { threshold: 500, percent: 10 },
-    { threshold: 800, percent: 15 },
-    { threshold: 1200, percent: 20 }
-  ];
-
-  var descuento = 0;
-  var tierPercent = 0;
-  for (var t = 0; t < TIERS.length; t++) {
-    if (totalDecants >= TIERS[t].threshold) {
-      tierPercent = TIERS[t].percent;
+    if (window._activePromo && window._activePromo.code) {
+      window._markCodeUsed(window._activePromo.code);
     }
+
+    window.open('https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent(texto), '_blank');
   }
 
-  if (tierPercent > 0) {
-    descuento = Math.round(totalDecants * tierPercent / 100);
-  }
-
-  // Código promo
-  var promoDescuento = 0;
-  if (_activePromo && totalDecants > 0) {
-    promoDescuento = Math.round(totalDecants * _activePromo.percent / 100);
-  }
-
-  var descuentoTotal = descuento + promoDescuento;
-
-  if (descuentoTotal > 0) {
-    texto += '\nSubtotal: $' + total;
-    if (descuento > 0) texto += '\nDescuento ' + tierPercent + '% (volumen): -$' + descuento;
-    if (promoDescuento > 0) texto += '\nCódigo promo (' + _activePromo.percent + '%): -$' + promoDescuento;
-    texto += '\nTotal de mi pedido: $' + (total - descuentoTotal);
-  } else {
-    texto += '\nTotal de mi pedido: $' + total;
-  }
-
-  // Marcar código como usado al enviar
-  if (_activePromo && _activePromo.code) {
-    _markCodeUsed(_activePromo.code);
-  }
-
-  var url = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent(texto);
-  window.open(url, '_blank');
-}
+  window.enviarPedido = enviarPedido;
+})(window.SG);

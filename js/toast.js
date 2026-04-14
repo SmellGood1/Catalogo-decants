@@ -1,21 +1,18 @@
 function mostrarToast(mensaje, error) {
   var toast = document.getElementById('toast');
-  toast.textContent = mensaje;
+  if (!toast) return;
 
-  // Reset any ongoing animation
+  toast.textContent = mensaje;
+  toast.setAttribute('role', error ? 'alert' : 'status');
+  toast.setAttribute('aria-live', error ? 'assertive' : 'polite');
+
   toast.className = '';
   void toast.offsetWidth;
+  toast.className = error ? 'show toast-error' : 'show';
 
-  if (error) {
-    toast.className = 'show toast-error';
-  } else {
-    toast.className = 'show';
-  }
-
-  setTimeout(function() {
+  setTimeout(function () {
     toast.classList.remove('show');
     toast.classList.add('toast-out');
-
     toast.addEventListener('animationend', function handler() {
       toast.removeEventListener('animationend', handler);
       toast.className = '';

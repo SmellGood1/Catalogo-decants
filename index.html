@@ -16,26 +16,34 @@
   <meta property="og:description" content="Prueba fragancias originales desde 2ml sin comprar el frasco completo. Catálogo con +19 fragancias, combos con descuento y pedido rápido por WhatsApp.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://smellgood.mx/">
-  <meta property="og:image" content="https://smellgood.mx/assets/og-image.jpg">
+  <meta property="og:image" content="https://smellgood.mx/assets/aroma-bg.jpg">
   <meta property="og:locale" content="es_MX">
   <meta property="og:site_name" content="SmellGood Decants">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SmellGood Decants | Decants de Perfumes Originales">
   <meta name="twitter:description" content="Prueba fragancias originales desde 2ml. Catálogo elegante, combos con descuento y pedido rápido por WhatsApp.">
-  <meta name="twitter:image" content="https://smellgood.mx/assets/og-image.jpg">
+  <meta name="twitter:image" content="https://smellgood.mx/assets/aroma-bg.jpg">
 
   <meta name="theme-color" content="#0b0b0e">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
-  <!-- Google Analytics — reemplaza G-XXXXXXXXXX con tu ID real de GA4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <!-- Google Analytics: se carga solo si CONFIG.GA_ID está configurado en js/config.js -->
+  <script src="js/config.js"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
+    (function () {
+      var id = (window.CONFIG && CONFIG.GA_ID || '').trim();
+      if (!id) return;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function(){ dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', id);
+    })();
   </script>
 
   <!-- JSON-LD Structured Data -->
@@ -47,7 +55,7 @@
     "description": "Decants de perfumes originales en Cancún. Prueba fragancias desde 2ml sin comprar el frasco completo.",
     "url": "https://smellgood.mx",
     "logo": "https://smellgood.mx/assets/favicon.svg",
-    "image": "https://smellgood.mx/assets/og-image.jpg",
+    "image": "https://smellgood.mx/assets/aroma-bg.jpg",
     "telephone": "+529213042001",
     "address": {
       "@type": "PostalAddress",
@@ -146,6 +154,8 @@
 </head>
 <body>
 
+  <a id="skipLink" href="#main-decants" class="skip-link">Saltar al contenido</a>
+
   <!-- ============ GATEWAY — Pantalla de entrada ============ -->
   <div id="gateway" class="gateway">
     <div class="gateway-glow gateway-glow-1"></div>
@@ -198,7 +208,7 @@
   <div id="gatewayOverlay" class="gateway-overlay"></div>
 
   <!-- ============ SITIO DECANTS (oculto hasta elegir) ============ -->
-  <div id="siteDecants" class="site-zone site-hidden">
+  <div id="siteDecants" class="site-zone site-hidden" role="region" aria-label="Catálogo de decants" aria-hidden="true">
 
     <div class="announcement-bar">
       <div class="announcement-track">
@@ -239,7 +249,7 @@
       </nav>
     </header>
 
-    <main>
+    <main id="main-decants">
       <section class="hero">
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
@@ -327,7 +337,7 @@
 
           <div class="stats">
             <div class="stat">
-              <strong><span class="count-up" data-target="19">0</span>+</strong>
+              <strong><span id="countFragancias" class="count-up" data-target="19">0</span>+</strong>
               <span>Fragancias disponibles</span>
             </div>
 
@@ -421,7 +431,7 @@
   </div><!-- /siteDecants -->
 
   <!-- ============ SITIO PERFUMES COMPLETOS (oculto hasta elegir) ============ -->
-  <div id="siteCompletos" class="site-zone site-hidden">
+  <div id="siteCompletos" class="site-zone site-hidden" role="region" aria-label="Catálogo de frascos completos" aria-hidden="true">
 
     <div class="announcement-bar">
       <div class="announcement-track">
@@ -456,7 +466,7 @@
       </nav>
     </header>
 
-    <main>
+    <main id="main-completos">
       <section class="hero completos-hero">
         <div class="glow-orb orb-1" style="background:radial-gradient(circle, rgba(168,130,255,.15), transparent 70%);"></div>
         <div class="glow-orb orb-2" style="background:radial-gradient(circle, rgba(212,175,55,.1), transparent 70%);"></div>
@@ -520,7 +530,7 @@
 
   <!-- MODALS & OVERLAYS (fuera de las zonas para que siempre funcionen) -->
 
-  <div id="detalle" role="dialog" aria-modal="true" aria-label="Detalle del perfume">
+  <div id="detalle" role="dialog" aria-modal="true" aria-labelledby="dNombre" aria-hidden="true">
     <div class="detalleBox" id="detalleBox">
       <div class="detalle-left">
         <img id="dImg" alt="Perfume" loading="lazy">
@@ -561,7 +571,7 @@
 
   <div id="cartOverlay"></div>
 
-  <aside id="carritoPanel" aria-label="Carrito de compras">
+  <aside id="carritoPanel" role="dialog" aria-modal="true" aria-label="Carrito de compras" aria-hidden="true">
     <div class="cart-head">
       <h2>Carrito</h2>
       <button id="btnCerrarCarrito" class="close-cart" aria-label="Cerrar carrito">&times;</button>
@@ -593,11 +603,11 @@
     <button id="btnEnviarPedido" class="full-btn primary">Enviar pedido por WhatsApp</button>
   </aside>
 
-  <div id="confirmOverlay" class="confirm-overlay">
+  <div id="confirmOverlay" class="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc" aria-hidden="true">
     <div class="confirm-box">
-      <div class="confirm-icon">🗑️</div>
-      <h3>¿Vaciar carrito?</h3>
-      <p>Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
+      <div class="confirm-icon" aria-hidden="true">🗑️</div>
+      <h3 id="confirmTitle">¿Vaciar carrito?</h3>
+      <p id="confirmDesc">Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
       <div class="confirm-actions">
         <button id="confirmCancel" class="confirm-btn cancel">Cancelar</button>
         <button id="confirmAccept" class="confirm-btn accept">Sí, vaciar</button>
@@ -605,17 +615,21 @@
     </div>
   </div>
 
-  <div id="toast">Añadido exitosamente</div>
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="js/config.js" defer></script>
-  <script src="js/sheets.js?v=9" defer></script>
-  <script src="js/toast.js" defer></script>
-  <script src="js/cart.js?v=12" defer></script>
-  <script src="js/modal.js?v=5" defer></script>
-  <script src="js/whatsapp.js?v=5" defer></script>
-  <script src="js/catalog.js?v=7" defer></script>
-  <script src="js/extras.js?v=33" defer></script>
-  <script src="js/faq.js" defer></script>
-  <script src="js/app.js?v=33" defer></script>
+  <!-- config.js ya se cargó en el head para habilitar GA condicional.
+       El resto se difiere hasta que el DOM esté listo. -->
+  <script src="js/core.js?v=1" defer></script>
+  <script src="js/a11y.js?v=1" defer></script>
+  <script src="js/pricing.js?v=1" defer></script>
+  <script src="js/sheets.js?v=10" defer></script>
+  <script src="js/toast.js?v=2" defer></script>
+  <script src="js/cart.js?v=13" defer></script>
+  <script src="js/modal.js?v=6" defer></script>
+  <script src="js/whatsapp.js?v=6" defer></script>
+  <script src="js/catalog.js?v=8" defer></script>
+  <script src="js/extras.js?v=34" defer></script>
+  <script src="js/faq.js?v=2" defer></script>
+  <script src="js/app.js?v=34" defer></script>
 </body>
 </html>

@@ -1,842 +1,691 @@
 /*
- * extras.js — Destacados, completos, contadores animados, botón scroll-top
+ * extras.js — Secciones auxiliares y efectos visuales del sitio.
+ *   · Catálogo de frascos completos
+ *   · Combos
+ *   · Destacados (bestsellers)
+ *   · Hero particles + parallax
+ *   · Card tilt 3D + glare overlay
+ *   · Botones magnéticos (scope acotado, rAF throttled)
+ *   · Count-up animado
+ *   · Announcement bar, scroll-top, scroll reveal
+ *   · Easter egg "smell"
  */
+(function (SG) {
+  'use strict';
 
-/* ── Catálogo Completos ─────────────────────────────────────── */
+  var el = SG.el, byId = SG.byId;
+  var rafThrottle = SG.rafThrottle;
 
-function renderCompletos() {
-  var container = document.getElementById('catalogoCompletos');
-  console.log('[COMPLETOS] container:', !!container, 'data:', !!window.COMPLETOS, 'casas:', window.COMPLETOS ? Object.keys(COMPLETOS).length : 0);
-  if (!container || !window.COMPLETOS) return;
+  /* ── Catálogo Completos ─────────────────────────────────────── */
 
-  var casas = Object.keys(COMPLETOS);
-  if (!casas.length) {
-    container.innerHTML = '<p style="text-align:center;color:var(--muted);padding:3rem 1rem;">Próximamente — estamos preparando esta sección.</p>';
-    return;
+  function completoCardClass(p) {
+    return 'card revealed' + (p.proximo ? ' proximo' : '') + (p.agotado ? ' agotado' : '');
   }
 
-  container.innerHTML = '';
-
-  casas.forEach(function(casa) {
-    // Título de casa
-    var titleDiv = document.createElement('div');
-    titleDiv.className = 'house-title revealed';
-    titleDiv.style.opacity = '1';
-    titleDiv.style.transform = 'none';
-    titleDiv.innerHTML = '<h3>' + casa + '</h3><div class="house-line"></div>';
-    container.appendChild(titleDiv);
-
-    // Grid de cards
-    var grid = document.createElement('div');
-    grid.className = 'grid';
-
-    COMPLETOS[casa].forEach(function(p) {
-      var card = document.createElement('article');
-      card.className = 'card revealed' + (p.proximo ? ' proximo' : '') + (p.agotado ? ' agotado' : '');
-      card.style.opacity = '1';
-      card.style.transform = 'none';
-
-      var topPills = '';
-      if (p.agotado) {
-        topPills = '<div class="agotado-label">Agotado</div>';
-      } else if (p.proximo && p.muyProonto) {
-        topPills = '<span class="soon-label muy-pronto-label">Muy pronto</span>';
-      } else if (p.proximo) {
-        topPills = '<span class="soon-label">Próximamente</span>';
-      } else {
-        if (p.conc) topPills += '<span class="pill">' + p.conc + '</span>';
-        if (p.ml) topPills += '<span class="pill">' + p.ml + ' ml</span>';
-      }
-
-      var bottomContent = '';
-      if (p.agotado) {
-        bottomContent = '<div class="bottom"><div class="starting"><span>Agotado</span></div>' +
-          (p.link ? '<a href="' + p.link + '" target="_blank" rel="noopener" class="small-btn agotado-link">Fragrantica</a>' : '') +
-          '</div>';
-      } else {
-        bottomContent =
-          (p.entrega && !p.proximo ? '<div class="entrega-label">📦 ' + p.entrega + '</div>' : '') +
-          '<div class="bottom">' +
-            '<div class="starting">' +
-              '<span>Frasco completo</span>' +
-              '<strong>$' + p.price + '</strong>' +
-            '</div>' +
-            (!p.proximo ? '<span class="small-btn">Ver</span>' : '') +
-          '</div>';
-      }
-
-      card.innerHTML =
-        '<div class="card-top">' + topPills + '</div>' +
-        '<div class="card-img-wrap">' +
-          '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
-        '</div>' +
-        '<div class="card-content">' +
-          '<h4>' + p.name + '</h4>' +
-          '<div class="brand">' + casa + '</div>' +
-          bottomContent +
-        '</div>';
-
-      if (!p.proximo && !p.agotado) {
-        card.addEventListener('click', function() {
-          var perfumeConCasa = {};
-          for (var key in p) { perfumeConCasa[key] = p[key]; }
-          perfumeConCasa.casa = casa;
-          perfumeConCasa.isCompleto = true;
-          verPerfume(perfumeConCasa);
-        });
-      }
-
-      grid.appendChild(card);
+  function buildCompletoImg(p) {
+    var img = el('img', {
+      src: p.img || 'assets/favicon.svg',
+      alt: p.name || '',
+      loading: 'lazy'
     });
-
-    container.appendChild(grid);
-  });
-}
-
-/* ── Combos ──────────────────────────────────────────────────── */
-
-function renderCombos() {
-  var container = document.getElementById('combosContainer');
-  if (!container || !window.COMBOS || !window.PERFUMES) return;
-
-  var combos = COMBOS.filter(function(c) { return !c.agotado; });
-
-  if (!combos.length) {
-    var section = container.closest('.combos-section');
-    if (section) section.style.display = 'none';
-    return;
+    img.addEventListener('error', function () {
+      img.style.opacity = '0.3';
+      img.src = 'assets/favicon.svg';
+    }, { once: true });
+    return img;
   }
 
-  container.innerHTML = '';
+  function buildCompletoTop(p) {
+    var top = el('div', { class: 'card-top' });
+    if (p.agotado) {
+      top.appendChild(el('div', { class: 'agotado-label', text: 'Agotado' }));
+    } else if (p.proximo) {
+      top.appendChild(el('span', {
+        class: 'soon-label' + (p.muyPronto ? ' muy-pronto-label' : ''),
+        text: p.muyPronto ? 'Muy pronto' : 'Próximamente'
+      }));
+    } else {
+      if (p.conc) top.appendChild(el('span', { class: 'pill', text: p.conc }));
+      if (p.ml)   top.appendChild(el('span', { class: 'pill', text: p.ml + ' ml' }));
+    }
+    return top;
+  }
 
-  combos.forEach(function(combo) {
-    // Buscar los 3 perfumes por código
-    var perfumes = combo.codes.map(function(code) {
-      return findPerfumeByCode(code);
-    }).filter(Boolean);
-
-    if (perfumes.length < 3) return;
-
-    var card = document.createElement('article');
-    card.className = 'combo-card';
-
-    // Calcular precio original sumado (5ml como referencia)
-    var originalSum = perfumes.reduce(function(sum, p) {
-      return sum + (p.prices[5] || 0);
-    }, 0);
-    var savings = originalSum - combo.prices[5];
-
-    function calcSavings(ml) {
-      var orig = perfumes.reduce(function(sum, p) { return sum + (p.prices[ml] || 0); }, 0);
-      return orig - combo.prices[ml];
+  function buildCompletoBottom(p) {
+    var wrap = document.createDocumentFragment();
+    if (p.agotado) {
+      var bottom = el('div', { class: 'bottom' });
+      bottom.appendChild(el('div', { class: 'starting' }, [ el('span', { text: 'Agotado' }) ]));
+      if (p.link) {
+        bottom.appendChild(el('a', {
+          href: p.link, target: '_blank', rel: 'noopener noreferrer',
+          class: 'small-btn agotado-link', text: 'Fragrantica'
+        }));
+      }
+      wrap.appendChild(bottom);
+      return wrap;
     }
 
-    card.innerHTML =
-      '<div class="combo-header">' +
-        '<h3>' + combo.name + '</h3>' +
-        '<span class="combo-savings">Ahorras $' + calcSavings(5) + '</span>' +
-      '</div>' +
-      '<div class="combo-perfumes">' +
-        perfumes.map(function(p) {
-          return '<div class="combo-perfume">' +
-            '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
-            '<span class="combo-perfume-name">' + p.name + '</span>' +
-            '<span class="combo-perfume-brand">' + p.casa + '</span>' +
-          '</div>';
-        }).join('<span class="combo-plus">+</span>') +
-      '</div>' +
-      '<div class="combo-footer">' +
-        '<div class="combo-prices">' +
-          '<div class="combo-price-tag" data-ml="2" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[2]||0)},0) + '"><span>2ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[2]||0)},0) + '</s><strong>$' + combo.prices[2] + '</strong></div>' +
-          '<div class="combo-price-tag active" data-ml="5" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[5]||0)},0) + '"><span>5ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[5]||0)},0) + '</s><strong>$' + combo.prices[5] + '</strong></div>' +
-          '<div class="combo-price-tag" data-ml="10" data-orig="' + perfumes.reduce(function(s,p){return s+(p.prices[10]||0)},0) + '"><span>10ml</span><s>$' + perfumes.reduce(function(s,p){return s+(p.prices[10]||0)},0) + '</s><strong>$' + combo.prices[10] + '</strong></div>' +
-        '</div>' +
-        '<button class="btn btn-primary combo-add-btn">Añadir combo</button>' +
-      '</div>';
+    if (p.entrega && !p.proximo) {
+      wrap.appendChild(el('div', { class: 'entrega-label', text: '📦 ' + p.entrega }));
+    }
+    var bottomOk = el('div', { class: 'bottom' }, [
+      el('div', { class: 'starting' }, [
+        el('span', { text: 'Frasco completo' }),
+        el('strong', { text: '$' + (p.price || 0) })
+      ])
+    ]);
+    if (!p.proximo) bottomOk.appendChild(el('button', { class: 'small-btn', type: 'button', text: 'Ver' }));
+    wrap.appendChild(bottomOk);
+    return wrap;
+  }
 
-    // Click en price tags — actualizar ahorro
-    card.addEventListener('click', function(e) {
-      var tag = e.target.closest('.combo-price-tag');
-      if (tag) {
-        card.querySelectorAll('.combo-price-tag').forEach(function(t) { t.classList.remove('active'); });
-        tag.classList.add('active');
-        var ml = Number(tag.dataset.ml);
-        var s = calcSavings(ml);
-        var savingsEl = card.querySelector('.combo-savings');
-        savingsEl.textContent = 'Ahorras $' + s;
-        if (s <= 0) savingsEl.style.display = 'none';
-        else savingsEl.style.display = '';
-      }
-    });
+  function renderCompletos() {
+    var container = byId('catalogoCompletos');
+    if (!container || !window.COMPLETOS) return;
 
-    // Añadir combo al carrito
-    var addBtn = card.querySelector('.combo-add-btn');
-    addBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var activeTag = card.querySelector('.combo-price-tag.active');
-      var ml = Number(activeTag.dataset.ml);
+    var casas = Object.keys(window.COMPLETOS);
+    if (!casas.length) {
+      container.textContent = '';
+      container.appendChild(el('p', {
+        style: { textAlign: 'center', color: 'var(--muted)', padding: '3rem 1rem' },
+        text: 'Próximamente — estamos preparando esta sección.'
+      }));
+      return;
+    }
 
-      carrito.push({
-        id: _nextCartId++,
-        nombre: combo.name,
-        ml: ml,
-        precio: combo.prices[ml],
-        img: perfumes[1].img || '',
-        isCombo: true,
-        comboItems: perfumes.map(function(p) { return p.name; })
+    container.textContent = '';
+    var has = Object.prototype.hasOwnProperty;
+
+    casas.forEach(function (casa) {
+      if (!has.call(window.COMPLETOS, casa)) return;
+
+      var title = el('div', { class: 'house-title revealed' }, [
+        el('h3', { text: casa }),
+        el('div', { class: 'house-line' })
+      ]);
+      title.style.opacity = '1';
+      title.style.transform = 'none';
+      container.appendChild(title);
+
+      var grid = el('div', { class: 'grid' });
+      window.COMPLETOS[casa].forEach(function (p) {
+        var card = el('article', { class: completoCardClass(p) });
+        card.style.opacity = '1';
+        card.style.transform = 'none';
+        card.appendChild(buildCompletoTop(p));
+        card.appendChild(el('div', { class: 'card-img-wrap' }, [ buildCompletoImg(p) ]));
+        card.appendChild(el('div', { class: 'card-content' }, [
+          el('h4', { text: p.name }),
+          el('div', { class: 'brand', text: casa }),
+          buildCompletoBottom(p)
+        ]));
+
+        if (!p.proximo && !p.agotado) {
+          card.addEventListener('click', function () {
+            var perfumeConCasa = {};
+            for (var k in p) { if (has.call(p, k)) perfumeConCasa[k] = p[k]; }
+            perfumeConCasa.casa = casa;
+            perfumeConCasa.isCompleto = true;
+            verPerfume(perfumeConCasa);
+          });
+        }
+        grid.appendChild(card);
       });
-
-      _saveCart();
-      renderCarrito();
-      mostrarToast('Combo añadido al carrito');
-
-      var contador = document.getElementById('contador');
-      if (contador) {
-        contador.classList.remove('pop');
-        void contador.offsetWidth;
-        contador.classList.add('pop');
-      }
-      _triggerConfetti();
-    });
-
-    container.appendChild(card);
-
-    // Video de fondo: se guarda la URL, se activa al mostrar la sección
-    if (combo.video) {
-      card.dataset.video = 'assets/' + combo.video;
-    }
-  });
-
-}
-
-/* ── Destacados ──────────────────────────────────────────────── */
-
-function renderDestacados() {
-  var container = document.getElementById('destacados');
-  if (!container || !window.PERFUMES) return;
-
-  var destacados = [];
-
-  for (var casa in PERFUMES) {
-    PERFUMES[casa].forEach(function(p) {
-      if (p.destacado && !p.proximo) {
-        destacados.push({ perfume: p, casa: casa });
-      }
+      container.appendChild(grid);
     });
   }
 
-  // Ordenar por ranking (menor número = más vendido)
-  destacados.sort(function(a, b) {
-    return (a.perfume.ranking || 999) - (b.perfume.ranking || 999);
-  });
+  /* ── Combos ──────────────────────────────────────────────────── */
 
-  // Si no hay destacados marcados, no mostrar la sección
-  if (!destacados.length) {
-    var section = container.closest('.bestsellers-section');
-    if (section) section.style.display = 'none';
-    return;
+  function sumAtMl(perfumes, ml) {
+    return perfumes.reduce(function (s, p) { return s + (p.prices[ml] || 0); }, 0);
   }
 
-  container.innerHTML = '';
+  function buildPriceTag(ml, orig, comboPrice, isActive) {
+    return el('div', {
+      class: 'combo-price-tag' + (isActive ? ' active' : ''),
+      dataset: { ml: String(ml), orig: String(orig) }
+    }, [
+      el('span',   { text: ml + 'ml' }),
+      el('s',      { text: '$' + orig }),
+      el('strong', { text: '$' + comboPrice })
+    ]);
+  }
 
-  function buildCard(item, index) {
-    var p = item.perfume;
-    var casa = item.casa;
+  function buildComboCard(combo, perfumes) {
+    var card = el('article', { class: 'combo-card' });
 
-    var card = document.createElement('article');
-    card.className = 'bestseller-card';
-    card.innerHTML =
-      '<span class="bestseller-rank">#' + (index + 1) + '</span>' +
-      '<div class="bestseller-badge">Bestseller</div>' +
-      '<div class="bs-img-wrap">' +
-        '<img src="' + p.img + '" alt="' + p.name + '" loading="lazy">' +
-      '</div>' +
-      '<div class="bestseller-content">' +
-        '<div class="bs-brand">' + casa + '</div>' +
-        '<h4>' + p.name + '</h4>' +
-        (p.conc ? '<div class="bs-conc">' + p.conc + '</div>' : '<div class="bs-conc">&nbsp;</div>') +
-        '<div class="bestseller-bottom">' +
-          '<div class="bs-price">' +
-            '<span>Desde</span>' +
-            '<strong>$' + p.prices[2] + '</strong>' +
-          '</div>' +
-          '<span class="bs-cta">Ver</span>' +
-        '</div>' +
-      '</div>';
+    var savingsEl = el('span', { class: 'combo-savings', text: 'Ahorras $' + (sumAtMl(perfumes, 5) - combo.prices[5]) });
+    card.appendChild(el('div', { class: 'combo-header' }, [
+      el('h3', { text: combo.name }),
+      savingsEl
+    ]));
 
-    card.addEventListener('click', (function(perfume, casaNombre) {
-      return function() {
-        var perfumeConCasa = {};
-        for (var key in perfume) { perfumeConCasa[key] = perfume[key]; }
-        perfumeConCasa.casa = casaNombre;
-        verPerfume(perfumeConCasa);
-      };
-    })(p, casa));
+    var perfumesRow = el('div', { class: 'combo-perfumes' });
+    perfumes.forEach(function (p, i) {
+      if (i > 0) perfumesRow.appendChild(el('span', { class: 'combo-plus', text: '+' }));
+      perfumesRow.appendChild(el('div', { class: 'combo-perfume' }, [
+        el('img', { src: p.img || 'assets/favicon.svg', alt: p.name, loading: 'lazy' }),
+        el('span', { class: 'combo-perfume-name', text: p.name }),
+        el('span', { class: 'combo-perfume-brand', text: p.casa })
+      ]));
+    });
+    card.appendChild(perfumesRow);
 
+    var prices = el('div', { class: 'combo-prices' });
+    [2, 5, 10].forEach(function (ml) {
+      prices.appendChild(buildPriceTag(ml, sumAtMl(perfumes, ml), combo.prices[ml], ml === 5));
+    });
+    var addBtn = el('button', { class: 'btn btn-primary combo-add-btn', type: 'button', text: 'Añadir combo' });
+    card.appendChild(el('div', { class: 'combo-footer' }, [ prices, addBtn ]));
+
+    card.addEventListener('click', function (e) {
+      var tag = e.target.closest('.combo-price-tag');
+      if (!tag) return;
+      SG.$$('.combo-price-tag', card).forEach(function (t) { t.classList.remove('active'); });
+      tag.classList.add('active');
+      var ml = Number(tag.dataset.ml);
+      var s = sumAtMl(perfumes, ml) - combo.prices[ml];
+      savingsEl.textContent = 'Ahorras $' + s;
+      savingsEl.style.display = s <= 0 ? 'none' : '';
+    });
+
+    addBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var activeTag = SG.$('.combo-price-tag.active', card);
+      var ml = Number(activeTag.dataset.ml);
+      window.agregarComboAlCarrito(combo, perfumes, ml);
+    });
+
+    if (combo.video) card.dataset.video = 'assets/' + combo.video;
     return card;
   }
 
-  // Render cards
-  destacados.forEach(function(item, i) {
-    container.appendChild(buildCard(item, i));
-  });
+  function renderCombos() {
+    var container = byId('combosContainer');
+    if (!container || !window.COMBOS || !window.PERFUMES) return;
 
-  // Auto-scroll
-  var wrapper = container.closest('.bestsellers-wrapper');
-  if (wrapper) {
-    var scrollInterval = null;
+    var combos = window.COMBOS.filter(function (c) { return !c.agotado; });
+    if (!combos.length) {
+      var section = container.closest('.combos-section');
+      if (section) section.style.display = 'none';
+      return;
+    }
+
+    container.textContent = '';
+    combos.forEach(function (combo) {
+      var perfumes = combo.codes.map(findPerfumeByCode).filter(Boolean);
+      if (perfumes.length < 3) return;
+      container.appendChild(buildComboCard(combo, perfumes));
+    });
+  }
+
+  /* ── Destacados (bestsellers) ─────────────────────────────────── */
+
+  function buildBestsellerCard(item, index) {
+    var p = item.perfume, casa = item.casa;
+    var card = el('article', { class: 'bestseller-card', tabindex: '0', role: 'button', 'aria-label': 'Ver ' + (p.name || '') });
+    card.appendChild(el('span', { class: 'bestseller-rank', text: '#' + (index + 1) }));
+    card.appendChild(el('div', { class: 'bestseller-badge', text: 'Bestseller' }));
+    card.appendChild(el('div', { class: 'bs-img-wrap' }, [
+      el('img', { src: p.img || 'assets/favicon.svg', alt: p.name, loading: 'lazy' })
+    ]));
+    card.appendChild(el('div', { class: 'bestseller-content' }, [
+      el('div', { class: 'bs-brand', text: casa }),
+      el('h4', { text: p.name }),
+      el('div', { class: 'bs-conc', text: p.conc || '\u00A0' }),
+      el('div', { class: 'bestseller-bottom' }, [
+        el('div', { class: 'bs-price' }, [
+          el('span', { text: 'Desde' }),
+          el('strong', { text: '$' + p.prices[2] })
+        ]),
+        el('span', { class: 'bs-cta', text: 'Ver' })
+      ])
+    ]));
+
+    var open = function () {
+      var perfumeConCasa = {};
+      for (var k in p) { if (Object.prototype.hasOwnProperty.call(p, k)) perfumeConCasa[k] = p[k]; }
+      perfumeConCasa.casa = casa;
+      verPerfume(perfumeConCasa);
+    };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    return card;
+  }
+
+  function renderDestacados() {
+    var container = byId('destacados');
+    if (!container || !window.PERFUMES) return;
+
+    var destacados = [];
+    var has = Object.prototype.hasOwnProperty;
+    for (var casa in window.PERFUMES) {
+      if (!has.call(window.PERFUMES, casa)) continue;
+      window.PERFUMES[casa].forEach(function (p) {
+        if (p.destacado && !p.proximo) destacados.push({ perfume: p, casa: casa });
+      });
+    }
+
+    destacados.sort(function (a, b) {
+      return (a.perfume.ranking || 999) - (b.perfume.ranking || 999);
+    });
+
+    if (!destacados.length) {
+      var section = container.closest('.bestsellers-section');
+      if (section) section.style.display = 'none';
+      return;
+    }
+
+    container.textContent = '';
+    destacados.forEach(function (item, i) {
+      container.appendChild(buildBestsellerCard(item, i));
+    });
+
+    initBestsellersAutoScroll(container);
+  }
+
+  function initBestsellersAutoScroll(trackEl) {
+    var wrapper = trackEl.closest('.bestsellers-wrapper');
+    if (!wrapper) return;
+
+    var SCROLL_SPEED = 0.5; // px por frame (~30px/s a 60fps)
+    var rafId = null;
+    var rewinding = false;
     var resumeTimer = null;
 
-    var rewinding = false;
+    function step() {
+      var max = wrapper.scrollWidth - wrapper.clientWidth;
+      if (wrapper.scrollLeft >= max - 1) {
+        rewind();
+        return;
+      }
+      wrapper.scrollLeft += SCROLL_SPEED;
+      rafId = requestAnimationFrame(step);
+    }
 
     function rewind() {
       rewinding = true;
-      clearInterval(scrollInterval);
-      scrollInterval = null;
+      cancelAnimationFrame(rafId);
+      rafId = null;
 
-      // Rebobinar hacia la izquierda
       var startPos = wrapper.scrollLeft;
-      var startTime = Date.now();
-      var duration = 1200; // ms
+      var startTime = 0;
+      var duration = 1200;
 
-      var rewindId = setInterval(function() {
-        var elapsed = Date.now() - startTime;
-        var t = Math.min(elapsed / duration, 1);
-
-        // easeInOutCubic: arranca suave, acelera, frena suave
-        var ease = t < 0.5
-          ? 4 * t * t * t
-          : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
+      function frame(t) {
+        if (!startTime) startTime = t;
+        var progress = Math.min((t - startTime) / duration, 1);
+        var ease = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
         wrapper.scrollLeft = startPos * (1 - ease);
-
-        if (t >= 1) {
-          wrapper.scrollLeft = 0;
-          clearInterval(rewindId);
-          rewinding = false;
-          setTimeout(startScroll, 800);
-        }
-      }, 16);
-    }
-
-    function startScroll() {
-      if (scrollInterval || rewinding) return;
-      scrollInterval = setInterval(function() {
-        var max = wrapper.scrollWidth - wrapper.clientWidth;
-        if (wrapper.scrollLeft >= max - 2) {
-          rewind();
+        if (progress < 1) {
+          requestAnimationFrame(frame);
         } else {
-          wrapper.scrollLeft += 0.5;
+          wrapper.scrollLeft = 0;
+          rewinding = false;
+          resumeTimer = setTimeout(start, 800);
         }
-      }, 30);
+      }
+      requestAnimationFrame(frame);
     }
 
-    function stopScroll() {
-      clearInterval(scrollInterval);
-      scrollInterval = null;
+    function start() {
+      if (rafId || rewinding) return;
+      rafId = requestAnimationFrame(step);
+    }
+
+    function stop() {
+      cancelAnimationFrame(rafId);
+      rafId = null;
       clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(startScroll, 4000);
+      resumeTimer = setTimeout(start, 4000);
     }
 
-    wrapper.addEventListener('pointerdown', stopScroll);
-    wrapper.addEventListener('wheel', stopScroll, { passive: true });
+    wrapper.addEventListener('pointerdown', stop);
+    wrapper.addEventListener('wheel', stop, { passive: true });
 
-    // Iniciar solo cuando el usuario vea la sección
-    var obs = new IntersectionObserver(function(entries) {
+    var obs = new IntersectionObserver(function (entries) {
       if (entries[0].isIntersecting) {
         obs.disconnect();
-        setTimeout(startScroll, 2000);
+        setTimeout(start, 2000);
       }
     }, { threshold: 0.3 });
     obs.observe(wrapper);
   }
-}
 
-/* ── Gold Floating Particles in Hero ──────────────────────────── */
+  /* ── Hero particles ──────────────────────────────────────────── */
 
-function initHeroParticles() {
-  var hero = document.querySelector('.hero');
-  if (!hero) return;
+  function initHeroParticles() {
+    var hero = SG.$('.hero');
+    if (!hero) return;
 
-  var count = 20;
-  for (var i = 0; i < count; i++) {
-    var particle = document.createElement('div');
-    particle.className = 'hero-particle';
+    var count = 20;
+    for (var i = 0; i < count; i++) {
+      var size = 2 + Math.random() * 3;
+      var duration = 6 + Math.random() * 8;
+      var delay = Math.random() * duration;
+      var drift = (Math.random() - 0.5) * 80;
+      var maxOpacity = 0.2 + Math.random() * 0.35;
 
-    var size = 2 + Math.random() * 3;
-    particle.style.width = size + 'px';
-    particle.style.height = size + 'px';
-    particle.style.left = Math.random() * 100 + '%';
-    particle.style.bottom = -(Math.random() * 20) + '%';
-
-    var duration = 6 + Math.random() * 8;
-    var delay = Math.random() * duration;
-    var drift = (Math.random() - 0.5) * 80;
-    var maxOpacity = 0.2 + Math.random() * 0.35;
-
-    particle.style.setProperty('--duration', duration + 's');
-    particle.style.setProperty('--delay', '-' + delay + 's');
-    particle.style.setProperty('--drift', drift + 'px');
-    particle.style.setProperty('--max-opacity', maxOpacity);
-
-    hero.appendChild(particle);
-  }
-}
-
-/* ── Parallax on Hero Background ─────────────────────────────── */
-
-function initHeroParallax() {
-  var hero = document.querySelector('.hero');
-  if (!hero) return;
-
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
-        var scrollY = window.scrollY;
-        var heroH = hero.offsetHeight;
-        if (scrollY <= heroH) {
-          var offset = scrollY * 0.3;
-          hero.style.backgroundPositionY = 'calc(50% + ' + offset + 'px)';
-        }
-        ticking = false;
-      });
-      ticking = true;
+      var particle = el('div', { class: 'hero-particle' });
+      particle.style.width = particle.style.height = size + 'px';
+      particle.style.left = (Math.random() * 100) + '%';
+      particle.style.bottom = -(Math.random() * 20) + '%';
+      particle.style.setProperty('--duration', duration + 's');
+      particle.style.setProperty('--delay', '-' + delay + 's');
+      particle.style.setProperty('--drift', drift + 'px');
+      particle.style.setProperty('--max-opacity', maxOpacity);
+      hero.appendChild(particle);
     }
-  });
-}
-
-/* ── 3D Tilt Effect on Cards ─────────────────────────────────── */
-
-function initCardTilt() {
-  var container = document.getElementById('catalogo');
-  if (!container) return;
-
-  container.addEventListener('mousemove', function(e) {
-    var card = e.target.closest('.card');
-    if (!card) return;
-
-    var rect = card.getBoundingClientRect();
-    var x = (e.clientX - rect.left) / rect.width;
-    var y = (e.clientY - rect.top) / rect.height;
-
-    var tiltX = (0.5 - y) * 16;
-    var tiltY = (x - 0.5) * 16;
-
-    card.classList.add('tilt-active');
-    card.style.transform = 'perspective(600px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) scale(1.02)';
-
-    var glare = card.querySelector('.tilt-glare');
-    if (glare) {
-      glare.style.background = 'radial-gradient(circle at ' + (x * 100) + '% ' + (y * 100) + '%, rgba(255,255,255,0.15), transparent 60%)';
-    }
-  });
-
-  container.addEventListener('mouseleave', function(e) {
-    var card = e.target.closest('.card');
-    if (card) _resetCardTilt(card);
-  }, true);
-
-  container.addEventListener('mouseout', function(e) {
-    var card = e.target.closest('.card');
-    var related = e.relatedTarget;
-    if (card && (!related || !card.contains(related))) {
-      _resetCardTilt(card);
-    }
-  });
-}
-
-function _resetCardTilt(card) {
-  card.classList.remove('tilt-active');
-  card.style.transition = 'transform .4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .4s ease, border-color .4s ease';
-  card.style.transform = '';
-  setTimeout(function() {
-    card.style.transition = '';
-  }, 400);
-}
-
-/* ── Inject tilt-glare overlay into cards ─────────────────────── */
-
-function _injectGlareOverlays() {
-  var cards = document.querySelectorAll('.card:not(.glare-injected)');
-  cards.forEach(function(card) {
-    var glare = document.createElement('div');
-    glare.className = 'tilt-glare';
-    card.appendChild(glare);
-    card.classList.add('glare-injected');
-  });
-}
-
-function initGlareObserver() {
-  var catalogo = document.getElementById('catalogo');
-  if (!catalogo) return;
-
-  _injectGlareOverlays();
-
-  var observer = new MutationObserver(function() {
-    _injectGlareOverlays();
-  });
-  observer.observe(catalogo, { childList: true, subtree: true });
-}
-
-/* ── Custom Droplet Cursor (Global) ──────────────────────────── */
-
-function initCustomCursor() {
-  // No activar en touch/mobile
-  if ('ontouchstart' in window) return;
-
-  var cursor = document.createElement('div');
-  cursor.id = 'custom-cursor';
-  cursor.innerHTML = '<div class="droplet"></div>';
-  document.body.appendChild(cursor);
-
-  var mouseX = 0, mouseY = 0;
-  var curX = 0, curY = 0;
-
-  function updateCursor() {
-    curX += (mouseX - curX) * 0.15;
-    curY += (mouseY - curY) * 0.15;
-    cursor.style.left = curX + 'px';
-    cursor.style.top = curY + 'px';
-    requestAnimationFrame(updateCursor);
   }
 
-  document.addEventListener('mousemove', function(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
+  /* ── Hero parallax ───────────────────────────────────────────── */
 
-  // Ocultar cursor global
-  document.body.classList.add('custom-cursor-active');
-  cursor.classList.add('visible');
-  curX = mouseX;
-  curY = mouseY;
-  requestAnimationFrame(updateCursor);
-}
-
-/* ── Magnetic Buttons ────────────────────────────────────────── */
-
-function initMagneticButtons() {
-  if ('ontouchstart' in window) return;
-
-  var selectors = '.btn, .full-btn, .small-btn, .filter-pill, .cart-btn, .scroll-top-btn, .cerrarX, .qty-btn';
-
-  document.addEventListener('mousemove', function(e) {
-    var btns = document.querySelectorAll(selectors);
-    btns.forEach(function(btn) {
-      var rect = btn.getBoundingClientRect();
-      var cx = rect.left + rect.width / 2;
-      var cy = rect.top + rect.height / 2;
-
-      var distX = e.clientX - cx;
-      var distY = e.clientY - cy;
-      var dist = Math.sqrt(distX * distX + distY * distY);
-
-      var radius = Math.max(rect.width, rect.height) * 0.5;
-
-      if (dist < radius) {
-        var pull = 1 - (dist / radius);
-        var moveX = distX * pull * 0.3;
-        var moveY = distY * pull * 0.3;
-        btn.style.transform = 'translate(' + moveX + 'px,' + moveY + 'px)';
-        btn.style.transition = 'transform .2s ease';
-      } else {
-        if (btn.style.transform && btn.style.transform.indexOf('translate') !== -1) {
-          btn.style.transform = '';
-          btn.style.transition = 'transform .4s cubic-bezier(.25,.46,.45,.94)';
-        }
+  function initHeroParallax() {
+    var hero = SG.$('.hero');
+    if (!hero) return;
+    var onScroll = rafThrottle(function () {
+      var scrollY = window.scrollY;
+      var heroH = hero.offsetHeight;
+      if (scrollY <= heroH) {
+        hero.style.backgroundPositionY = 'calc(50% + ' + (scrollY * 0.3) + 'px)';
       }
     });
-  });
-}
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
 
-/* ── Count-Up Animation ──────────────────────────────────────── */
+  /* ── Card tilt + glare (observer único) ───────────────────────── */
 
-function initCountUp() {
-  var counters = document.querySelectorAll('.count-up');
-  if (!counters.length) return;
+  function _resetCardTilt(card) {
+    card.classList.remove('tilt-active');
+    card.style.transition = 'transform .4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .4s ease, border-color .4s ease';
+    card.style.transform = '';
+    setTimeout(function () { card.style.transition = ''; }, 400);
+  }
 
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (!entry.isIntersecting) return;
+  function initCardTilt() {
+    var container = byId('catalogo');
+    if (!container) return;
 
-      var el = entry.target;
-      var target = Number(el.dataset.target);
-      var duration = 1500;
-      var start = 0;
-      var startTime = null;
+    var onMove = rafThrottle(function (e) {
+      var card = e.target.closest('.card');
+      if (!card) return;
+      var rect = card.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width;
+      var y = (e.clientY - rect.top)  / rect.height;
 
-      function animate(timestamp) {
-        if (!startTime) startTime = timestamp;
-        var progress = Math.min((timestamp - startTime) / duration, 1);
-        var eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-        el.textContent = Math.floor(eased * target);
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          el.textContent = target;
-        }
+      card.classList.add('tilt-active');
+      card.style.transform =
+        'perspective(600px) rotateX(' + ((0.5 - y) * 16) + 'deg) rotateY(' + ((x - 0.5) * 16) + 'deg) scale(1.02)';
+
+      var glare = card.querySelector('.tilt-glare');
+      if (glare) {
+        glare.style.background =
+          'radial-gradient(circle at ' + (x * 100) + '% ' + (y * 100) + '%, rgba(255,255,255,0.15), transparent 60%)';
       }
-
-      requestAnimationFrame(animate);
-      observer.unobserve(el);
     });
-  }, { threshold: 0.5 });
 
-  counters.forEach(function(c) {
-    observer.observe(c);
-  });
-}
+    container.addEventListener('mousemove', onMove);
+    container.addEventListener('mouseleave', function (e) {
+      var card = e.target.closest('.card');
+      if (card) _resetCardTilt(card);
+    }, true);
+    container.addEventListener('mouseout', function (e) {
+      var card = e.target.closest('.card');
+      var related = e.relatedTarget;
+      if (card && (!related || !card.contains(related))) _resetCardTilt(card);
+    });
+  }
 
-/* ── Scroll to Top Button ────────────────────────────────────── */
+  /* ── Observer unificado para catálogo (glare + scroll reveal) ── */
 
-function initAnnouncementBar() {
-  var bar = document.querySelector('.announcement-bar');
-  if (!bar) return;
+  function _injectGlareOverlays(root) {
+    SG.$$('.card:not(.glare-injected)', root).forEach(function (card) {
+      card.appendChild(el('div', { class: 'tilt-glare' }));
+      card.classList.add('glare-injected');
+    });
+  }
 
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 80) {
-      bar.classList.add('hidden');
-    } else {
-      bar.classList.remove('hidden');
+  function initCatalogObserver() {
+    var catalogo = byId('catalogo');
+    if (!catalogo) return;
+
+    _injectGlareOverlays(catalogo);
+
+    var pending = [];
+    function collectPending() {
+      pending = [];
+      SG.$$('.house-title:not(.revealed)', catalogo).forEach(function (t) { pending.push(t); });
+      SG.$$('.card:not(.revealed)',        catalogo).forEach(function (c) { pending.push(c); });
     }
-  });
-}
 
-/* ── Scroll Reveal on Cards & House Titles ────────────────────── */
-
-function initScrollReveal() {
-  var catalogo = document.getElementById('catalogo');
-  if (!catalogo) return;
-
-  function revealElements() {
-    var cards = catalogo.querySelectorAll('.card:not(.revealed)');
-    var titles = catalogo.querySelectorAll('.house-title:not(.revealed)');
-    var elements = [];
-
-    titles.forEach(function(t) { elements.push(t); });
-    cards.forEach(function(c) { elements.push(c); });
-
-    if (!elements.length) return;
-
-    var observer = new IntersectionObserver(function(entries) {
-      // Group entries that are intersecting
+    var observer = new IntersectionObserver(function (entries) {
       var visible = [];
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          visible.push(entry.target);
-          observer.unobserve(entry.target);
-        }
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { visible.push(entry.target); observer.unobserve(entry.target); }
       });
-
-      // Stagger delay within each batch
-      visible.forEach(function(el, i) {
+      visible.forEach(function (el, i) {
         el.style.setProperty('--delay', (i * 0.07) + 's');
         el.classList.add('revealed');
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
-    elements.forEach(function(el) {
-      observer.observe(el);
+    function observeAll() {
+      collectPending();
+      pending.forEach(function (el) { observer.observe(el); });
+    }
+    observeAll();
+
+    var mo = new MutationObserver(function () {
+      _injectGlareOverlays(catalogo);
+      observeAll();
+    });
+    mo.observe(catalogo, { childList: true, subtree: true });
+  }
+
+  /* ── Magnetic buttons (con scope, rAF y delegación) ──────────── */
+
+  function initMagneticButtons() {
+    if (SG.ua.isTouch) return;
+
+    var SELECTORS = '.btn, .full-btn, .small-btn, .filter-pill, .cart-btn, .scroll-top-btn, .cerrarX, .qty-btn';
+    var MAX_DISTANCE = 80; // px — rango útil en el que un botón puede atraer el cursor
+    var tracked = new Set();
+
+    function resetAll() {
+      tracked.forEach(function (btn) {
+        if (btn.style.transform) {
+          btn.style.transform = '';
+          btn.style.transition = 'transform .4s cubic-bezier(.25,.46,.45,.94)';
+        }
+      });
+      tracked.clear();
+    }
+
+    var onMove = rafThrottle(function (e) {
+      var ex = e.clientX, ey = e.clientY;
+      // Limitar a los botones dentro del viewport visible + cerca del cursor
+      var vw = window.innerWidth, vh = window.innerHeight;
+      if (ex < 0 || ex > vw || ey < 0 || ey > vh) { resetAll(); return; }
+
+      var nodes = document.querySelectorAll(SELECTORS);
+      var stillTracked = new Set();
+
+      for (var i = 0; i < nodes.length; i++) {
+        var btn = nodes[i];
+        var rect = btn.getBoundingClientRect();
+        if (!rect.width || !rect.height) continue;
+        // Descarte rápido por rectángulo expandido — evita Math.sqrt en la mayoría
+        if (ex < rect.left - MAX_DISTANCE || ex > rect.right  + MAX_DISTANCE ||
+            ey < rect.top  - MAX_DISTANCE || ey > rect.bottom + MAX_DISTANCE) {
+          if (tracked.has(btn)) {
+            btn.style.transform = '';
+            btn.style.transition = 'transform .4s cubic-bezier(.25,.46,.45,.94)';
+          }
+          continue;
+        }
+
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top  + rect.height / 2;
+        var distX = ex - cx, distY = ey - cy;
+        var dist = Math.sqrt(distX * distX + distY * distY);
+        var radius = Math.max(rect.width, rect.height) * 0.5;
+
+        if (dist < radius) {
+          var pull = 1 - (dist / radius);
+          btn.style.transform = 'translate(' + (distX * pull * 0.3) + 'px,' + (distY * pull * 0.3) + 'px)';
+          btn.style.transition = 'transform .2s ease';
+          stillTracked.add(btn);
+        } else if (tracked.has(btn)) {
+          btn.style.transform = '';
+          btn.style.transition = 'transform .4s cubic-bezier(.25,.46,.45,.94)';
+        }
+      }
+      tracked = stillTracked;
+    });
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseleave', resetAll);
+  }
+
+  /* ── Count-up ────────────────────────────────────────────────── */
+
+  function initCountUp() {
+    var counters = SG.$$('.count-up');
+    if (!counters.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var elCounter = entry.target;
+        var target = Number(elCounter.dataset.target);
+        var duration = 1500;
+        var startTime = null;
+
+        function animate(ts) {
+          if (!startTime) startTime = ts;
+          var progress = Math.min((ts - startTime) / duration, 1);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          elCounter.textContent = Math.floor(eased * target);
+          if (progress < 1) requestAnimationFrame(animate);
+          else elCounter.textContent = target;
+        }
+        requestAnimationFrame(animate);
+        observer.unobserve(elCounter);
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(function (c) { observer.observe(c); });
+  }
+
+  /* ── Announcement bar ────────────────────────────────────────── */
+
+  function initAnnouncementBar() {
+    var bar = SG.$('.announcement-bar');
+    if (!bar) return;
+    var onScroll = rafThrottle(function () {
+      bar.classList.toggle('hidden', window.scrollY > 80);
+    });
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* ── Scroll top ──────────────────────────────────────────────── */
+
+  function initScrollTop() {
+    var btn = byId('btnScrollTop');
+    if (!btn) return;
+
+    var onScroll = rafThrottle(function () {
+      btn.classList.toggle('show', window.scrollY > 600);
+    });
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    btn.addEventListener('click', function () {
+      var currentY = window.scrollY;
+      var impulso = Math.min(80, currentY * 0.08);
+      window.scrollTo({ top: currentY + impulso, behavior: 'smooth' });
+
+      setTimeout(function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        var onArrival = function () {
+          if (window.scrollY === 0) {
+            window.removeEventListener('scroll', onArrival);
+            var main = SG.$('main') || document.body;
+            main.style.transition = 'transform .25s cubic-bezier(.34,1.56,.64,1)';
+            main.style.transform = 'translateY(18px)';
+            setTimeout(function () {
+              main.style.transform = 'translateY(0)';
+              setTimeout(function () {
+                main.style.transition = '';
+                main.style.transform = '';
+              }, 250);
+            }, 120);
+          }
+        };
+        window.addEventListener('scroll', onArrival);
+      }, 200);
     });
   }
 
-  // Run initially and also watch for DOM changes (search/filter re-renders)
-  revealElements();
+  /* ── Easter egg "smell" → lluvia de gotas ────────────────────── */
 
-  var mo = new MutationObserver(function() {
-    revealElements();
-  });
-  mo.observe(catalogo, { childList: true, subtree: true });
-}
+  function _triggerDropletRain() {
+    var count = 25;
+    var container = el('div');
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:10000;overflow:hidden;';
+    document.body.appendChild(container);
 
-/* ── Easter Egg — "smell" Keyboard Sequence ───────────────────── */
-
-function initEasterEgg() {
-  var sequence = 'smell';
-  var buffer = '';
-
-  document.addEventListener('keydown', function(e) {
-    // Ignore if user is typing in an input or textarea
-    var tag = (e.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
-
-    buffer += e.key.toLowerCase();
-
-    // Keep only the last N characters
-    if (buffer.length > sequence.length) {
-      buffer = buffer.slice(-sequence.length);
+    for (var i = 0; i < count; i++) {
+      var drop = el('div', { class: 'ee-droplet' });
+      drop.style.left = (Math.random() * 100) + '%';
+      drop.style.setProperty('--ee-delay', (Math.random() * 1.2) + 's');
+      drop.style.setProperty('--fall-duration', (2 + Math.random() * 1.5) + 's');
+      drop.style.setProperty('--ee-sway', ((Math.random() - 0.5) * 80) + 'px');
+      drop.style.setProperty('--ee-rotate', ((Math.random() - 0.5) * 120) + 'deg');
+      container.appendChild(drop);
     }
-
-    if (buffer === sequence) {
-      buffer = '';
-      _triggerDropletRain();
-    }
-  });
-}
-
-function _triggerDropletRain() {
-  var count = 25;
-  var container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.inset = '0';
-  container.style.pointerEvents = 'none';
-  container.style.zIndex = '10000';
-  container.style.overflow = 'hidden';
-  document.body.appendChild(container);
-
-  for (var i = 0; i < count; i++) {
-    var drop = document.createElement('div');
-    drop.className = 'ee-droplet';
-
-    var left = Math.random() * 100;
-    var delay = Math.random() * 1.2;
-    var duration = 2 + Math.random() * 1.5;
-    var sway = (Math.random() - 0.5) * 80;
-    var rotate = (Math.random() - 0.5) * 120;
-
-    drop.style.left = left + '%';
-    drop.style.setProperty('--ee-delay', delay + 's');
-    drop.style.setProperty('--fall-duration', duration + 's');
-    drop.style.setProperty('--ee-sway', sway + 'px');
-    drop.style.setProperty('--ee-rotate', rotate + 'deg');
-
-    container.appendChild(drop);
+    setTimeout(function () { container.remove(); }, 4700);
   }
 
-  // Clean up after animations finish
-  var maxTime = (1.2 + 3.5) * 1000; // max delay + max duration
-  setTimeout(function() {
-    container.remove();
-  }, maxTime);
-}
-
-/* ── Typewriter Effect on Hero Subtitle ────────────────────── */
-
-function initTypewriter() {
-  var el = document.querySelector('.hero p.cinematic-reveal');
-  if (!el) return;
-
-  var fullText = el.textContent.trim();
-
-  // Wait for cinematic animation to finish (delay 0.5s + ~0.7s animation)
-  setTimeout(function() {
-    el.textContent = '';
-
-    // Add blinking cursor
-    var cursor = document.createElement('span');
-    cursor.className = 'typewriter-cursor';
-    cursor.textContent = '|';
-    el.appendChild(cursor);
-
-    var index = 0;
-
-    function typeChar() {
-      if (index < fullText.length) {
-        // Insert character before cursor
-        var textNode = document.createTextNode(fullText.charAt(index));
-        el.insertBefore(textNode, cursor);
-        index++;
-        setTimeout(typeChar, 40);
-      } else {
-        // Typing done — blink cursor briefly then remove
-        setTimeout(function() {
-          cursor.remove();
-        }, 1500);
-      }
-    }
-
-    typeChar();
-  }, 1200);
-}
-
-/* ── Shake to Reveal Easter Egg (Mobile) ──────────────────── */
-
-function initShakeDetect() {
-  if (!('ontouchstart' in window)) return;
-
-  var lastTrigger = 0;
-  var cooldown = 3000;
-  var threshold = 15;
-  var lastX = null, lastY = null, lastZ = null;
-
-  function handleMotion(e) {
-    var acc = e.accelerationIncludingGravity || e.acceleration;
-    if (!acc || acc.x === null) return;
-
-    if (lastX !== null) {
-      var deltaX = Math.abs(acc.x - lastX);
-      var deltaY = Math.abs(acc.y - lastY);
-      var deltaZ = Math.abs(acc.z - lastZ);
-      var total = deltaX + deltaY + deltaZ;
-
-      if (total > threshold) {
-        var now = Date.now();
-        if (now - lastTrigger > cooldown) {
-          lastTrigger = now;
-          _triggerDropletRain();
-        }
-      }
-    }
-
-    lastX = acc.x;
-    lastY = acc.y;
-    lastZ = acc.z;
+  function initEasterEgg() {
+    var sequence = 'smell';
+    var buffer = '';
+    document.addEventListener('keydown', function (e) {
+      var tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      buffer += e.key.toLowerCase();
+      if (buffer.length > sequence.length) buffer = buffer.slice(-sequence.length);
+      if (buffer === sequence) { buffer = ''; _triggerDropletRain(); }
+    });
   }
 
-  function startListening() {
-    window.addEventListener('devicemotion', handleMotion);
-  }
+  /* ── Scroll con impulso + rebote elástico (reusable) ──────────── */
 
-  // iOS 13+ requires permission
-  if (typeof DeviceMotionEvent !== 'undefined' &&
-      typeof DeviceMotionEvent.requestPermission === 'function') {
-    document.addEventListener('touchstart', function reqPerm() {
-      DeviceMotionEvent.requestPermission()
-        .then(function(state) {
-          if (state === 'granted') startListening();
-        })
-        .catch(function() {});
-      document.removeEventListener('touchstart', reqPerm);
-    }, { once: true });
-  } else if (typeof DeviceMotionEvent !== 'undefined') {
-    startListening();
-  }
-}
-
-function initScrollTop() {
-  var btn = document.getElementById('btnScrollTop');
-  if (!btn) return;
-
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 600) {
-      btn.classList.add('show');
-    } else {
-      btn.classList.remove('show');
-    }
-  });
-
-  btn.addEventListener('click', function() {
-    // Primero bajar un poco para "tomar impulso"
+  function scrollToWithBounce(target) {
+    if (!target) return;
     var currentY = window.scrollY;
-    var impulso = Math.min(80, currentY * 0.08);
+    var targetY = target.getBoundingClientRect().top + currentY;
+    var goingDown = currentY < targetY;
+    var impulso = goingDown ? Math.max(0, currentY - 80) : currentY + 80;
+    window.scrollTo({ top: impulso, behavior: 'smooth' });
 
-    window.scrollTo({ top: currentY + impulso, behavior: 'smooth' });
-
-    // Después de bajar, subir al top
-    setTimeout(function() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      // Rebote elástico al llegar arriba
-      var onScroll = function() {
-        if (window.scrollY === 0) {
+    setTimeout(function () {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var onScroll = function () {
+        var rect = target.getBoundingClientRect();
+        if (Math.abs(rect.top) < 5) {
           window.removeEventListener('scroll', onScroll);
-          var main = document.querySelector('main') || document.body;
+          var main = SG.$('main') || document.body;
           main.style.transition = 'transform .25s cubic-bezier(.34,1.56,.64,1)';
           main.style.transform = 'translateY(18px)';
-          setTimeout(function() {
+          setTimeout(function () {
             main.style.transform = 'translateY(0)';
-            setTimeout(function() {
+            setTimeout(function () {
               main.style.transition = '';
               main.style.transform = '';
             }, 250);
@@ -845,5 +694,24 @@ function initScrollTop() {
       };
       window.addEventListener('scroll', onScroll);
     }, 200);
-  });
-}
+  }
+
+  /* ── Exposición pública ──────────────────────────────────────── */
+
+  window.renderCompletos   = renderCompletos;
+  window.renderCombos      = renderCombos;
+  window.renderDestacados  = renderDestacados;
+
+  SG.ui = {
+    initHeroParticles: initHeroParticles,
+    initHeroParallax:  initHeroParallax,
+    initCardTilt:      initCardTilt,
+    initCatalogObserver: initCatalogObserver,
+    initMagneticButtons: initMagneticButtons,
+    initCountUp:       initCountUp,
+    initAnnouncementBar: initAnnouncementBar,
+    initScrollTop:     initScrollTop,
+    initEasterEgg:     initEasterEgg,
+    scrollToWithBounce: scrollToWithBounce
+  };
+})(window.SG);

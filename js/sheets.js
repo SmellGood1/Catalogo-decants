@@ -3,7 +3,7 @@
  * Expone window.PERFUMES con el mismo formato que usaba perfumes.js.
  */
 var SHEETS_CSV_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vT31Q_qgQbxSCGNxeJ09rE-VqtnaLhgyjwyY5cdsU_C2VT6WAz1RYTFVFEcNQvr7pt58TyNhHnn0lGk/pub?output=csv';
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vT31Q_qgQbxSCGNxeJ09rE-VqtnaLhgyjwyY5cdsU_C2VT6WAz1RYTFVFEcNQvr7pt58TyNhHnn0lGk/pub?gid=1268874206&single=true&output=csv';
 
 /* ── CSV Parser ─────────────────────────────────────────────── */
 
@@ -63,11 +63,15 @@ function parseNotes(salida, corazon, fondo) {
 
 function findPerfumeByCode(code) {
   if (!window.PERFUMES) return null;
+  var has = Object.prototype.hasOwnProperty;
   for (var casa in PERFUMES) {
+    if (!has.call(PERFUMES, casa)) continue;
     for (var i = 0; i < PERFUMES[casa].length; i++) {
       if (String(PERFUMES[casa][i].codigo) === String(code)) {
         var p = {};
-        for (var k in PERFUMES[casa][i]) p[k] = PERFUMES[casa][i][k];
+        for (var k in PERFUMES[casa][i]) {
+          if (has.call(PERFUMES[casa][i], k)) p[k] = PERFUMES[casa][i][k];
+        }
         p.casa = casa;
         return p;
       }
@@ -88,10 +92,25 @@ function loadPerfumesFromSheets() {
       var rows = parseCSV(csvText);
       if (!rows.length) throw new Error('CSV vacío');
 
+      // Validación defensiva: la hoja publicada debe ser la de decants.
+      // Si no trae las columnas esperadas, el tab del Sheets es otro (típicamente
+      // la calculadora si se reorganizan los tabs) y hay que fijar el gid correcto
+      // en SHEETS_CSV_URL.
+      var headers = Object.keys(rows[0] || {});
+      var hasCasa = headers.indexOf('casa') !== -1 || headers.indexOf('Casa') !== -1;
+      var hasPerfume = headers.indexOf('perfume') !== -1 || headers.indexOf('Perfume') !== -1;
+      if (!hasCasa || !hasPerfume) {
+        throw new Error(
+          'El tab publicado no parece ser el de Decants. Columnas encontradas: ' +
+          headers.join(', ') +
+          '. Fijar el gid correcto en SHEETS_CSV_URL (js/sheets.js).'
+        );
+      }
+
       var perfumes = {};
 
       rows.forEach(function(row) {
-        var casa = row['casa'] || '';
+        var casa = row['casa'] || row['Casa'] || '';
         if (!casa) return;
 
         var enVenta = (row['En venta'] || '').toUpperCase().trim();
@@ -116,7 +135,7 @@ function loadPerfumesFromSheets() {
           ranking: parseInt(row['Ranking'] || row['ranking'] || '0', 10) || 0,
           proximo: enVenta !== 'SI' && enVenta !== 'NO',
           agotado: enVenta === 'NO',
-          muyProonto: enVenta === 'MUY PRONTO'
+          muyPronto: enVenta === 'MUY PRONTO'
         };
 
         if (!perfumes[casa]) perfumes[casa] = [];
@@ -165,7 +184,7 @@ function loadCompletosFromSheets() {
                    ),
           proximo: enVenta !== 'SI' && enVenta !== 'NO',
           agotado: enVenta === 'NO',
-          muyProonto: enVenta === 'MUY PRONTO',
+          muyPronto: enVenta === 'MUY PRONTO',
           entrega: (row['Entrega'] || row['entrega'] || '').trim()
         };
 

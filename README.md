@@ -1,88 +1,100 @@
 # SmellGood Decants
 
-Catalogo de decants de perfumes premium con pedido por WhatsApp.
+Catálogo de decants y frascos completos con pedido directo por WhatsApp.
+El stack es estático (HTML/CSS/JS vanilla) y el catálogo se alimenta desde una
+hoja pública de Google Sheets.
 
-## Estructura del proyecto
+## Arquitectura
 
 ```
 /
-├── index.html              # HTML principal
-├── css/
-│   ├── variables.css       # Variables CSS (:root)
-│   ├── reset.css           # Reset y estilos base
-│   ├── layout.css          # Container y grid system
-│   ├── header.css          # Header, nav, search, carrito
-│   ├── hero.css            # Seccion hero
-│   ├── trust.css           # Trust cards
-│   ├── catalog.css         # Cards de perfumes y grid
-│   ├── modal.css           # Modal de detalle
-│   ├── cart.css            # Panel lateral del carrito
-│   ├── aroma.css           # Seccion "Tu aroma, a tu ritmo"
-│   ├── footer.css          # Footer y redes sociales
-│   ├── components.css      # Botones, toast, inputs, WA float
-│   └── responsive.css      # Media queries consolidados
+├── index.html                   # Marcado del sitio y meta tags
+├── css/                         # Hojas de estilo por componente
+│   ├── variables.css            # Tokens (:root)
+│   ├── reset.css / layout.css
+│   ├── components.css           # Botones, toast, skip-link, filtros
+│   ├── header.css / hero.css / trust.css
+│   ├── catalog.css / modal.css / cart.css
+│   ├── combos.css / extras.css / category-picker.css
+│   ├── aroma.css / faq.css / footer.css / responsive.css
 ├── js/
-│   ├── config.js           # Configuracion del negocio
-│   ├── data/
-│   │   └── perfumes.js     # Catalogo de perfumes
-│   ├── toast.js            # Notificaciones toast
-│   ├── cart.js             # Carrito con localStorage
-│   ├── modal.js            # Modal de detalle
-│   ├── whatsapp.js         # Envio de pedido por WhatsApp
-│   ├── catalog.js          # Render del catalogo
-│   └── app.js              # Inicializacion
-└── assets/
-    ├── favicon.ico
-    └── og-image.jpg
+│   ├── core.js                  # Helpers globales (SG.el, SG.audio, SG.sha256Hex, SG.ua...)
+│   ├── a11y.js                  # Controlador único de modales (Escape, focus trap, foco)
+│   ├── pricing.js               # Motor único de precios y descuentos
+│   ├── config.js                # Número de WhatsApp, promo codes (hashed) y tiers
+│   ├── sheets.js                # Lectura de Google Sheets (decants, completos, combos)
+│   ├── catalog.js               # Render del catálogo + buscador fuzzy
+│   ├── extras.js                # Completos, combos, destacados y efectos visuales
+│   ├── modal.js                 # Modal de detalle (usa SG.audio y SG.modal)
+│   ├── cart.js                  # Carrito, promo codes, panel lateral
+│   ├── whatsapp.js              # Construcción del mensaje (usa pricing.js)
+│   ├── toast.js / faq.js / app.js
+└── assets/                      # Imágenes de branding y videos de combos
 ```
 
-## Como agregar un perfume
+Un único namespace global (`window.SG`) expone los módulos compartidos. Todos
+los datos que vienen de Google Sheets se insertan en el DOM mediante
+`SG.el()` / `textContent` (nunca `innerHTML` con interpolación) para prevenir
+XSS.
 
-Editar `js/data/perfumes.js`. Cada perfume tiene esta estructura:
-
-```js
-{
-  name: "Nombre del Perfume",
-  conc: "Eau de Parfum",        // Concentracion
-  img: "https://...",           // URL de la imagen
-  link: "https://...",         // Link a Fragrantica
-  price: 25,                   // Precio por ml
-  proximo: false               // true = "Proximamente" (no se puede agregar al carrito)
-}
-```
-
-Agregar el objeto dentro del array de la casa correspondiente. Para una casa nueva, agregar una nueva clave al objeto `PERFUMES`.
-
-## Como cambiar el numero de WhatsApp
-
-Editar `js/config.js`:
+## Configuración del negocio (`js/config.js`)
 
 ```js
 window.CONFIG = {
-  WA_NUMBER: '529213042001',   // Numero con codigo de pais
-  WA_CONTACT: 'Jhoan',         // Nombre del contacto
+  WA_NUMBER: '529213042001',
+  WA_CONTACT: 'Jhoan',
   TOAST_DURATION: 2000,
-  ML_OPTIONS: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  ML_OPTIONS: [2, 5, 10],
+  SITE_URL: 'https://smellgood.mx',
+
+  GA_ID: '',                     // vacío = no se carga Google Analytics
+
+  VOLUME_TIERS: [                // descuentos por volumen sobre decants
+    { threshold: 500,  percent: 10 },
+    { threshold: 800,  percent: 15 },
+    { threshold: 1200, percent: 20 }
+  ],
+
+  MAX_COMBINED_DISCOUNT: 35,     // cap de volumen + promo
+
+  PROMO_CODES: {                 // claves: SHA-256 del código en mayúsculas
+    '0d31902e...': { percent: 10, expires: new Date('2026-06-30T23:59:59-05:00') }
+    // ...
+  }
 };
 ```
 
-Tambien actualizar el link del boton flotante de WhatsApp en `index.html` (buscar `wa-float`).
+Para rotar o añadir un código promocional calcula el hash antes de pegarlo:
+
+```bash
+python3 -c "import hashlib; print(hashlib.sha256(b'NUEVO').hexdigest())"
+```
+
+Los códigos no viven en texto plano dentro del bundle: esto evita que un
+usuario los lea simplemente abriendo DevTools. Para refuerzo real del modelo
+promocional se recomienda validar en un backend — este cambio deja la capa
+lista para migrar.
+
+## Cómo agregar un perfume
+
+Todo el catálogo se alimenta de la hoja pública en Google Sheets
+(URL configurable en `js/sheets.js`). Añade una fila nueva con los campos
+`casa`, `perfume`, `Concentración`, `imagen`, `link`, precios por ml,
+`Notas Salida` / `Corazón` / `Base`, `Destacado`, `Ranking` y `En venta`
+(`SI`, `NO` o `MUY PRONTO`).
+
+## Desarrollo local
+
+```bash
+python3 -m http.server 8000      # o  npx serve .
+```
+
+Abrir `http://localhost:8000`.
 
 ## Deploy
 
-El sitio es HTML/CSS/JS estatico. Opciones de deploy:
+Proyecto 100% estático. Cualquiera de estas opciones funciona:
 
-1. **GitHub Pages**: Push a un repo y activar Pages en Settings
-2. **Netlify/Vercel**: Conectar el repo, se publica automaticamente
-3. **Servidor propio**: Subir todos los archivos a la raiz del hosting
-
-Para desarrollo local:
-```bash
-# Python
-python3 -m http.server 8000
-
-# Node.js
-npx serve .
-```
-
-Abrir `http://localhost:8000` en el navegador.
+1. **GitHub Pages** — push al repo y activar Pages
+2. **Netlify / Vercel** — conectar el repo
+3. **Servidor propio** — subir los archivos a la raíz del hosting
