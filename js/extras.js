@@ -66,16 +66,34 @@
       return wrap;
     }
 
-    if (p.entrega && !p.proximo) {
+    if (p.proximo) {
+      var bottomProx = el('div', { class: 'bottom' });
+      if (p.price) {
+        bottomProx.appendChild(el('div', { class: 'starting' }, [
+          el('span', { text: 'Frasco completo' }),
+          el('strong', { text: '$' + p.price })
+        ]));
+      }
+      if (p.link) {
+        bottomProx.appendChild(el('a', {
+          href: p.link, target: '_blank', rel: 'noopener noreferrer',
+          class: 'small-btn fragrantica-card-link', text: 'Conoce más en Fragrantica'
+        }));
+      }
+      if (bottomProx.childNodes.length) wrap.appendChild(bottomProx);
+      return wrap;
+    }
+
+    if (p.entrega) {
       wrap.appendChild(el('div', { class: 'entrega-label', text: '📦 ' + p.entrega }));
     }
     var bottomOk = el('div', { class: 'bottom' }, [
       el('div', { class: 'starting' }, [
         el('span', { text: 'Frasco completo' }),
         el('strong', { text: '$' + (p.price || 0) })
-      ])
+      ]),
+      el('button', { class: 'small-btn', type: 'button', text: 'Ver' })
     ]);
-    if (!p.proximo) bottomOk.appendChild(el('button', { class: 'small-btn', type: 'button', text: 'Ver' }));
     wrap.appendChild(bottomOk);
     return wrap;
   }

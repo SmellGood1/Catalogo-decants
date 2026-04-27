@@ -150,18 +150,21 @@
   }
 
   .card-top{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:6px;
+    flex-direction:row;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:5px;
     top:8px;
     left:8px;
     right:8px;
   }
 
   .pill,
-  .soon-label{
+  .soon-label,
+  .agotado-label{
     font-size:9px;
     padding:4px 8px;
+    height:20px;
   }
 
   .card h4{
