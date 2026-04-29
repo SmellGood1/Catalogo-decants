@@ -25,6 +25,9 @@ window.CONFIG = {
     { threshold: 1200, percent: 20 }
   ],
 
+  // Descuento para combos personalizados (usuario elige sus 3 perfumes).
+  CUSTOM_COMBO_DISCOUNT: 10,
+
   // Cap de descuento combinado (volumen + promo) como % del subtotal de decants.
   // Default 100 = sin cap para preservar el comportamiento actual del negocio.
   // Ajustar a un valor más bajo (ej. 40) si se quiere limitar el stacking.

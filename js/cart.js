@@ -211,6 +211,7 @@
           isCompleto: item.isCompleto || false,
           isCombo:    item.isCombo || false,
           comboItems: item.comboItems || null,
+          comboImages: item.comboImages || null,
           cantidad: 0, ids: []
         };
       }
@@ -257,7 +258,17 @@
     ]);
 
     var row = el('div', { class: 'cart-item' }, [ left ]);
-    if (item.img) row.appendChild(el('img', { class: 'cart-img', src: item.img, alt: item.nombre }));
+
+    if (item.comboImages && item.comboImages.length === 3) {
+      var comp = el('div', { class: 'cart-combo-img' }, [
+        el('img', { class: 'cart-combo-left',   src: item.comboImages[0], alt: '' }),
+        el('img', { class: 'cart-combo-center', src: item.comboImages[1], alt: '' }),
+        el('img', { class: 'cart-combo-right',  src: item.comboImages[2], alt: '' })
+      ]);
+      row.appendChild(comp);
+    } else if (item.img) {
+      row.appendChild(el('img', { class: 'cart-img', src: item.img, alt: item.nombre }));
+    }
     return row;
   }
 

@@ -230,23 +230,298 @@
     return card;
   }
 
+  /* ── Combo Personalizado (builder) ──────────────────────────── */
+
+  function buildCustomComboCard() {
+    var discount = (window.CONFIG && CONFIG.CUSTOM_COMBO_DISCOUNT) || 10;
+    var selected = [null, null, null];
+    var activeMl = 5;
+    var has = Object.prototype.hasOwnProperty;
+
+    var card = el('article', { class: 'combo-card' });
+
+    var savingsEl = el('span', { class: 'combo-savings', style: { display: 'none' } });
+    card.appendChild(el('div', { class: 'combo-header' }, [
+      el('h3', { text: 'Personaliza tu combo' }),
+      savingsEl
+    ]));
+
+    // 3 slots
+    var slotsContainer = el('div', { class: 'combo-builder-slots' });
+    var slots = [];
+    for (var s = 0; s < 3; s++) {
+      (function (idx) {
+        var slot = el('div', { class: 'combo-slot' }, [
+          el('div', { class: 'combo-slot-icon', text: '+' }),
+          el('span', { class: 'combo-slot-hint', text: 'Elegir perfume' })
+        ]);
+        slot.addEventListener('click', function () {
+          if (!selected[idx]) openPicker(idx);
+        });
+        slots.push(slot);
+        if (idx > 0) slotsContainer.appendChild(el('span', { class: 'combo-plus', text: '+' }));
+        slotsContainer.appendChild(slot);
+      })(s);
+    }
+    card.appendChild(slotsContainer);
+
+    // Footer con precios
+    var footerEl = el('div', { class: 'combo-builder-footer combo-builder-disabled' });
+    var pricesRow = el('div', { class: 'combo-prices' });
+    var addBtnCustom = el('button', { class: 'btn btn-primary combo-add-btn', type: 'button', text: 'Añadir mi combo' });
+
+    [2, 5, 10].forEach(function (ml) {
+      var tag = el('div', {
+        class: 'combo-price-tag' + (ml === 5 ? ' active' : ''),
+        dataset: { ml: String(ml) }
+      }, [
+        el('span', { text: ml + 'ml' }),
+        el('s', { text: '-' }),
+        el('strong', { text: '-' })
+      ]);
+      tag.addEventListener('click', function () {
+        activeMl = ml;
+        SG.$$('.combo-price-tag', footerEl).forEach(function (t) { t.classList.remove('active'); });
+        tag.classList.add('active');
+        updatePrices();
+      });
+      pricesRow.appendChild(tag);
+    });
+    footerEl.appendChild(pricesRow);
+    footerEl.appendChild(addBtnCustom);
+    card.appendChild(footerEl);
+
+    // Lógica de precios
+    function updatePrices() {
+      var filled = selected.filter(Boolean);
+      if (filled.length < 3) {
+        footerEl.classList.add('combo-builder-disabled');
+        savingsEl.style.display = 'none';
+        SG.$$('.combo-price-tag', footerEl).forEach(function (tag) {
+          tag.querySelector('s').textContent = '-';
+          tag.querySelector('strong').textContent = '-';
+        });
+        return;
+      }
+      footerEl.classList.remove('combo-builder-disabled');
+
+      SG.$$('.combo-price-tag', footerEl).forEach(function (tag) {
+        var ml = Number(tag.dataset.ml);
+        var original = filled.reduce(function (sum, p) { return sum + (p.prices[ml] || 0); }, 0);
+        var discounted = Math.round(original * (1 - discount / 100));
+        tag.querySelector('s').textContent = '$' + original;
+        tag.querySelector('strong').textContent = '$' + discounted;
+      });
+
+      var origActive = filled.reduce(function (sum, p) { return sum + (p.prices[activeMl] || 0); }, 0);
+      var save = Math.round(origActive * discount / 100);
+      savingsEl.textContent = 'Ahorras $' + save;
+      savingsEl.style.display = save > 0 ? '' : 'none';
+    }
+
+    // Render de un slot lleno
+    function fillSlot(idx) {
+      var p = selected[idx];
+      var slot = slots[idx];
+      slot.textContent = '';
+      slot.classList.add('filled');
+
+      slot.appendChild(el('img', { src: p.img || 'assets/favicon.svg', alt: p.name }));
+      slot.appendChild(el('span', { class: 'combo-slot-name', text: p.name }));
+      slot.appendChild(el('span', { class: 'combo-slot-brand', text: p.casa }));
+      var removeBtn = el('button', { class: 'combo-slot-remove', type: 'button', text: 'Quitar' });
+      removeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        selected[idx] = null;
+        clearSlot(idx);
+        updatePrices();
+      });
+      slot.appendChild(removeBtn);
+    }
+
+    function clearSlot(idx) {
+      var slot = slots[idx];
+      slot.textContent = '';
+      slot.classList.remove('filled');
+      slot.appendChild(el('div', { class: 'combo-slot-icon', text: '+' }));
+      slot.appendChild(el('span', { class: 'combo-slot-hint', text: 'Elegir perfume' }));
+      slot.addEventListener('click', function handler() {
+        if (!selected[idx]) {
+          openPicker(idx);
+          slot.removeEventListener('click', handler);
+        }
+      });
+    }
+
+    // Picker modal
+    function openPicker(slotIdx) {
+      var overlay = el('div', { class: 'combo-picker-overlay' });
+      var picker = el('div', { class: 'combo-picker' });
+      var head = el('div', { class: 'combo-picker-head' }, [
+        el('h3', { text: 'Elige un perfume' })
+      ]);
+      var searchInput = el('input', {
+        class: 'combo-picker-search', type: 'text',
+        placeholder: 'Buscar perfume o marca...', 'aria-label': 'Buscar perfume'
+      });
+      head.appendChild(searchInput);
+      picker.appendChild(head);
+
+      var list = el('div', { class: 'combo-picker-list' });
+      picker.appendChild(list);
+      overlay.appendChild(picker);
+      document.body.appendChild(overlay);
+
+      function renderList(query) {
+        var currentSelected = selected.filter(Boolean).map(function (p) { return p.name; });
+        list.textContent = '';
+        var perfumes = window.PERFUMES || {};
+        var count = 0;
+        for (var casa in perfumes) {
+          if (!has.call(perfumes, casa)) continue;
+          for (var i = 0; i < perfumes[casa].length; i++) {
+            var p = perfumes[casa][i];
+            if (p.proximo || p.agotado) continue;
+            if (query && !fuzzy(p.name, query) && !fuzzy(casa, query)) continue;
+            var isUsed = currentSelected.indexOf(p.name) !== -1;
+
+            var item = el('div', { class: 'combo-picker-item' + (isUsed ? ' disabled' : '') }, [
+              el('img', { src: p.img || 'assets/favicon.svg', alt: p.name, loading: 'lazy' }),
+              el('div', { class: 'combo-picker-item-info' }, [
+                el('span', { class: 'combo-picker-item-name', text: p.name }),
+                el('span', { class: 'combo-picker-item-brand', text: casa })
+              ]),
+              el('span', { class: 'combo-picker-item-price', text: '$' + (p.prices[5] || 0) })
+            ]);
+
+            if (!isUsed) {
+              (function (perfume, casaN) {
+                item.addEventListener('click', function () {
+                  var pCopy = {};
+                  for (var k in perfume) { if (has.call(perfume, k)) pCopy[k] = perfume[k]; }
+                  pCopy.casa = casaN;
+                  selected[slotIdx] = pCopy;
+                  fillSlot(slotIdx);
+                  updatePrices();
+                  closePicker();
+                });
+              })(p, casa);
+            }
+
+            list.appendChild(item);
+            count++;
+          }
+        }
+        if (!count) {
+          list.appendChild(el('p', {
+            style: { textAlign: 'center', color: 'var(--muted)', padding: '24px' },
+            text: 'No se encontraron perfumes'
+          }));
+        }
+      }
+
+      function closePicker() {
+        overlay.classList.remove('open');
+        setTimeout(function () { overlay.remove(); }, 300);
+      }
+
+      renderList('');
+      requestAnimationFrame(function () {
+        overlay.classList.add('open');
+        searchInput.focus();
+      });
+
+      searchInput.addEventListener('input', SG.debounce(function (e) {
+        renderList(e.target.value.trim());
+      }, 150));
+
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closePicker();
+      });
+
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closePicker();
+      });
+    }
+
+    // Resetear el builder después de agregar
+    function resetBuilder() {
+      for (var i = 0; i < 3; i++) {
+        selected[i] = null;
+        clearSlot(i);
+      }
+      activeMl = 5;
+      SG.$$('.combo-price-tag', footerEl).forEach(function (t) {
+        t.classList.toggle('active', t.dataset.ml === '5');
+      });
+      updatePrices();
+    }
+
+    // Añadir al carrito
+    addBtnCustom.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var filled = selected.filter(Boolean);
+      if (filled.length < 3) return;
+
+      var original = filled.reduce(function (sum, p) { return sum + (p.prices[activeMl] || 0); }, 0);
+      var discounted = Math.round(original * (1 - discount / 100));
+
+      var comboImages = filled.map(function (p) { return p.img || 'assets/favicon.svg'; });
+
+      // Nombre único para que no se agrupen combos distintos
+      var comboName = 'Combo: ' + filled.map(function (p) { return p.name; }).join(' + ');
+
+      window.agregarComboAlCarrito(
+        { name: comboName, prices: { 2: 0, 5: 0, 10: 0 } },
+        filled,
+        activeMl
+      );
+
+      var cart = window.carrito;
+      if (cart.length) {
+        cart[cart.length - 1].precio = discounted;
+        cart[cart.length - 1].comboImages = comboImages;
+        window.renderCarrito();
+      }
+
+      resetBuilder();
+    });
+
+    return card;
+  }
+
+  function _initInfiniteComboScroll(container) {
+    var originals = Array.prototype.slice.call(container.children);
+    // Repetir 3 veces — strip suficientemente largo para scroll "infinito"
+    for (var r = 0; r < 3; r++) {
+      originals.forEach(function (child) {
+        var clone = child.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        container.appendChild(clone);
+      });
+    }
+  }
+
   function renderCombos() {
     var container = byId('combosContainer');
     if (!container || !window.COMBOS || !window.PERFUMES) return;
 
     var combos = window.COMBOS.filter(function (c) { return !c.agotado; });
-    if (!combos.length) {
-      var section = container.closest('.combos-section');
-      if (section) section.style.display = 'none';
-      return;
-    }
 
     container.textContent = '';
+
+    // Combos normales primero
     combos.forEach(function (combo) {
       var perfumes = combo.codes.map(findPerfumeByCode).filter(Boolean);
       if (perfumes.length < 3) return;
       container.appendChild(buildComboCard(combo, perfumes));
     });
+
+    // Personalizado al final
+    container.appendChild(buildCustomComboCard());
+
+    // Scroll infinito: al llegar al final, volver al inicio sin que se note
+    _initInfiniteComboScroll(container);
   }
 
   /* ── Destacados (bestsellers) ─────────────────────────────────── */
