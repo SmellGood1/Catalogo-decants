@@ -98,15 +98,7 @@
     return wrap;
   }
 
-  function _fuzzyMatchCompletos(texto, busqueda) {
-    if (!busqueda) return true;
-    var t = texto.toLowerCase();
-    var b = busqueda.toLowerCase();
-    if (t.indexOf(b) !== -1) return true;
-    var tn = t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/(.)\1+/g, '$1');
-    var bn = b.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/(.)\1+/g, '$1');
-    return tn.indexOf(bn) !== -1;
-  }
+  var fuzzy = SG.fuzzyMatch;
 
   function renderCompletos(filtroTexto) {
     filtroTexto = filtroTexto || '';
@@ -130,9 +122,9 @@
       if (!has.call(window.COMPLETOS, casa)) return;
 
       var filtrados = window.COMPLETOS[casa].filter(function (p) {
-        return _fuzzyMatchCompletos(p.name, filtroTexto) ||
-               _fuzzyMatchCompletos(casa, filtroTexto) ||
-               _fuzzyMatchCompletos(p.conc || '', filtroTexto);
+        return fuzzy(p.name, filtroTexto) ||
+               fuzzy(casa, filtroTexto) ||
+               fuzzy(p.conc || '', filtroTexto);
       });
       if (!filtrados.length) return;
 

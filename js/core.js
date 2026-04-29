@@ -146,6 +146,50 @@
     }
   };
 
+  /* ── Búsqueda fuzzy (compartida por decants y completos) ──── */
+
+  function _norm(s) {
+    return s.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/(.)\1+/g, '$1');
+  }
+
+  function _lev(a, b) {
+    var m = a.length, n = b.length;
+    var dp = [];
+    for (var i = 0; i <= m; i++) {
+      dp[i] = [i];
+      for (var j = 1; j <= n; j++) {
+        dp[i][j] = i === 0 ? j :
+          Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1,
+                   dp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+    }
+    return dp[m][n];
+  }
+
+  SG.fuzzyMatch = function (texto, busqueda) {
+    if (!busqueda) return true;
+    var t = texto.toLowerCase(), b = busqueda.toLowerCase();
+    if (t.indexOf(b) !== -1) return true;
+    var tn = _norm(texto), bn = _norm(busqueda);
+    if (tn.indexOf(bn) !== -1) return true;
+    if (bn.length >= 3) {
+      var palabras = tn.split(/\s+/);
+      var umbral = bn.length <= 4 ? 1 : Math.min(Math.floor(bn.length / 2), 3);
+      for (var i = 0; i < palabras.length; i++) {
+        if (_lev(palabras[i], bn) <= umbral) return true;
+        if (palabras[i].length > bn.length) {
+          for (var j = 0; j <= palabras[i].length - bn.length; j++) {
+            if (_lev(palabras[i].substring(j, j + bn.length), bn) <= 1) return true;
+          }
+        }
+      }
+      if (_lev(tn.replace(/\s+/g, ''), bn) <= umbral) return true;
+    }
+    return false;
+  };
+
   /* ── Debounce y rAF throttle ───────────────────────────────── */
 
   SG.debounce = function (fn, ms) {

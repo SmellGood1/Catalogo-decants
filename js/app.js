@@ -346,29 +346,124 @@
       logo.addEventListener('click', function (e) { e.preventDefault(); backToGateway(); });
     });
 
-    /* Buscador decants con debounce */
-    var buscador = byId('buscador');
-    if (buscador) {
-      var applySearch = SG.debounce(function (value) { renderCatalogo(value); }, 200);
-      buscador.addEventListener('input', function (e) {
-        applySearch(e.target.value);
-        if (e.target.value.length === 1) {
-          if (ui.scrollToWithBounce) ui.scrollToWithBounce(byId('catalogoSection'));
+    /* ── Search con sugerencias (reutilizable) ─────────────────── */
+
+    function initSearchWithSuggestions(inputId, getData, renderFn, scrollTarget) {
+      var input = byId(inputId);
+      if (!input) return;
+      var wrap = input.closest('.search-wrap');
+      if (!wrap) return;
+
+      var dropdown = SG.el('div', { class: 'search-suggestions' });
+      wrap.appendChild(dropdown);
+      var activeIdx = -1;
+      var MAX = 6;
+
+      function getMatches(query) {
+        if (!query || query.length < 1) return [];
+        var data = getData();
+        var results = [];
+        var has = Object.prototype.hasOwnProperty;
+        for (var casa in data) {
+          if (!has.call(data, casa)) continue;
+          for (var i = 0; i < data[casa].length; i++) {
+            var p = data[casa][i];
+            if (SG.fuzzyMatch(p.name, query) || SG.fuzzyMatch(casa, query) || SG.fuzzyMatch(p.conc || '', query)) {
+              results.push({ perfume: p, casa: casa });
+              if (results.length >= MAX) return results;
+            }
+          }
         }
+        return results;
+      }
+
+      function buildItem(match) {
+        var p = match.perfume;
+        var item = SG.el('div', { class: 'search-suggestion' }, [
+          SG.el('img', { src: p.img || 'assets/favicon.svg', alt: p.name, loading: 'lazy' }),
+          SG.el('div', { class: 'search-suggestion-info' }, [
+            SG.el('span', { class: 'search-suggestion-name', text: p.name }),
+            SG.el('span', { class: 'search-suggestion-brand', text: match.casa })
+          ]),
+          p.conc ? SG.el('span', { class: 'search-suggestion-pill', text: p.conc }) : null
+        ]);
+        item.addEventListener('click', function () {
+          closeSuggestions();
+          input.value = p.name;
+          renderFn(p.name);
+          if (!p.proximo && !p.agotado) {
+            var perfumeConCasa = {};
+            for (var k in p) { if (Object.prototype.hasOwnProperty.call(p, k)) perfumeConCasa[k] = p[k]; }
+            perfumeConCasa.casa = match.casa;
+            if (match.isCompleto) perfumeConCasa.isCompleto = true;
+            verPerfume(perfumeConCasa);
+          }
+        });
+        return item;
+      }
+
+      function showSuggestions(query) {
+        var matches = getMatches(query);
+        dropdown.textContent = '';
+        activeIdx = -1;
+        if (!matches.length) return;
+        matches.forEach(function (m) { dropdown.appendChild(buildItem(m)); });
+      }
+
+      function closeSuggestions() {
+        dropdown.textContent = '';
+        activeIdx = -1;
+      }
+
+      function highlightItem(idx) {
+        var items = dropdown.querySelectorAll('.search-suggestion');
+        items.forEach(function (it, i) { it.classList.toggle('active', i === idx); });
+        if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
+      }
+
+      var applyFilter = SG.debounce(function (value) { renderFn(value); }, 200);
+
+      input.addEventListener('input', function (e) {
+        var val = e.target.value.trim();
+        applyFilter(val);
+        showSuggestions(val);
+        if (val.length === 1 && ui.scrollToWithBounce) {
+          ui.scrollToWithBounce(byId(scrollTarget));
+        }
+      });
+
+      input.addEventListener('keydown', function (e) {
+        var items = dropdown.querySelectorAll('.search-suggestion');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIdx = Math.min(activeIdx + 1, items.length - 1);
+          highlightItem(activeIdx);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIdx = Math.max(activeIdx - 1, 0);
+          highlightItem(activeIdx);
+        } else if (e.key === 'Enter' && activeIdx >= 0) {
+          e.preventDefault();
+          items[activeIdx].click();
+        } else if (e.key === 'Escape') {
+          closeSuggestions();
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) closeSuggestions();
+      });
+
+      input.addEventListener('focus', function () {
+        var val = input.value.trim();
+        if (val) showSuggestions(val);
       });
     }
 
-    /* Buscador completos con debounce */
-    var buscadorCompletos = byId('buscadorCompletos');
-    if (buscadorCompletos) {
-      var applySearchCompletos = SG.debounce(function (value) { renderCompletos(value); }, 200);
-      buscadorCompletos.addEventListener('input', function (e) {
-        applySearchCompletos(e.target.value);
-        if (e.target.value.length === 1) {
-          if (ui.scrollToWithBounce) ui.scrollToWithBounce(byId('completosCatalogo'));
-        }
-      });
-    }
+    initSearchWithSuggestions('buscador', function () { return window.PERFUMES || {}; }, renderCatalogo, 'catalogoSection');
+    initSearchWithSuggestions('buscadorCompletos', function () { return window.COMPLETOS || {}; }, renderCompletos, 'completosCatalogo');
 
     /* Botón flotante de WhatsApp */
     SG.$$('.wa-float').forEach(function (el) {
