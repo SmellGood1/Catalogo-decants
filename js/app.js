@@ -346,7 +346,7 @@
       logo.addEventListener('click', function (e) { e.preventDefault(); backToGateway(); });
     });
 
-    /* Buscador con debounce */
+    /* Buscador decants con debounce */
     var buscador = byId('buscador');
     if (buscador) {
       var applySearch = SG.debounce(function (value) { renderCatalogo(value); }, 200);
@@ -354,6 +354,18 @@
         applySearch(e.target.value);
         if (e.target.value.length === 1) {
           if (ui.scrollToWithBounce) ui.scrollToWithBounce(byId('catalogoSection'));
+        }
+      });
+    }
+
+    /* Buscador completos con debounce */
+    var buscadorCompletos = byId('buscadorCompletos');
+    if (buscadorCompletos) {
+      var applySearchCompletos = SG.debounce(function (value) { renderCompletos(value); }, 200);
+      buscadorCompletos.addEventListener('input', function (e) {
+        applySearchCompletos(e.target.value);
+        if (e.target.value.length === 1) {
+          if (ui.scrollToWithBounce) ui.scrollToWithBounce(byId('completosCatalogo'));
         }
       });
     }

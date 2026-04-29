@@ -12,7 +12,7 @@ window.CONFIG = {
   TOAST_DURATION: 2000,
   ML_OPTIONS: [2, 5, 10],
 
-  SITE_URL: 'https://smellgood.mx',
+  SITE_URL: 'https://catalogo-decants.vercel.app',
 
   // Analytics: dejar vacío en dev / staging para no emitir hits con un ID placeholder.
   GA_ID: '',

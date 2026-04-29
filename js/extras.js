@@ -98,7 +98,18 @@
     return wrap;
   }
 
-  function renderCompletos() {
+  function _fuzzyMatchCompletos(texto, busqueda) {
+    if (!busqueda) return true;
+    var t = texto.toLowerCase();
+    var b = busqueda.toLowerCase();
+    if (t.indexOf(b) !== -1) return true;
+    var tn = t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/(.)\1+/g, '$1');
+    var bn = b.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/(.)\1+/g, '$1');
+    return tn.indexOf(bn) !== -1;
+  }
+
+  function renderCompletos(filtroTexto) {
+    filtroTexto = filtroTexto || '';
     var container = byId('catalogoCompletos');
     if (!container || !window.COMPLETOS) return;
 
@@ -118,6 +129,13 @@
     casas.forEach(function (casa) {
       if (!has.call(window.COMPLETOS, casa)) return;
 
+      var filtrados = window.COMPLETOS[casa].filter(function (p) {
+        return _fuzzyMatchCompletos(p.name, filtroTexto) ||
+               _fuzzyMatchCompletos(casa, filtroTexto) ||
+               _fuzzyMatchCompletos(p.conc || '', filtroTexto);
+      });
+      if (!filtrados.length) return;
+
       var title = el('div', { class: 'house-title revealed' }, [
         el('h3', { text: casa }),
         el('div', { class: 'house-line' })
@@ -127,7 +145,7 @@
       container.appendChild(title);
 
       var grid = el('div', { class: 'grid' });
-      window.COMPLETOS[casa].forEach(function (p) {
+      filtrados.forEach(function (p) {
         var card = el('article', { class: completoCardClass(p) });
         card.style.opacity = '1';
         card.style.transform = 'none';
