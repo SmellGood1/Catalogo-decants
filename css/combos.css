@@ -21,6 +21,8 @@
 
 .combo-card{
   position:relative;
+  display:flex;
+  flex-direction:column;
   background:rgba(15,15,17,.7);
   background-image:radial-gradient(ellipse at 30% 20%, rgba(212,175,55,.06) 0%, transparent 60%),
                     radial-gradient(ellipse at 70% 80%, rgba(168,130,255,.04) 0%, transparent 60%);
@@ -31,6 +33,11 @@
   transition:border-color .4s ease, box-shadow .4s ease;
   overflow:hidden;
   flex:0 0 85%;
+}
+
+.combo-footer,
+.combo-builder-footer{
+  margin-top:auto;
 }
 
 .combo-card .combo-video{

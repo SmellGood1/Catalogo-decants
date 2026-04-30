@@ -646,27 +646,33 @@
   /* ── Hero particles ──────────────────────────────────────────── */
 
   function initHeroParticles() {
-    var hero = SG.$('.hero');
-    if (!hero) return;
+    var heroes = SG.$$('.hero');
+    if (!heroes.length) return;
 
-    var count = 20;
-    for (var i = 0; i < count; i++) {
-      var size = 2 + Math.random() * 3;
-      var duration = 6 + Math.random() * 8;
-      var delay = Math.random() * duration;
-      var drift = (Math.random() - 0.5) * 80;
-      var maxOpacity = 0.2 + Math.random() * 0.35;
+    heroes.forEach(function (hero) {
+      var isCompletos = hero.classList.contains('completos-hero');
+      var count = 20;
+      for (var i = 0; i < count; i++) {
+        var size = 2 + Math.random() * 3;
+        var duration = 6 + Math.random() * 8;
+        var delay = Math.random() * duration;
+        var drift = (Math.random() - 0.5) * 80;
+        var maxOpacity = 0.2 + Math.random() * 0.35;
 
-      var particle = el('div', { class: 'hero-particle' });
-      particle.style.width = particle.style.height = size + 'px';
-      particle.style.left = (Math.random() * 100) + '%';
-      particle.style.bottom = -(Math.random() * 20) + '%';
-      particle.style.setProperty('--duration', duration + 's');
-      particle.style.setProperty('--delay', '-' + delay + 's');
-      particle.style.setProperty('--drift', drift + 'px');
-      particle.style.setProperty('--max-opacity', maxOpacity);
-      hero.appendChild(particle);
-    }
+        var cls = 'hero-particle';
+        if (isCompletos && Math.random() < 0.5) cls += ' purple';
+
+        var particle = el('div', { class: cls });
+        particle.style.width = particle.style.height = size + 'px';
+        particle.style.left = (Math.random() * 100) + '%';
+        particle.style.bottom = -(Math.random() * 20) + '%';
+        particle.style.setProperty('--duration', duration + 's');
+        particle.style.setProperty('--delay', '-' + delay + 's');
+        particle.style.setProperty('--drift', drift + 'px');
+        particle.style.setProperty('--max-opacity', maxOpacity);
+        hero.appendChild(particle);
+      }
+    });
   }
 
   /* ── Hero parallax ───────────────────────────────────────────── */
