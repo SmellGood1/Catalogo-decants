@@ -345,12 +345,6 @@
       slot.classList.remove('filled');
       slot.appendChild(el('div', { class: 'combo-slot-icon', text: '+' }));
       slot.appendChild(el('span', { class: 'combo-slot-hint', text: 'Elegir perfume' }));
-      slot.addEventListener('click', function handler() {
-        if (!selected[idx]) {
-          openPicker(idx);
-          slot.removeEventListener('click', handler);
-        }
-      });
     }
 
     // Picker modal
@@ -466,23 +460,11 @@
       var original = filled.reduce(function (sum, p) { return sum + (p.prices[activeMl] || 0); }, 0);
       var discounted = Math.round(original * (1 - discount / 100));
 
-      var comboImages = filled.map(function (p) { return p.img || 'assets/favicon.svg'; });
-
-      // Nombre único para que no se agrupen combos distintos
       var comboName = 'Combo: ' + filled.map(function (p) { return p.name; }).join(' + ');
+      var prices = {};
+      prices[activeMl] = discounted;
 
-      window.agregarComboAlCarrito(
-        { name: comboName, prices: { 2: 0, 5: 0, 10: 0 } },
-        filled,
-        activeMl
-      );
-
-      var cart = window.carrito;
-      if (cart.length) {
-        cart[cart.length - 1].precio = discounted;
-        cart[cart.length - 1].comboImages = comboImages;
-        window.renderCarrito();
-      }
+      window.agregarComboAlCarrito({ name: comboName, prices: prices }, filled, activeMl);
 
       resetBuilder();
     });

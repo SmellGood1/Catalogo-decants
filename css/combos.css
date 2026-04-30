@@ -460,7 +460,8 @@
     font-size:18px;
   }
 
-  .combo-footer{
+  .combo-footer,
+  .combo-builder-footer{
     flex-direction:column;
     gap:16px;
   }

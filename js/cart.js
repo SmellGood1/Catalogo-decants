@@ -73,6 +73,7 @@
   }
 
   function agregarComboAlCarrito(combo, perfumes, ml) {
+    var comboImages = perfumes.map(function (p) { return p.img || 'assets/favicon.svg'; });
     carrito.push({
       id: _nextCartId++,
       nombre: combo.name,
@@ -80,7 +81,8 @@
       precio: combo.prices[ml],
       img: (perfumes[1] && perfumes[1].img) || '',
       isCombo: true,
-      comboItems: perfumes.map(function (p) { return p.name; })
+      comboItems: perfumes.map(function (p) { return p.name; }),
+      comboImages: comboImages
     });
     _saveCart();
     renderCarrito();
@@ -109,7 +111,8 @@
       img: existing.img,
       isCompleto: existing.isCompleto,
       isCombo: existing.isCombo,
-      comboItems: existing.comboItems
+      comboItems: existing.comboItems,
+      comboImages: existing.comboImages
     });
     _saveCart();
     renderCarrito();
