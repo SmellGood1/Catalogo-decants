@@ -206,8 +206,6 @@
     runEffect('initAnnouncementBar');
     runEffect('initHeroParticles');
     runEffect('initHeroParallax');
-    runEffect('initCardTilt');
-    runEffect('initMagneticButtons');
     runEffect('initEasterEgg');
 
     /* Explorar catálogo con impulso */

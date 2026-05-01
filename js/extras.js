@@ -67,20 +67,15 @@
     }
 
     if (p.proximo) {
-      var bottomProx = el('div', { class: 'bottom' });
-      if (p.price) {
-        bottomProx.appendChild(el('div', { class: 'starting' }, [
-          el('span', { text: 'Frasco completo' }),
-          el('strong', { text: '$' + p.price })
-        ]));
-      }
       if (p.link) {
-        bottomProx.appendChild(el('a', {
-          href: p.link, target: '_blank', rel: 'noopener noreferrer',
-          class: 'small-btn fragrantica-card-link', text: 'Conoce más en Fragrantica'
-        }));
+        var bottomProx = el('div', { class: 'bottom' }, [
+          el('a', {
+            href: p.link, target: '_blank', rel: 'noopener noreferrer',
+            class: 'small-btn fragrantica-card-link', text: 'Conoce más en Fragrantica'
+          })
+        ]);
+        wrap.appendChild(bottomProx);
       }
-      if (bottomProx.childNodes.length) wrap.appendChild(bottomProx);
       return wrap;
     }
 
@@ -651,7 +646,7 @@
 
     heroes.forEach(function (hero) {
       var isCompletos = hero.classList.contains('completos-hero');
-      var count = 20;
+      var count = 10;
       for (var i = 0; i < count; i++) {
         var size = 2 + Math.random() * 3;
         var duration = 6 + Math.random() * 8;

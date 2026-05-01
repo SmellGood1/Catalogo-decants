@@ -2,6 +2,30 @@
   padding:8px 0 14px;
 }
 
+@media (min-width:1024px){
+  .trust{
+    padding:40px 0 0;
+  }
+
+  .trust + .bestsellers-section{
+    padding-top:8px;
+  }
+
+  .trust + .bestsellers-section .section-head{
+    padding-top:18px;
+  }
+}
+
+@media (max-width:1023px){
+  .trust + .bestsellers-section{
+    padding-top:12px;
+  }
+
+  .trust + .bestsellers-section .section-head{
+    padding-top:18px;
+  }
+}
+
 .trust-grid{
   display:flex;
   justify-content:space-between;
