@@ -14,6 +14,24 @@
   var _nextCartId = 1;
   var _activePromo = null;
 
+  /* ── Easter egg 6-7 ──────────────────────────────────────────── */
+
+  function _triggerSixSeven() {
+    var overlay = el('div', { class: 'ee-six-seven' });
+    var leftHand  = el('span', { class: 'ee-hand ee-hand-left',  text: '🖐️' });
+    var sixText   = el('span', { class: 'ee-67-num', text: '6' });
+    var sevenText = el('span', { class: 'ee-67-num ee-67-7', text: '7' });
+    var rightHand = el('span', { class: 'ee-hand ee-hand-right', text: '🖐️' });
+    overlay.appendChild(leftHand);
+    overlay.appendChild(sixText);
+    overlay.appendChild(sevenText);
+    overlay.appendChild(rightHand);
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function () { overlay.classList.add('show'); });
+    setTimeout(function () { overlay.classList.remove('show'); }, 2400);
+    setTimeout(function () { overlay.remove(); }, 3300);
+  }
+
   /* ── Persistencia ────────────────────────────────────────────── */
 
   function _saveCart() {
@@ -426,6 +444,15 @@
     if (!code) {
       msg.textContent = '';
       msg.className = 'promo-msg';
+      return;
+    }
+
+    // Easter egg: 6-7 meme
+    if (code === '67' || code === '6-7' || code === 'SIXSEVEN' || code === 'SIX SEVEN') {
+      _triggerSixSeven();
+      msg.textContent = '6️⃣ 7️⃣';
+      msg.className = 'promo-msg';
+      input.value = '';
       return;
     }
 

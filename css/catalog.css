@@ -494,3 +494,143 @@ body.custom-cursor-active *{
     transform:translateX(var(--ee-sway, 30px)) rotate(var(--ee-rotate, 45deg));
   }
 }
+
+/* Drip desde cards: las gotas no caen desde arriba sino desde la posición de la card */
+.ee-droplet.ee-card-drip{
+  top:auto;
+  animation:eeCardDrip var(--fall-duration, 1.8s) cubic-bezier(.4,0,.6,1) forwards;
+  animation-delay:var(--ee-delay, 0s);
+}
+
+@keyframes eeCardDrip{
+  0%{ opacity:0; transform:translate(0, 0) scale(.6); }
+  15%{ opacity:1; transform:translate(0, 4px) scale(1); }
+  100%{ opacity:0; transform:translate(var(--ee-sway, 0px), 220px) scale(.85); }
+}
+
+/* ── Easter Egg "luxury" — flash dorado ───────────────────── */
+.ee-luxury-overlay{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:10001;
+  background:radial-gradient(circle at center, rgba(212,175,55,.18), rgba(212,175,55,0) 60%);
+  opacity:0;
+  transition:opacity 1.1s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ee-luxury-overlay.show{
+  opacity:1;
+}
+
+.ee-luxury-text{
+  font-family:"Playfair Display", serif;
+  font-style:italic;
+  font-weight:700;
+  font-size:clamp(48px, 9vw, 120px);
+  color:#f5d77a;
+  letter-spacing:-1px;
+  transform:scale(.7);
+  opacity:0;
+  filter:blur(8px);
+  transition:transform 1.6s cubic-bezier(.2,.8,.2,1), opacity 1.2s ease, filter 1.4s ease;
+  -webkit-text-stroke:1.5px #d4af37;
+  text-shadow:
+    0 0 20px rgba(212,175,55,.9),
+    0 0 40px rgba(212,175,55,.6),
+    0 4px 32px rgba(0,0,0,.6),
+    0 2px 4px rgba(0,0,0,.8);
+}
+
+.ee-luxury-overlay.show .ee-luxury-text{
+  transform:scale(1);
+  opacity:1;
+  filter:blur(0);
+}
+
+.ee-luxury-overlay.show .ee-luxury-text{
+  transform:scale(1);
+  opacity:1;
+}
+
+/* ── Easter Egg "Konami" — modo luxe en hero ──────────────── */
+.hero.ee-luxe::before,
+.hero.ee-luxe::after{
+  animation:eeLuxePulse 1.5s ease-in-out infinite alternate;
+}
+
+.hero.ee-luxe .glow-orb{
+  filter:blur(70px) brightness(1.6) saturate(1.3);
+}
+
+@keyframes eeLuxePulse{
+  0%   { filter:brightness(1)   saturate(1); }
+  100% { filter:brightness(1.2) saturate(1.4); }
+}
+
+/* ── Easter Egg "6-7" ──────────────────────────────────────── */
+.ee-six-seven{
+  position:fixed;
+  inset:0;
+  z-index:10001;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(20px, 4vw, 60px);
+  background:radial-gradient(circle at center, rgba(0,0,0,.55), rgba(0,0,0,.85) 70%);
+  opacity:0;
+  transition:opacity .5s ease;
+}
+
+.ee-six-seven.show{ opacity:1; }
+
+.ee-67-num{
+  font-family:"Playfair Display", serif;
+  font-weight:900;
+  font-size:clamp(100px, 22vw, 280px);
+  color:#f5d77a;
+  -webkit-text-stroke:2px #d4af37;
+  text-shadow:
+    0 0 30px rgba(212,175,55,.9),
+    0 0 60px rgba(212,175,55,.5),
+    0 6px 20px rgba(0,0,0,.7);
+  display:inline-block;
+  transform:scale(.3);
+  opacity:0;
+  transition:transform .9s cubic-bezier(.34,1.56,.64,1), opacity .6s ease;
+}
+
+.ee-six-seven.show .ee-67-num{
+  transform:scale(1);
+  opacity:1;
+}
+
+.ee-six-seven.show .ee-67-7{
+  transition-delay:.15s;
+}
+
+.ee-hand{
+  font-size:clamp(80px, 14vw, 180px);
+  display:inline-block;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,.6));
+  opacity:0;
+  transition:opacity .5s ease;
+}
+
+.ee-six-seven.show .ee-hand{
+  opacity:1;
+  animation:ee67Bounce 0.8s ease-in-out infinite alternate;
+}
+
+.ee-six-seven.show .ee-hand-right{
+  animation-delay:0.4s;
+}
+
+@keyframes ee67Bounce{
+  0%   { transform:translateY(-30px) rotate(-15deg); }
+  100% { transform:translateY(30px)  rotate(15deg); }
+}

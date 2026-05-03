@@ -918,7 +918,7 @@
     });
   }
 
-  /* ── Easter egg "smell" → lluvia de gotas ────────────────────── */
+  /* ── Easter eggs ─────────────────────────────────────────────── */
 
   function _triggerDropletRain() {
     var count = 25;
@@ -938,16 +938,116 @@
     setTimeout(function () { container.remove(); }, 4700);
   }
 
+  function _triggerCardDrip() {
+    var cards = SG.$$('.card:not(.proximo):not(.agotado), .bestseller-card, .combo-card');
+    var visibles = [];
+    var vh = window.innerHeight;
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      if (r.bottom > 0 && r.top < vh) visibles.push(cards[i]);
+    }
+    if (!visibles.length) return _triggerDropletRain();
+
+    var container = el('div');
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:10000;overflow:hidden;';
+    document.body.appendChild(container);
+
+    visibles.forEach(function (card) {
+      var img = card.querySelector('img');
+      var src = img ? img.getBoundingClientRect() : card.getBoundingClientRect();
+      var dropsPerCard = 3;
+      for (var k = 0; k < dropsPerCard; k++) {
+        var d = el('div', { class: 'ee-droplet ee-card-drip' });
+        var x = src.left + Math.random() * src.width;
+        var y = src.bottom - 8;
+        d.style.left = x + 'px';
+        d.style.top = y + 'px';
+        d.style.setProperty('--ee-delay', (Math.random() * 0.5) + 's');
+        d.style.setProperty('--fall-duration', (1.4 + Math.random() * 1.2) + 's');
+        d.style.setProperty('--ee-sway', ((Math.random() - 0.5) * 30) + 'px');
+        container.appendChild(d);
+      }
+    });
+    setTimeout(function () { container.remove(); }, 3500);
+  }
+
+  function _triggerLuxuryFlash() {
+    var overlay = el('div', { class: 'ee-luxury-overlay' });
+    var label   = el('div', { class: 'ee-luxury-text', text: 'Pura esencia' });
+    overlay.appendChild(label);
+    document.body.appendChild(overlay);
+    requestAnimationFrame(function () { overlay.classList.add('show'); });
+    setTimeout(function () { overlay.classList.remove('show'); }, 2400);
+    setTimeout(function () { overlay.remove(); }, 4000);
+  }
+
+  function _triggerKonami() {
+    var hero = SG.$('.hero');
+    if (hero) {
+      hero.classList.add('ee-luxe');
+      setTimeout(function () { hero.classList.remove('ee-luxe'); }, 6000);
+    }
+    if (typeof mostrarToast === 'function') mostrarToast('🥂 Modo luxe activado');
+    _triggerDropletRain();
+  }
+
+  function _initLogoEgg() {
+    var logos = SG.$$('.logo-text, .logo strong');
+    if (!logos.length) return;
+    var clicks = 0;
+    var resetTimer = null;
+    logos.forEach(function (l) {
+      l.addEventListener('click', function () {
+        clicks++;
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function () { clicks = 0; }, 1500);
+        if (clicks >= 5) {
+          clicks = 0;
+          if (typeof mostrarToast === 'function') {
+            mostrarToast('El que sabe, sabe 🥃 — gracias por estar aquí');
+          }
+        }
+      });
+    });
+  }
+
   function initEasterEgg() {
-    var sequence = 'smell';
+    var sequences = {
+      'smell':   _triggerDropletRain,
+      'drip':    _triggerCardDrip,
+      'luxury':  _triggerLuxuryFlash
+    };
+    var maxLen = 0;
+    Object.keys(sequences).forEach(function (s) { if (s.length > maxLen) maxLen = s.length; });
+
     var buffer = '';
+    var konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    var konamiIdx = 0;
+
     document.addEventListener('keydown', function (e) {
       var tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
-      buffer += e.key.toLowerCase();
-      if (buffer.length > sequence.length) buffer = buffer.slice(-sequence.length);
-      if (buffer === sequence) { buffer = ''; _triggerDropletRain(); }
+
+      // Konami: respeta mayúsculas/flechas tal cual vienen
+      var expected = konami[konamiIdx];
+      if (e.key === expected || (expected.length === 1 && e.key.toLowerCase() === expected)) {
+        konamiIdx++;
+        if (konamiIdx === konami.length) { konamiIdx = 0; _triggerKonami(); }
+      } else {
+        konamiIdx = (e.key === konami[0]) ? 1 : 0;
+      }
+
+      // Secuencias de letras
+      if (e.key.length === 1) {
+        buffer += e.key.toLowerCase();
+        if (buffer.length > maxLen) buffer = buffer.slice(-maxLen);
+        Object.keys(sequences).forEach(function (seq) {
+          if (buffer.endsWith(seq)) { buffer = ''; sequences[seq](); }
+        });
+      }
     });
+
+    _initLogoEgg();
   }
 
   /* ── Scroll con impulso + rebote elástico (reusable) ──────────── */
