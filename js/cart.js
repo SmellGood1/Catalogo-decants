@@ -450,7 +450,7 @@
     // Easter egg: 6-7 meme
     if (code === '67' || code === '6-7' || code === 'SIXSEVEN' || code === 'SIX SEVEN') {
       _triggerSixSeven();
-      msg.textContent = '6️⃣ 7️⃣';
+      msg.textContent = '';
       msg.className = 'promo-msg';
       input.value = '';
       return;
