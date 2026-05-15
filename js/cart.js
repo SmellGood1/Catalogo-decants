@@ -109,11 +109,80 @@
     _triggerConfetti();
   }
 
+  function _confirmAction(opts) {
+    var overlay = byId('confirmOverlay');
+    if (!overlay) { opts.onAccept && opts.onAccept(); return; }
+
+    var iconEl   = overlay.querySelector('.confirm-icon');
+    var titleEl  = byId('confirmTitle');
+    var descEl   = byId('confirmDesc');
+    var cancelEl = byId('confirmCancel');
+    var acceptEl = byId('confirmAccept');
+
+    var prevIcon   = iconEl ? iconEl.textContent : null;
+    var prevTitle  = titleEl ? titleEl.textContent : null;
+    var prevDesc   = descEl ? descEl.textContent : null;
+    var prevCancel = cancelEl ? cancelEl.textContent : null;
+    var prevAccept = acceptEl ? acceptEl.textContent : null;
+
+    if (iconEl && opts.icon)    iconEl.textContent  = opts.icon;
+    if (titleEl && opts.title)  titleEl.textContent = opts.title;
+    if (descEl && opts.desc)    descEl.textContent  = opts.desc;
+    if (cancelEl && opts.cancelText) cancelEl.textContent = opts.cancelText;
+    if (acceptEl && opts.acceptText) acceptEl.textContent = opts.acceptText;
+
+    overlay.classList.add('show');
+
+    function detach() {
+      cancelEl.removeEventListener('click', onCancel);
+      acceptEl.removeEventListener('click', onAccept);
+      overlay.removeEventListener('click', onOverlay);
+    }
+    function restore() {
+      if (iconEl && prevIcon != null)     iconEl.textContent  = prevIcon;
+      if (titleEl && prevTitle != null)   titleEl.textContent = prevTitle;
+      if (descEl && prevDesc != null)     descEl.textContent  = prevDesc;
+      if (cancelEl && prevCancel != null) cancelEl.textContent = prevCancel;
+      if (acceptEl && prevAccept != null) acceptEl.textContent = prevAccept;
+    }
+    function onCancel() { SG.modal.close(overlay); }
+    function onAccept() {
+      SG.modal.close(overlay);
+      if (opts.onAccept) opts.onAccept();
+    }
+    function onOverlay(e) { if (e.target === overlay) onCancel(); }
+
+    cancelEl.addEventListener('click', onCancel);
+    acceptEl.addEventListener('click', onAccept);
+    overlay.addEventListener('click', onOverlay);
+
+    SG.modal.open(overlay, {
+      opener: document.activeElement,
+      initialFocus: '#confirmCancel',
+      onClose: function () {
+        overlay.classList.remove('show');
+        detach();
+        restore();
+      }
+    });
+  }
+
   function eliminar(ids) {
-    carrito = carrito.filter(function (item) { return ids.indexOf(item.id) === -1; });
-    _saveCart();
-    renderCarrito();
-    mostrarToast('Producto eliminado');
+    var item = carrito.find(function (i) { return ids.indexOf(i.id) !== -1; });
+    var nombre = item ? item.nombre : 'este producto';
+    _confirmAction({
+      icon: '🗑️',
+      title: '¿Eliminar producto?',
+      desc: 'Vas a quitar "' + nombre + '" de tu carrito.',
+      cancelText: 'Cancelar',
+      acceptText: 'Sí, eliminar',
+      onAccept: function () {
+        carrito = carrito.filter(function (item) { return ids.indexOf(item.id) === -1; });
+        _saveCart();
+        renderCarrito();
+        mostrarToast('Producto eliminado');
+      }
+    });
   }
 
   function incrementar(nombre, ml) {
@@ -139,6 +208,27 @@
   function decrementar(ids) {
     if (!ids.length) return;
     var idToRemove = ids[ids.length - 1];
+
+    // Si es la última unidad, pedir confirmación (porque borra el item)
+    if (ids.length === 1) {
+      var item = carrito.find(function (i) { return i.id === idToRemove; });
+      var nombre = item ? item.nombre : 'este producto';
+      _confirmAction({
+        icon: '🗑️',
+        title: '¿Eliminar producto?',
+        desc: 'Vas a quitar "' + nombre + '" de tu carrito.',
+        cancelText: 'Cancelar',
+        acceptText: 'Sí, eliminar',
+        onAccept: function () {
+          carrito = carrito.filter(function (item) { return item.id !== idToRemove; });
+          _saveCart();
+          renderCarrito();
+          mostrarToast('Producto eliminado');
+        }
+      });
+      return;
+    }
+
     carrito = carrito.filter(function (item) { return item.id !== idToRemove; });
     _saveCart();
     renderCarrito();
@@ -146,36 +236,17 @@
 
   function vaciarCarrito() {
     if (!carrito.length) return;
-
-    var overlay = byId('confirmOverlay');
-    overlay.classList.add('show');
-
-    function detach() {
-      byId('confirmCancel').removeEventListener('click', onCancel);
-      byId('confirmAccept').removeEventListener('click', onAccept);
-      overlay.removeEventListener('click', onOverlay);
-    }
-
-    function onCancel() { SG.modal.close(overlay); }
-    function onAccept() {
-      SG.modal.close(overlay);
-      carrito = [];
-      _saveCart();
-      renderCarrito();
-      mostrarToast('Carrito vaciado');
-    }
-    function onOverlay(e) { if (e.target === overlay) onCancel(); }
-
-    byId('confirmCancel').addEventListener('click', onCancel);
-    byId('confirmAccept').addEventListener('click', onAccept);
-    overlay.addEventListener('click', onOverlay);
-
-    SG.modal.open(overlay, {
-      opener: document.activeElement,
-      initialFocus: '#confirmCancel',
-      onClose: function () {
-        overlay.classList.remove('show');
-        detach();
+    _confirmAction({
+      icon: '🗑️',
+      title: '¿Vaciar carrito?',
+      desc: 'Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.',
+      cancelText: 'Cancelar',
+      acceptText: 'Sí, vaciar',
+      onAccept: function () {
+        carrito = [];
+        _saveCart();
+        renderCarrito();
+        mostrarToast('Carrito vaciado');
       }
     });
   }
@@ -274,7 +345,10 @@
       ]),
       el('button', {
         class: 'cart-remove', type: 'button',
-        dataset: { ids: ids }, text: 'Eliminar'
+        dataset: { ids: ids },
+        'aria-label': 'Eliminar producto',
+        title: 'Eliminar',
+        text: '🗑️'
       })
     ]);
 

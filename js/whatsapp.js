@@ -10,19 +10,16 @@
 
   function _formatLine(p) {
     if (p.isCombo) {
-      var line = '• ' + p.nombre + '\n';
-      line += '   ' + p.ml + ' ml c/u — $' + p.precio + '\n';
+      var line = '• ' + p.nombre + ' — ' + p.ml + ' ml — $' + p.precio;
       if (p.comboItems && p.comboItems.length) {
-        p.comboItems.forEach(function (item) {
-          line += '   · ' + item + '\n';
-        });
+        line += '\n   ' + p.comboItems.join(' · ');
       }
       return line + '\n';
     }
     if (p.isCompleto) {
-      return '• ' + p.nombre + '\n   Frasco completo — $' + p.precio + '\n\n';
+      return '• ' + p.nombre + ' — frasco — $' + p.precio + '\n';
     }
-    return '• ' + p.nombre + '\n   ' + p.ml + ' ml — $' + p.precio + '\n\n';
+    return '• ' + p.nombre + ' — ' + p.ml + ' ml — $' + p.precio + '\n';
   }
 
   function enviarPedido() {
@@ -32,27 +29,12 @@
     if (!nombre) { mostrarToast('Escribe tu nombre', true); return; }
     if (!window.carrito.length) { mostrarToast('Tu carrito está vacío', true); return; }
 
-    var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría hacer mi pedido.\n\n';
-    texto += '━━━━━━━━━━━━\n';
-    texto += 'MI PEDIDO\n';
-    texto += '━━━━━━━━━━━━\n\n';
+    var texto = 'Hola ' + CONFIG.WA_CONTACT + ', soy ' + nombre + ' y me gustaría ordenar mi pedido:\n\n';
     window.carrito.forEach(function (p) { texto += _formatLine(p); });
 
     var b = SG.pricing.calculate(window.carrito, window._activePromo);
 
-    texto += '━━━━━━━━━━━━\n';
-    if (b.totalDiscount > 0) {
-      texto += 'Subtotal: $' + b.subtotal + '\n';
-      if (b.volumeDiscount > 0) {
-        texto += 'Descuento ' + b.tierCurrent.percent + '% (volumen): -$' + b.volumeDiscount + '\n';
-      }
-      if (b.promoDiscount > 0) {
-        texto += 'Código promo (' + window._activePromo.percent + '%): -$' + b.promoDiscount + '\n';
-      }
-      texto += 'Total: $' + b.total;
-    } else {
-      texto += 'Total: $' + b.total;
-    }
+    texto += '\nTotal: $' + b.total;
 
     if (window._activePromo && window._activePromo.code) {
       window._markCodeUsed(window._activePromo.code);
