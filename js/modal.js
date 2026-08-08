@@ -210,6 +210,22 @@
       fragranticaLink.style.display = 'none';
     }
 
+    var waNombreCompleto = p.name || '';
+    if (p.casa) waNombreCompleto += ' de ' + p.casa;
+
+    var waQuestion = byId('dWhatsappQuestion');
+    if (waQuestion) {
+      waQuestion.textContent = '';
+      waQuestion.appendChild(document.createTextNode('¿Tienes dudas con "'));
+      waQuestion.appendChild(el('strong', { text: waNombreCompleto }));
+      waQuestion.appendChild(document.createTextNode('"?'));
+    }
+    var waBtn = byId('btnWhatsappProducto');
+    if (waBtn && window.CONFIG) {
+      var waMsg = 'Hola ' + CONFIG.WA_CONTACT + ', me interesa saber más de "' + waNombreCompleto + '"';
+      waBtn.href = 'https://wa.me/' + CONFIG.WA_NUMBER + '?text=' + encodeURIComponent(waMsg);
+    }
+
     var notasDiv = byId('dNotas');
     notasDiv.textContent = '';
     if (p.notes) {
@@ -266,9 +282,12 @@
     breakGlass: _crearParticulas
   };
 
-  // cart.js necesita leer el producto abierto — getter sin mutación externa.
+  // cart.js necesita leer el producto abierto. El setter es aditivo: permite
+  // que otras páginas (p.ej. /recomendador) reutilicen addCarrito() para un
+  // "agregar" directo sin duplicar la lógica del carrito.
   Object.defineProperty(window, 'actual', {
     get: function () { return actual; },
+    set: function (value) { actual = value; },
     configurable: true
   });
 })(window.SG);

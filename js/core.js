@@ -190,6 +190,15 @@
     return false;
   };
 
+  /* ── Precio ────────────────────────────────────────────────── */
+
+  // Menor precio disponible entre las presentaciones (1/2/5/10 ml). null si no hay ninguna.
+  SG.cheapestPrice = function (prices) {
+    if (!prices) return null;
+    var vals = [1, 2, 5, 10].map(function (ml) { return prices[ml]; }).filter(function (v) { return v > 0; });
+    return vals.length ? Math.min.apply(Math, vals) : null;
+  };
+
   /* ── Debounce y rAF throttle ───────────────────────────────── */
 
   SG.debounce = function (fn, ms) {

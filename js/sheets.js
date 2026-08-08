@@ -122,6 +122,7 @@ function loadPerfumesFromSheets() {
           img:     row['imagen'] || '',
           link:    row['link'] || '',
           prices: {
+            1:  cleanPrice(row['precio venta 1ml']),
             2:  cleanPrice(row['precio venta 2ml']),
             5:  cleanPrice(row['precio venta 5ml']),
             10: cleanPrice(row['precio venta 10ml'])

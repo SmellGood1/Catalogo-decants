@@ -1,0 +1,177 @@
+/* spotlight.css — Revelación cinematográfica al entrar a Decants (spotlight.js) */
+
+.spotlight-overlay{
+  position:fixed;
+  inset:0;
+  z-index:150;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  overflow-y:auto;
+  background:rgba(5,5,8,.82);
+  opacity:0;
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+  transition:opacity .5s cubic-bezier(.25,.46,.45,.94),
+             backdrop-filter .6s cubic-bezier(.25,.46,.45,.94),
+             -webkit-backdrop-filter .6s cubic-bezier(.25,.46,.45,.94);
+}
+
+.spotlight-overlay.show{
+  opacity:1;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+
+.spotlight-overlay.closing{
+  opacity:0;
+  backdrop-filter:blur(0px);
+  -webkit-backdrop-filter:blur(0px);
+}
+
+.spotlight-glow{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(100px);
+  pointer-events:none;
+}
+
+.spotlight-glow-1{
+  width:45vw;
+  height:45vw;
+  background:rgba(212,175,55,.16);
+  top:-12%;
+  left:-10%;
+}
+
+.spotlight-glow-2{
+  width:50vw;
+  height:50vw;
+  background:rgba(168,130,255,.12);
+  bottom:-16%;
+  right:-10%;
+}
+
+.spotlight-box{
+  position:relative;
+  width:min(900px, 100%);
+  border-radius:28px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  background:linear-gradient(180deg, #16141c, #0d0c11);
+  border:1px solid rgba(212,175,55,.18);
+  box-shadow:0 40px 100px rgba(0,0,0,.55);
+  margin:auto;
+  transform:scale(.9) translateY(30px);
+  opacity:0;
+  transition:transform .5s cubic-bezier(.16,1,.3,1), opacity .45s ease;
+}
+
+.spotlight-overlay.show .spotlight-box{
+  transform:scale(1) translateY(0);
+  opacity:1;
+}
+
+.spotlight-overlay.closing .spotlight-box{
+  transform:scale(.9) translateY(20px);
+  opacity:0;
+}
+
+.spotlight-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  z-index:5;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.3);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+  transition:var(--transition);
+}
+
+.spotlight-close:hover{
+  background:rgba(212,175,55,.15);
+  border-color:rgba(212,175,55,.4);
+  color:var(--gold-2);
+}
+
+.spotlight-imgwrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  min-height:320px;
+  background:radial-gradient(circle at 50% 30%, rgba(212,175,55,.1), transparent 70%);
+}
+
+.spotlight-imgwrap img{
+  max-width:100%;
+  max-height:380px;
+  object-fit:contain;
+  filter:drop-shadow(0 30px 40px rgba(0,0,0,.5));
+}
+
+.spotlight-content{
+  padding:44px 44px 44px 10px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.spotlight-kicker{
+  display:inline-block;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:var(--gold-2);
+  margin-bottom:14px;
+}
+
+.spotlight-brand{
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:8px;
+}
+
+.spotlight-content h2{
+  font-family:"Playfair Display", serif;
+  font-size:clamp(28px, 3.4vw, 40px);
+  line-height:1.1;
+  margin-bottom:18px;
+}
+
+.spotlight-content p{
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+  margin-bottom:28px;
+}
+
+.spotlight-cta{
+  align-self:flex-start;
+}
+
+@media (max-width:768px){
+  .spotlight-box{
+    grid-template-columns:1fr;
+  }
+
+  .spotlight-content{
+    padding:8px 28px 32px;
+  }
+
+  .spotlight-imgwrap{
+    padding:32px 28px 8px;
+    min-height:auto;
+  }
+}

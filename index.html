@@ -115,7 +115,7 @@
         "name": "¿Cuánto perfume trae un decant?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Manejamos 3 tamaños: 2ml (30 atomizaciones), 5ml (90 atomizaciones) y 10ml (180 atomizaciones)."
+          "text": "Manejamos 4 tamaños: 1ml (aproximadamente 15 atomizaciones), 2ml (aproximadamente 30 atomizaciones), 5ml (aproximadamente 90 atomizaciones) y 10ml (aproximadamente 180 atomizaciones)."
         }
       },
       {
@@ -141,6 +141,7 @@
   <link rel="stylesheet" href="css/header.css">
   <link rel="stylesheet" href="css/hero.css?v=2">
   <link rel="stylesheet" href="css/trust.css">
+  <link rel="stylesheet" href="css/finder-cta.css?v=1">
   <link rel="stylesheet" href="css/catalog.css?v=10">
   <link rel="stylesheet" href="css/modal.css">
   <link rel="stylesheet" href="css/cart.css?v=7">
@@ -151,6 +152,7 @@
   <link rel="stylesheet" href="css/combos.css?v=12">
   <link rel="stylesheet" href="css/extras.css?v=7">
   <link rel="stylesheet" href="css/responsive.css?v=4">
+  <link rel="stylesheet" href="css/spotlight.css?v=1">
 </head>
 <body>
 
@@ -295,6 +297,18 @@
         </div>
       </section>
 
+      <!-- RECOMENDADOR — CTA hacia el quiz de estilo -->
+      <section class="finder-cta">
+        <div class="container finder-cta-inner reveal">
+          <h2>Encuentra un perfume que encaje contigo</h2>
+          <p>Responde seis preguntas y descubre nuestras recomendaciones según tu estilo, ocasión y preferencias.</p>
+          <div class="finder-cta-actions">
+            <a href="/recomendador" class="btn btn-primary">Descubrir mi perfume</a>
+            <a href="#catalogoSection" class="btn btn-secondary">Explorar catálogo</a>
+          </div>
+        </div>
+      </section>
+
       <section id="catalogoSection" class="container">
         <div class="section-head reveal">
           <div>
@@ -347,7 +361,7 @@
             </div>
 
             <div class="stat">
-              <strong><span class="count-up" data-target="3">0</span></strong>
+              <strong><span class="count-up" data-target="4">0</span></strong>
               <span>Tamaños disponibles</span>
             </div>
           </div>
@@ -377,10 +391,11 @@
           <details class="faq-item">
             <summary>¿Cuánto perfume trae un decant?</summary>
             <div class="faq-answer">
-              <p>Manejamos 3 tamaños:</p>
-              <p>2 ml: 30 atomizaciones</p>
-              <p>5 ml: 90 atomizaciones</p>
-              <p>10 ml: 180 atomizaciones</p>
+              <p>Manejamos 4 tamaños:</p>
+              <p>1 ml: aproximadamente 15 atomizaciones</p>
+              <p>2 ml: aproximadamente 30 atomizaciones</p>
+              <p>5 ml: aproximadamente 90 atomizaciones</p>
+              <p>10 ml: aproximadamente 180 atomizaciones</p>
             </div>
           </details>
 
@@ -602,6 +617,7 @@
         <div class="field">
           <label for="ml">Selecciona tus mililitros</label>
           <select id="ml">
+            <option value="1">1 ml</option>
             <option value="2">2 ml</option>
             <option value="5">5 ml</option>
             <option value="10">10 ml</option>
@@ -618,11 +634,17 @@
         </div>
         <div class="modal-actions">
           <button id="btnAddCart" class="full-btn primary">Añadir al carrito</button>
-          <button id="btnCerrarDetalle" class="full-btn secondary">Cerrar</button>
         </div>
         <a id="fragranticaLink" class="fragrantica-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
           Conoce más en Fragrantica ↗
         </a>
+
+        <div class="whatsapp-help">
+          <p id="dWhatsappQuestion" class="whatsapp-help-question"></p>
+          <a id="btnWhatsappProducto" class="whatsapp-help-btn" href="#" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">💬</span> Escríbeme por WhatsApp
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -688,6 +710,7 @@
   <script src="js/catalog.js?v=8" defer></script>
   <script src="js/extras.js?v=37" defer></script>
   <script src="js/faq.js?v=2" defer></script>
+  <script src="js/spotlight.js?v=1" defer></script>
   <script src="js/app.js?v=34" defer></script>
 </body>
 </html>

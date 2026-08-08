@@ -1,0 +1,430 @@
+/* recomendador.css — Wizard de recomendación (/recomendador). Reutiliza
+ * variables.css / components.css / header.css; esto solo cubre lo propio
+ * de esta página: header simple, progreso, preguntas y tarjetas de resultado. */
+
+.finder-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:100;
+  background:rgba(10,10,12,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.finder-home-link{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  text-decoration:none;
+}
+
+.finder-home-link strong{
+  font-family:"Playfair Display", serif;
+  font-size:24px;
+  font-weight:700;
+  color:var(--gold-2);
+}
+
+.finder-home-link span{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+.finder-nav-link{
+  display:inline-flex;
+  align-items:center;
+  background:rgba(212,175,55,.1);
+  color:var(--gold-2);
+  border:1px solid rgba(212,175,55,.2);
+  padding:10px 20px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  text-decoration:none;
+  transition:var(--transition);
+}
+
+.finder-nav-link:hover{
+  background:rgba(212,175,55,.2);
+  border-color:rgba(212,175,55,.4);
+}
+
+main#main-recomendador{
+  min-height:100vh;
+  padding:130px 0 80px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(212,175,55,.08), transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(168,130,255,.06), transparent 45%),
+    var(--bg);
+}
+
+.finder-wizard-section{
+  max-width:760px;
+  transition:max-width .3s ease;
+}
+
+/* Los resultados muestran 3 tarjetas con 4 precios cada una — necesitan
+ * más aire que una sola pregunta para que no se amontonen los números. */
+.finder-wizard-section.is-results{
+  max-width:1180px;
+}
+
+/* ── Progreso ─────────────────────────────────────────────────── */
+
+.finder-progress-wrap{
+  margin-bottom:32px;
+}
+
+.finder-progress-track{
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.finder-progress-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg, var(--gold), var(--gold-2));
+  transition:width .5s cubic-bezier(.22,1,.36,1);
+}
+
+.finder-progress-label{
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+  letter-spacing:.3px;
+}
+
+/* ── Tarjeta contenedora del stage ────────────────────────────── */
+
+.finder-stage{
+  position:relative;
+}
+
+.finder-question,
+.finder-status,
+.finder-results{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:rgba(255,255,255,.025);
+  box-shadow:var(--shadow);
+  padding:40px 32px;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .45s cubic-bezier(.22,1,.36,1), transform .45s cubic-bezier(.22,1,.36,1);
+}
+
+.finder-question.active,
+.finder-status.active,
+.finder-results.active{
+  opacity:1;
+  transform:translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .finder-question, .finder-status, .finder-results{
+    transition:opacity .01s linear;
+    transform:none;
+  }
+}
+
+.finder-q-kicker{
+  display:inline-block;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--gold-2);
+  margin-bottom:14px;
+}
+
+.finder-q-title{
+  font-family:"Playfair Display", serif;
+  font-size:clamp(24px, 3.4vw, 34px);
+  line-height:1.2;
+  margin-bottom:28px;
+  outline:none;
+}
+
+/* ── Opciones ─────────────────────────────────────────────────── */
+
+.finder-options{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:32px;
+}
+
+.finder-option{
+  text-align:left;
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:16px 20px;
+  font-size:16px;
+  font-weight:500;
+  cursor:pointer;
+  transition:var(--transition);
+}
+
+.finder-option:hover{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.2);
+}
+
+.finder-option.selected{
+  background:rgba(212,175,55,.12);
+  border-color:rgba(212,175,55,.45);
+  color:var(--gold-2);
+  box-shadow:0 8px 24px rgba(212,175,55,.12);
+}
+
+.finder-option:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+}
+
+/* ── Navegación del wizard ────────────────────────────────────── */
+
+.finder-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.finder-nav-center{
+  justify-content:center;
+}
+
+.finder-nav .btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+  transform:none !important;
+}
+
+/* ── Estados: cargando / error / vacío ───────────────────────── */
+
+.finder-status{
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  padding:60px 32px;
+}
+
+.finder-status h3{
+  font-family:"Playfair Display", serif;
+  font-size:24px;
+  color:var(--text);
+}
+
+.finder-status p{
+  color:var(--muted);
+  max-width:420px;
+}
+
+.finder-status-icon{
+  font-size:40px;
+  margin-bottom:6px;
+}
+
+.finder-spinner{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:3px solid rgba(212,175,55,.2);
+  border-top-color:var(--gold);
+  animation:finderSpin .8s linear infinite;
+  margin-bottom:6px;
+}
+
+@keyframes finderSpin{
+  to{ transform:rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .finder-spinner{ animation-duration:2s; }
+}
+
+/* ── Resultados ───────────────────────────────────────────────── */
+
+.finder-results-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:20px;
+  margin-bottom:32px;
+}
+
+.finder-result{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.03);
+  padding:24px 20px 20px;
+  display:flex;
+  flex-direction:column;
+  transition:var(--transition);
+}
+
+.finder-result:hover{
+  transform:translateY(-4px);
+  background:rgba(255,255,255,.045);
+}
+
+.finder-result.is-best{
+  border-color:rgba(212,175,55,.4);
+  box-shadow:0 16px 32px rgba(212,175,55,.1);
+}
+
+.finder-result-badge{
+  align-self:flex-start;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:999px;
+  margin-bottom:16px;
+  background:rgba(255,255,255,.06);
+  color:var(--muted);
+}
+
+.finder-result.is-best .finder-result-badge{
+  background:rgba(212,175,55,.15);
+  color:var(--gold-2);
+}
+
+.finder-result.is-accesible .finder-result-badge{
+  background:rgba(46,204,113,.14);
+  color:#6fe3a0;
+}
+
+.finder-result.is-atrevida .finder-result-badge{
+  background:rgba(168,130,255,.16);
+  color:#c6adff;
+}
+
+.finder-result-imgwrap{
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:16px;
+}
+
+.finder-result-imgwrap img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+}
+
+.finder-result h3{
+  font-size:19px;
+  margin-bottom:4px;
+}
+
+.finder-result-brand{
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:14px;
+}
+
+.finder-result-explain{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.6;
+  margin-bottom:18px;
+  flex-grow:1;
+}
+
+.finder-result-prices{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px 8px;
+  margin-bottom:18px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
+
+.finder-result-prices > div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+}
+
+.finder-result-prices span{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  white-space:nowrap;
+}
+
+.finder-result-prices strong{
+  font-size:16px;
+  color:var(--text);
+  white-space:nowrap;
+}
+
+.finder-result-actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.finder-result-actions .btn{
+  width:100%;
+  text-align:center;
+  font-size:14px;
+  padding:12px 16px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+
+@media (min-width:768px){
+  .finder-options{
+    flex-direction:row;
+    flex-wrap:wrap;
+  }
+
+  .finder-option{
+    flex:1 1 calc(50% - 6px);
+  }
+
+  .finder-results-grid{
+    grid-template-columns:repeat(3, 1fr);
+  }
+}
+
+@media (max-width:540px){
+  main#main-recomendador{
+    padding:110px 0 50px;
+  }
+
+  .finder-question, .finder-status, .finder-results{
+    padding:28px 20px;
+  }
+
+  .finder-nav{
+    flex-direction:column-reverse;
+    align-items:stretch;
+  }
+
+  .finder-nav .btn{
+    width:100%;
+    text-align:center;
+  }
+}

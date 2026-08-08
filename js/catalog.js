@@ -53,7 +53,7 @@
     var f = document.createDocumentFragment();
     f.appendChild(el('div', { class: 'starting' }, [
       el('span', { text: 'Desde' }),
-      el('strong', { text: '$' + p.prices[2] })
+      el('strong', { text: '$' + (SG.cheapestPrice(p.prices) || 0) })
     ]));
     f.appendChild(el('button', { class: 'small-btn', type: 'button', text: 'Ver' }));
     return f;

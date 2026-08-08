@@ -10,7 +10,7 @@ window.CONFIG = {
   WA_NUMBER: '529213042001',
   WA_CONTACT: 'Jhoan',
   TOAST_DURATION: 2000,
-  ML_OPTIONS: [2, 5, 10],
+  ML_OPTIONS: [1, 2, 5, 10],
 
   SITE_URL: 'https://catalogo-decants.vercel.app',
 
@@ -24,9 +24,6 @@ window.CONFIG = {
     { threshold: 800,  percent: 15 },
     { threshold: 1200, percent: 20 }
   ],
-
-  // Descuento para combos personalizados (usuario elige sus 3 perfumes).
-  CUSTOM_COMBO_DISCOUNT: 10,
 
   // Cap de descuento combinado (volumen + promo) como % del subtotal de decants.
   // Default 100 = sin cap para preservar el comportamiento actual del negocio.

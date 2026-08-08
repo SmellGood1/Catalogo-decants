@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recomendador de perfumes | SmellGood Decants</title>
+  <meta name="description" content="Responde 6 preguntas y descubre qué perfumes de nuestro catálogo combinan mejor con tu estilo, ocasión y preferencias.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+
+  <script src="../js/config.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/reset.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/header.css">
+  <link rel="stylesheet" href="../css/modal.css">
+  <link rel="stylesheet" href="../css/cart.css">
+  <link rel="stylesheet" href="../css/footer.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/recomendador.css?v=1">
+</head>
+<body>
+
+  <a id="skipLink" href="#main-recomendador" class="skip-link">Saltar al contenido</a>
+
+  <header class="finder-header">
+    <nav class="container nav" aria-label="Navegación">
+      <a href="/" class="finder-home-link">
+        <strong>SmellGood</strong>
+        <span>Recomendador</span>
+      </a>
+      <div class="nav-actions">
+        <a href="/#catalogoSection" class="finder-nav-link">Ver catálogo</a>
+        <button id="btnToggleCartNav" class="cart-btn" aria-label="Abrir carrito de compras">
+          <span>🛒 Carrito</span>
+          <span class="badge" id="contador">0</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-recomendador">
+    <section id="finderWizardSection" class="finder-wizard-section container">
+      <div class="finder-progress-wrap">
+        <div id="finderProgressTrack" class="finder-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progreso del cuestionario">
+          <div id="finderProgressFill" class="finder-progress-fill"></div>
+        </div>
+        <p id="finderProgressLabel" class="finder-progress-label">Pregunta 1 de 6</p>
+      </div>
+
+      <div id="finderStage" class="finder-stage"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-wrap">
+      <div class="footer-brand">
+        <strong style="font-family:'Playfair Display', serif; font-size:24px; color:var(--gold-2);">SmellGood</strong><br>
+        Encuentra tu aroma ideal.
+      </div>
+      <div>
+        Atención personalizada<br>
+        Catálogo elegante<br>
+        Compra rápida por WhatsApp
+      </div>
+      <div>
+        <a href="/#catalogoSection" style="color:var(--muted);text-decoration:none;">Ver catálogo completo →</a>
+      </div>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/529213042001?text=Hola%2C%20vi%20el%20recomendador%20de%20SmellGood%20y%20me%20gustar%C3%ADa%20m%C3%A1s%20informaci%C3%B3n%20%F0%9F%91%8B" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">💬</a>
+
+  <!-- MODALS & OVERLAYS — mismos IDs que index.html: reutilizan modal.js/cart.js
+       sin duplicar su lógica. -->
+
+  <div id="detalle" role="dialog" aria-modal="true" aria-labelledby="dNombre" aria-hidden="true">
+    <div class="detalleBox" id="detalleBox">
+      <div class="detalle-left">
+        <img id="dImg" alt="Perfume" loading="lazy">
+      </div>
+      <div class="detalle-right">
+        <button id="btnCerrarX" class="cerrarX" aria-label="Cerrar detalle">&times;</button>
+        <div class="modal-brand" id="dMarca"></div>
+        <div class="perfumeNombre" id="dNombre"></div>
+        <div class="concentracion" id="dConc"></div>
+        <div id="dNotas" class="notas-section" style="display:none"></div>
+        <div class="field">
+          <label for="ml">Selecciona tus mililitros</label>
+          <select id="ml">
+            <option value="1">1 ml</option>
+            <option value="2">2 ml</option>
+            <option value="5">5 ml</option>
+            <option value="10">10 ml</option>
+          </select>
+        </div>
+        <div class="price-box">
+          <div>
+            <span>Precio estimado</span>
+            <strong id="precioModal">$8</strong>
+          </div>
+          <div>
+            <span id="textoMlModal">1 ml seleccionado</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="btnAddCart" class="full-btn primary">Añadir al carrito</button>
+        </div>
+        <a id="fragranticaLink" class="fragrantica-link" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">
+          Conoce más en Fragrantica ↗
+        </a>
+
+        <div class="whatsapp-help">
+          <p id="dWhatsappQuestion" class="whatsapp-help-question"></p>
+          <a id="btnWhatsappProducto" class="whatsapp-help-btn" href="#" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">💬</span> Escríbeme por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartOverlay"></div>
+
+  <aside id="carritoPanel" role="dialog" aria-modal="true" aria-label="Carrito de compras" aria-hidden="true">
+    <div class="cart-head">
+      <h2>Carrito</h2>
+      <button id="btnCerrarCarrito" class="close-cart" aria-label="Cerrar carrito">&times;</button>
+    </div>
+    <div id="discountBar" class="discount-bar" style="display:none">
+      <p id="discountMsg"></p>
+      <div class="discount-track">
+        <div id="discountFill" class="discount-fill"></div>
+        <div class="discount-goal">
+          <span>Hasta 20% OFF</span>
+        </div>
+      </div>
+    </div>
+    <div id="listaCarrito"></div>
+    <div class="cart-total">
+      <span>Total de tu pedido</span>
+      <strong id="totalCarrito">$0</strong>
+    </div>
+    <button id="btnVaciarCarrito" class="vaciar-btn">Vaciar carrito</button>
+    <input id="nombreCliente" placeholder="Tu nombre" aria-label="Tu nombre para el pedido">
+
+    <div class="promo-code-wrap">
+      <input id="promoInput" placeholder="Código de descuento" aria-label="Código de descuento">
+      <button id="btnApplyPromo" class="promo-apply-btn">Aplicar</button>
+    </div>
+    <div id="promoMsg" class="promo-msg"></div>
+
+    <div style="height:14px"></div>
+    <button id="btnEnviarPedido" class="full-btn primary">Enviar pedido por WhatsApp</button>
+  </aside>
+
+  <div id="confirmOverlay" class="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmDesc" aria-hidden="true">
+    <div class="confirm-box">
+      <div class="confirm-icon" aria-hidden="true">🗑️</div>
+      <h3 id="confirmTitle">¿Vaciar carrito?</h3>
+      <p id="confirmDesc">Se eliminarán todas las fragancias de tu carrito. Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" class="confirm-btn cancel">Cancelar</button>
+        <button id="confirmAccept" class="confirm-btn accept">Sí, vaciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="../js/core.js" defer></script>
+  <script src="../js/a11y.js" defer></script>
+  <script src="../js/pricing.js" defer></script>
+  <script src="../js/sheets.js" defer></script>
+  <script src="../js/toast.js" defer></script>
+  <script src="../js/cart.js" defer></script>
+  <script src="../js/modal.js" defer></script>
+  <script src="../js/whatsapp.js" defer></script>
+  <script src="../js/recommendationProfiles.js" defer></script>
+  <script src="../js/recomendador.js" defer></script>
+</body>
+</html>
